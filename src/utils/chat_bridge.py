@@ -7,7 +7,7 @@ import aiohttp
 
 TOKEN_END = "<<END>>"
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
-DEFAULT_CHAT_MODEL = "moonshotai/kimi-k2-instruct"
+DEFAULT_CHAT_MODEL = "llama-3.1-8b-instant"
 DEFAULT_BACKEND = "groq"
 DEFAULT_SYSTEM_PROMPT = "Voce e a Mina AI."
 MAX_HISTORY = 10

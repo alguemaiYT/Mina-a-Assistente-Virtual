@@ -1,0 +1,208 @@
+2026-04-27 14:30:29,046[__main__] - ERROR - Chat error: GROQ_API_KEY is not set - MainThread
+Traceback (most recent call last):
+  File "/root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/main_gui.py", line 275, in handle_send_text
+    final_text = await chat_bridge.send_and_stream(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        text, on_chunk=on_chunk, on_emotion=on_emotion, on_control=on_control
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/src/utils/chat_bridge.py", line 284, in send_and_stream
+    return await self._send_and_stream_groq(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+    )
+    ^
+  File "/root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/src/utils/chat_bridge.py", line 193, in _send_and_stream_groq
+    raise RuntimeError("GROQ_API_KEY is not set")
+RuntimeError: GROQ_API_KEY is not set
+2026-04-27 14:30:34,791[__main__] - ERROR - Chat error: GROQ_API_KEY is not set - MainThread
+Traceback (most recent call last):
+  File "/root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/main_gui.py", line 275, in handle_send_text
+    final_text = await chat_bridge.send_and_stream(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        text, on_chunk=on_chunk, on_emotion=on_emotion, on_control=on_control
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/src/utils/chat_bridge.py", line 284, in send_and_stream
+    return await self._send_and_stream_groq(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+    )
+    ^
+  File "/root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/src/utils/chat_bridge.py", line 193, in _send_and_stream_groq
+    raise RuntimeError("GROQ_API_KEY is not set")
+RuntimeError: GROQ_API_KEY is not set
+2026-04-27 14:31:11,359[__main__] - ERROR - Chat error: GROQ_API_KEY is not set - MainThread
+Traceback (most recent call last):
+  File "/root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/main_gui.py", line 275, in handle_send_text
+    final_text = await chat_bridge.send_and_stream(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        text, on_chunk=on_chunk, on_emotion=on_emotion, on_control=on_control
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/src/utils/chat_bridge.py", line 284, in send_and_stream
+    return await self._send_and_stream_groq(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+    )
+    ^
+  File "/root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/src/utils/chat_bridge.py", line 193, in _send_and_stream_groq
+    raise RuntimeError("GROQ_API_KEY is not set")
+RuntimeError: GROQ_API_KEY is not set
+2026-04-27 14:42:49,242[__main__] - ERROR - Chat error: GROQ_API_KEY is not set - MainThread
+Traceback (most recent call last):
+  File "/root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/main_gui.py", line 275, in handle_send_text
+    final_text = await chat_bridge.send_and_stream(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        text, on_chunk=on_chunk, on_emotion=on_emotion, on_control=on_control
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/src/utils/chat_bridge.py", line 284, in send_and_stream
+    return await self._send_and_stream_groq(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+    )
+    ^
+  File "/root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/src/utils/chat_bridge.py", line 193, in _send_and_stream_groq
+    raise RuntimeError("GROQ_API_KEY is not set")
+RuntimeError: GROQ_API_KEY is not set
+2026-04-27 15:28:57,649[__main__] - ERROR - Chat error: GROQ_API_KEY is not set - MainThread
+Traceback (most recent call last):
+  File "/root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/main_gui.py", line 275, in handle_send_text
+    final_text = await chat_bridge.send_and_stream(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        text, on_chunk=on_chunk, on_emotion=on_emotion, on_control=on_control
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/src/utils/chat_bridge.py", line 284, in send_and_stream
+    return await self._send_and_stream_groq(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+    )
+    ^
+  File "/root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/src/utils/chat_bridge.py", line 193, in _send_and_stream_groq
+    raise RuntimeError("GROQ_API_KEY is not set")
+RuntimeError: GROQ_API_KEY is not set
+2026-04-27 15:29:21,626[root] - INFO - Logging initialized, log file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-04-27 15:29:22,084[__main__] - INFO - Created qasync event loop - MainThread
+2026-04-27 15:29:22,132[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
+2026-04-27 15:29:22,138[src.utils.config_manager] - INFO - Config directory: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config - MainThread
+2026-04-27 15:29:22,140[src.utils.config_manager] - INFO - Config file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config/config.json - MainThread
+2026-04-27 15:29:22,206[src.utils.tts_client] - WARNING - TTS server unreachable (http://localhost:8000): Cannot connect to host localhost:8000 ssl:default [Multiple exceptions: [Errno 111] Connect call failed ('::1', 8000, 0, 0), [Errno 111] Connect call failed ('127.0.0.1', 8000)] - MainThread
+2026-04-27 15:29:22,207[__main__] - INFO - TTS client ready (enabled=False) - MainThread
+2026-04-27 15:29:43,626[root] - INFO - Logging initialized, log file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-04-27 15:29:43,692[__main__] - INFO - Created qasync event loop - MainThread
+2026-04-27 15:29:43,800[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
+2026-04-27 15:29:43,804[src.utils.config_manager] - INFO - Config directory: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config - MainThread
+2026-04-27 15:29:43,805[src.utils.config_manager] - INFO - Config file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config/config.json - MainThread
+2026-04-27 15:29:43,839[src.utils.tts_client] - WARNING - TTS server unreachable (http://localhost:8000): Cannot connect to host localhost:8000 ssl:default [Multiple exceptions: [Errno 111] Connect call failed ('::1', 8000, 0, 0), [Errno 111] Connect call failed ('127.0.0.1', 8000)] - MainThread
+2026-04-27 15:29:43,840[__main__] - INFO - TTS client ready (enabled=False) - MainThread
+2026-04-27 15:30:53,296[root] - INFO - Logging initialized, log file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-04-27 15:30:53,366[__main__] - INFO - Created qasync event loop - MainThread
+2026-04-27 15:30:53,391[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
+2026-04-27 15:30:53,395[src.utils.config_manager] - INFO - Config directory: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config - MainThread
+2026-04-27 15:30:53,397[src.utils.config_manager] - INFO - Config file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config/config.json - MainThread
+2026-04-27 15:30:53,433[src.utils.tts_client] - WARNING - TTS server unreachable (http://localhost:8000): Cannot connect to host localhost:8000 ssl:default [Multiple exceptions: [Errno 111] Connect call failed ('::1', 8000, 0, 0), [Errno 111] Connect call failed ('127.0.0.1', 8000)] - MainThread
+2026-04-27 15:30:53,435[__main__] - INFO - TTS client ready (enabled=False) - MainThread
+2026-04-27 15:30:54,884[__main__] - INFO - GUI started successfully - MainThread
+2026-04-27 15:31:35,208[root] - INFO - Logging initialized, log file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-04-27 15:31:35,275[__main__] - INFO - Created qasync event loop - MainThread
+2026-04-27 15:31:35,301[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
+2026-04-27 15:31:35,305[src.utils.config_manager] - INFO - Config directory: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config - MainThread
+2026-04-27 15:31:35,307[src.utils.config_manager] - INFO - Config file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config/config.json - MainThread
+2026-04-27 15:31:35,340[src.utils.tts_client] - WARNING - TTS server unreachable (http://localhost:8000): Cannot connect to host localhost:8000 ssl:default [Multiple exceptions: [Errno 111] Connect call failed ('::1', 8000, 0, 0), [Errno 111] Connect call failed ('127.0.0.1', 8000)] - MainThread
+2026-04-27 15:31:35,341[__main__] - INFO - TTS client ready (enabled=False) - MainThread
+2026-04-27 15:31:36,518[__main__] - INFO - GUI started successfully - MainThread
+2026-04-27 15:31:38,594[root] - INFO - Logging initialized, log file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-04-27 15:32:09,921[root] - INFO - Logging initialized, log file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-04-27 15:32:09,987[__main__] - INFO - Created qasync event loop - MainThread
+2026-04-27 15:32:10,002[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
+2026-04-27 15:32:10,005[src.utils.config_manager] - INFO - Config directory: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config - MainThread
+2026-04-27 15:32:10,007[src.utils.config_manager] - INFO - Config file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config/config.json - MainThread
+2026-04-27 15:32:10,039[src.utils.tts_client] - WARNING - TTS server unreachable (http://localhost:8000): Cannot connect to host localhost:8000 ssl:default [Multiple exceptions: [Errno 111] Connect call failed ('::1', 8000, 0, 0), [Errno 111] Connect call failed ('127.0.0.1', 8000)] - MainThread
+2026-04-27 15:32:10,041[__main__] - INFO - TTS client ready (enabled=False) - MainThread
+2026-04-27 15:32:11,271[__main__] - INFO - GUI started successfully - MainThread
+2026-04-27 18:08:29,178[GuiDisplay] - INFO - 开始退出应用程序... - MainThread
+2026-04-27 18:08:29,188[src.utils.stt_client] - INFO - Shutting down native STT - Dummy-1
+2026-04-27 18:08:29,203[__main__] - INFO - GUI closed before loop completion - MainThread
+2026-04-27 18:08:29,706[qasync._QEventLoop] - ERROR - Task was destroyed but it is pending!
+task: <Task pending name='Task-1' coro=<run_gui() running at /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/main_gui.py:339> wait_for=<Future pending cb=[_chain_future.<locals>._call_check_cancel() at /usr/lib/python3.13/asyncio/futures.py:384, Task.task_wakeup()]>> - MainThread
+2026-04-27 18:08:29,709[qasync._QEventLoop] - ERROR - Unclosed client session
+client_session: <aiohttp.client.ClientSession object at 0xa5d2e030> - MainThread
+2026-04-27 18:08:29,711[src.utils.stt_client] - INFO - Shutting down native STT - MainThread
+2026-04-27 18:13:21,744[__main__] - ERROR - Chat error: GROQ_API_KEY is not set - MainThread
+Traceback (most recent call last):
+  File "/root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/main_gui.py", line 275, in handle_send_text
+    final_text = await chat_bridge.send_and_stream(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        text, on_chunk=on_chunk, on_emotion=on_emotion, on_control=on_control
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/src/utils/chat_bridge.py", line 284, in send_and_stream
+    return await self._send_and_stream_groq(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+    )
+    ^
+  File "/root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/src/utils/chat_bridge.py", line 193, in _send_and_stream_groq
+    raise RuntimeError("GROQ_API_KEY is not set")
+RuntimeError: GROQ_API_KEY is not set
+2026-04-27 18:14:15,266[root] - INFO - Logging initialized, log file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-04-27 18:14:15,440[__main__] - INFO - Created qasync event loop - MainThread
+2026-04-27 18:14:15,466[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
+2026-04-27 18:14:15,471[src.utils.config_manager] - INFO - Config directory: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config - MainThread
+2026-04-27 18:14:15,472[src.utils.config_manager] - INFO - Config file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config/config.json - MainThread
+2026-04-27 18:14:15,509[src.utils.tts_client] - WARNING - TTS server unreachable (http://localhost:8000): Cannot connect to host localhost:8000 ssl:default [Multiple exceptions: [Errno 111] Connect call failed ('::1', 8000, 0, 0), [Errno 111] Connect call failed ('127.0.0.1', 8000)] - MainThread
+2026-04-27 18:14:15,511[__main__] - INFO - TTS client ready (enabled=False) - MainThread
+2026-04-27 18:14:16,797[__main__] - INFO - GUI started successfully - MainThread
+2026-04-27 18:14:34,269[root] - INFO - Logging initialized, log file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-04-27 18:14:50,261[root] - INFO - Logging initialized, log file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-04-27 18:14:50,330[__main__] - INFO - Created qasync event loop - MainThread
+2026-04-27 18:14:50,345[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
+2026-04-27 18:14:50,348[src.utils.config_manager] - INFO - Config directory: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config - MainThread
+2026-04-27 18:14:50,349[src.utils.config_manager] - INFO - Config file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config/config.json - MainThread
+2026-04-27 18:14:50,380[src.utils.tts_client] - WARNING - TTS server unreachable (http://localhost:8000): Cannot connect to host localhost:8000 ssl:default [Multiple exceptions: [Errno 111] Connect call failed ('::1', 8000, 0, 0), [Errno 111] Connect call failed ('127.0.0.1', 8000)] - MainThread
+2026-04-27 18:14:50,382[__main__] - INFO - TTS client ready (enabled=False) - MainThread
+2026-04-27 18:17:29,900[__main__] - ERROR - Chat error: GROQ_API_KEY is not set - MainThread
+Traceback (most recent call last):
+  File "/root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/main_gui.py", line 275, in handle_send_text
+    final_text = await chat_bridge.send_and_stream(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        text, on_chunk=on_chunk, on_emotion=on_emotion, on_control=on_control
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/src/utils/chat_bridge.py", line 284, in send_and_stream
+    return await self._send_and_stream_groq(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+    )
+    ^
+  File "/root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/src/utils/chat_bridge.py", line 193, in _send_and_stream_groq
+    raise RuntimeError("GROQ_API_KEY is not set")
+RuntimeError: GROQ_API_KEY is not set
+2026-04-27 18:18:22,720[root] - INFO - Logging initialized, log file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-04-27 18:32:25,083[__main__] - ERROR - Chat error: GROQ_API_KEY is not set - MainThread
+Traceback (most recent call last):
+  File "/root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/main_gui.py", line 275, in handle_send_text
+    final_text = await chat_bridge.send_and_stream(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        text, on_chunk=on_chunk, on_emotion=on_emotion, on_control=on_control
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/src/utils/chat_bridge.py", line 284, in send_and_stream
+    return await self._send_and_stream_groq(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+    )
+    ^
+  File "/root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/src/utils/chat_bridge.py", line 193, in _send_and_stream_groq
+    raise RuntimeError("GROQ_API_KEY is not set")
+RuntimeError: GROQ_API_KEY is not set

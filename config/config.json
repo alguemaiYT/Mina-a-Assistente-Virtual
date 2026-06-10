@@ -22,7 +22,7 @@
     "PORCUPINE_MODEL_PATH": "/home/kali/Documentos/Mina-a-Assistente-Virtual-Do-G.E.R.A/models/porcupine_params_pt.pv",
     "PORCUPINE_KEYWORD_PATH": "/home/kali/Documentos/Mina-a-Assistente-Virtual-Do-G.E.R.A/keywords/abacaxi_linux.ppn",
     "AUDIO_DEVICE_INDEX": 8,
-    "NUM_THREADS": 4,
+    "NUM_THREADS": 2,
     "PROVIDER": "cpu",
     "MAX_ACTIVE_PATHS": 2,
     "KEYWORDS_SCORE": 1.8,
