@@ -9,6 +9,8 @@ import asyncio
 import io
 import time
 import hashlib
+import queue
+import threading
 from typing import Optional
 
 from src.utils.logging_config import get_logger
@@ -31,11 +33,11 @@ except ImportError:
 
 
 class TTSClient:
-    """Direct, embedded wrapper around the local edge-tts engine."""
+    """Direct, embedded wrapper around the local edge-tts engine with persistent playback."""
 
     def __init__(
         self,
-        base_url: str = "http://localhost:8000",  # Kept for compatibility with views
+        base_url: str = "http://localhost:8000",  # Kept for compatibility
         enabled: bool = True,
         voice: str = "pt-BR-FranciscaNeural",
         rate: str = "+15%",
@@ -50,32 +52,30 @@ class TTSClient:
         self._audio_lock = asyncio.Lock()
         self._cache: dict[str, bytes] = {}
         self._cache_max = 128
-
-    # ------------------------------------------------------------------
-    # Properties
-    # ------------------------------------------------------------------
+        
+        # Persistent audio playback queue & device
+        self._queue = queue.Queue()
+        self._device = None
+        self._sample_rate = 24000
+        self._channels = 1
 
     @property
     def enabled(self) -> bool:
         return self._enabled
 
-    # ------------------------------------------------------------------
-    # Embedding Management
-    # ------------------------------------------------------------------
-
     async def close(self) -> None:
-        pass
-
-    # ------------------------------------------------------------------
-    # Health check
-    # ------------------------------------------------------------------
+        if self._device is not None:
+            try:
+                self._device.close()
+            except Exception:
+                pass
+            self._device = None
 
     async def health_check(self) -> bool:
         """Verify the edge-tts local module functions properly."""
         if not self._enabled:
             return False
         try:
-            # Test if edge_tts can query voices (requires internet access)
             await edge_tts.list_voices()
             logger.info("Local embedded TTS engine initialized (voice=%s)", self._voice)
             return True
@@ -83,10 +83,6 @@ class TTSClient:
             logger.warning("Embedded TTS engine check failed (no internet?): %s", exc)
         self._enabled = False
         return False
-
-    # ------------------------------------------------------------------
-    # Synthesis
-    # ------------------------------------------------------------------
 
     def pre_synthesize(self, text: str) -> Optional[asyncio.Task]:
         """Fire-and-forget synthesis — returns a Task that resolves to bytes."""
@@ -133,55 +129,84 @@ class TTSClient:
             return None
 
     # ------------------------------------------------------------------
-    # Playback
+    # Persistent Playback Device & Thread-Safe Queue
     # ------------------------------------------------------------------
 
     async def play(self, audio_bytes: bytes) -> None:
-        """Play MP3 bytes through the default output device (no overlap)."""
+        """Play MP3 bytes through the persistent output device (0ms latency, no cutoff)."""
         if not _HAS_MINIAUDIO or not audio_bytes:
             return
         async with self._audio_lock:
             try:
-                await asyncio.to_thread(self._play_sync, audio_bytes)
+                decoded = miniaudio.decode(audio_bytes, output_format=miniaudio.SampleFormat.SIGNED16)
+                if not decoded.samples or decoded.num_frames == 0:
+                    return
+                
+                # Ensure the playback device is initialized and active
+                self._ensure_device_started(decoded.sample_rate, decoded.nchannels)
+                
+                # Create a completion event for this specific chunk
+                chunk_finished = threading.Event()
+                self._queue.put((decoded.samples, chunk_finished))
+                
+                # Block until this chunk finishes playing
+                await asyncio.to_thread(chunk_finished.wait)
+                # Small hardware buffer sleep to flush the final block
+                await asyncio.sleep(0.12)
             except Exception as exc:
                 logger.warning("TTS playback error: %s", exc)
 
-    @staticmethod
-    def _play_sync(audio_bytes: bytes) -> None:
-        """Decode MP3 and play synchronously (runs in a worker thread)."""
-        import threading
-        decoded = miniaudio.decode(audio_bytes, output_format=miniaudio.SampleFormat.SIGNED16)
-        if not decoded.samples or decoded.num_frames == 0:
-            return
-
-        nch = decoded.nchannels
-        samples = decoded.samples
-        total = len(samples)
-        pos = [0]
-        finished_event = threading.Event()
-
-        def _generator():
-            required = yield b""
-            while pos[0] < total:
-                n = required * nch
-                chunk = samples[pos[0] : pos[0] + n]
-                pos[0] += n
-                if not chunk:
-                    break
-                required = yield chunk
-            finished_event.set()
-
-        gen = _generator()
-        next(gen)
-
-        device = miniaudio.PlaybackDevice(
+    def _ensure_device_started(self, sample_rate: int, channels: int) -> None:
+        if self._device is not None:
+            if self._sample_rate == sample_rate and self._channels == channels:
+                return
+            try:
+                self._device.close()
+            except Exception:
+                pass
+            self._device = None
+            
+        self._sample_rate = sample_rate
+        self._channels = channels
+        
+        logger.info("Starting persistent miniaudio PlaybackDevice (rate=%d, channels=%d)", sample_rate, channels)
+        self._device = miniaudio.PlaybackDevice(
             output_format=miniaudio.SampleFormat.SIGNED16,
-            nchannels=nch,
-            sample_rate=decoded.sample_rate,
+            nchannels=channels,
+            sample_rate=sample_rate,
         )
-        try:
-            device.start(gen)
-            finished_event.wait()
-            time.sleep(0.15)
-        finally:
-            device.close()
+        
+        gen = self._generator()
+        next(gen)
+        self._device.start(gen)
+
+    def _generator(self):
+        required = yield b""
+        
+        current_samples = None
+        current_pos = 0
+        current_event = None
+        
+        while True:
+            if current_samples is None:
+                try:
+                    item = self._queue.get_nowait()
+                    current_samples, current_event = item
+                    current_pos = 0
+                except queue.Empty:
+                    # Output silent frames to keep device alive
+                    n = required * self._channels
+                    required = yield [0] * n
+                    continue
+            
+            n = required * self._channels
+            chunk = current_samples[current_pos : current_pos + n]
+            current_pos += len(chunk)
+            
+            if current_pos >= len(current_samples):
+                if current_event:
+                    current_event.set()
+                current_samples = None
+                current_event = None
+                
+            required = yield chunk
