@@ -76,3 +76,72 @@ client_session: <aiohttp.client.ClientSession object at 0xa4d34030> - MainThread
 2026-06-29 18:30:24,403[src.utils.tts_client] - WARNING - TTS server unreachable (http://10.129.65.187:8000):  - MainThread
 2026-06-29 18:30:24,406[__main__] - INFO - TTS client ready (enabled=False) - MainThread
 2026-06-29 18:30:25,543[__main__] - INFO - GUI started successfully - MainThread
+2026-06-29 20:21:24,391[GuiDisplay] - INFO - 开始退出应用程序... - MainThread
+2026-06-29 20:21:24,407[src.utils.stt_client] - INFO - Shutting down native STT - Dummy-1
+2026-06-29 20:21:25,390[GuiDisplay] - INFO - 开始退出应用程序... - MainThread
+2026-06-29 20:21:25,402[__main__] - INFO - GUI closed before loop completion - MainThread
+2026-06-29 20:21:29,815[root] - INFO - Logging initialized, log file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-06-29 20:21:29,880[__main__] - INFO - Created qasync event loop - MainThread
+2026-06-29 20:21:29,891[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
+2026-06-29 20:21:29,892[src.utils.system_optimizer] - INFO - Process scheduling priority set to high (nice=-15). - MainThread
+2026-06-29 20:21:29,894[src.utils.system_optimizer] - INFO - CPU affinity successfully mapped to all 4 system cores. - MainThread
+2026-06-29 20:21:29,896[src.utils.system_optimizer] - INFO - /tmp is mounted on tmpfs (RAM disk). Temporary audio writes are fully optimized. - MainThread
+2026-06-29 20:21:29,898[src.utils.config_manager] - INFO - Config directory: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config - MainThread
+2026-06-29 20:21:29,899[src.utils.config_manager] - INFO - Config file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config/config.json - MainThread
+2026-06-29 20:21:31,005[src.utils.tts_client] - INFO - Local embedded TTS engine initialized (voice=pt-BR-FranciscaNeural) - MainThread
+2026-06-29 20:21:31,007[__main__] - INFO - TTS client ready (enabled=True) - MainThread
+2026-06-29 20:21:32,023[__main__] - INFO - GUI started successfully - MainThread
+2026-06-29 20:21:49,701[__main__] - ERROR - Chat error: CEREBRAS chat error 429: {"message":"We're experiencing high traffic right now! Please try again soon.","type":"too_many_requests_error","param":"queue","code":"queue_exceeded"} - MainThread
+Traceback (most recent call last):
+  File "/root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/main_gui.py", line 285, in handle_send_text
+    final_text = await chat_bridge.send_and_stream(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        text, on_chunk=on_chunk, on_emotion=on_emotion, on_control=on_control
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/src/utils/chat_bridge.py", line 350, in send_and_stream
+    return await self._send_and_stream_openai(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+    )
+    ^
+  File "/root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/src/utils/chat_bridge.py", line 277, in _send_and_stream_openai
+    raise RuntimeError(f"{backend_name.upper()} chat error {resp.status}: {body}")
+RuntimeError: CEREBRAS chat error 429: {"message":"We're experiencing high traffic right now! Please try again soon.","type":"too_many_requests_error","param":"queue","code":"queue_exceeded"}
+2026-06-29 20:21:56,055[__main__] - ERROR - Chat error: CEREBRAS chat error 429: {"message":"We're experiencing high traffic right now! Please try again soon.","type":"too_many_requests_error","param":"queue","code":"queue_exceeded"} - MainThread
+Traceback (most recent call last):
+  File "/root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/main_gui.py", line 285, in handle_send_text
+    final_text = await chat_bridge.send_and_stream(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        text, on_chunk=on_chunk, on_emotion=on_emotion, on_control=on_control
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/src/utils/chat_bridge.py", line 350, in send_and_stream
+    return await self._send_and_stream_openai(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+    )
+    ^
+  File "/root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/src/utils/chat_bridge.py", line 277, in _send_and_stream_openai
+    raise RuntimeError(f"{backend_name.upper()} chat error {resp.status}: {body}")
+RuntimeError: CEREBRAS chat error 429: {"message":"We're experiencing high traffic right now! Please try again soon.","type":"too_many_requests_error","param":"queue","code":"queue_exceeded"}
+2026-06-29 20:24:27,768[__main__] - ERROR - Chat error: CEREBRAS chat error 429: {"message":"We're experiencing high traffic right now! Please try again soon.","type":"too_many_requests_error","param":"queue","code":"queue_exceeded"} - MainThread
+Traceback (most recent call last):
+  File "/root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/main_gui.py", line 285, in handle_send_text
+    final_text = await chat_bridge.send_and_stream(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        text, on_chunk=on_chunk, on_emotion=on_emotion, on_control=on_control
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/src/utils/chat_bridge.py", line 350, in send_and_stream
+    return await self._send_and_stream_openai(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+    )
+    ^
+  File "/root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/src/utils/chat_bridge.py", line 277, in _send_and_stream_openai
+    raise RuntimeError(f"{backend_name.upper()} chat error {resp.status}: {body}")
+RuntimeError: CEREBRAS chat error 429: {"message":"We're experiencing high traffic right now! Please try again soon.","type":"too_many_requests_error","param":"queue","code":"queue_exceeded"}

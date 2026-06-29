@@ -6,7 +6,11 @@
     "MODEL": "zai-glm-4.7",
     "API_URL": "https://api.cerebras.ai/v1/chat/completions",
     "TEMPERATURE": 0.7,
-    "MAX_TOKENS": 2048
+    "MAX_TOKENS": 2048,
+    "FALLBACK_BACKEND": "groq",
+    "FALLBACK_API_KEY": "",
+    "FALLBACK_MODEL": "llama3-8b-8192",
+    "FALLBACK_API_URL": "https://api.groq.com/openai/v1/chat/completions"
   },
   "STT_OPTIONS": {
     "ENABLED": true,
