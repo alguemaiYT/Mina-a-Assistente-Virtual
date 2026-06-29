@@ -7,6 +7,8 @@ import platform
 from pathlib import Path
 from typing import Optional
 
+from src.utils.config_manager import ConfigManager
+
 
 class STTClientError(RuntimeError):
     """Raised when the native STT helper cannot perform an action."""
@@ -17,6 +19,19 @@ class STTClient:
 
     def __init__(self, lib_path: Optional[str] = None):
         self._logger = logging.getLogger(__name__)
+        self._config = ConfigManager.get_instance()
+        
+        # Inject configurations into environment variables for the native STT library
+        stt_opts = self._config.get_config("STT_OPTIONS", {})
+        if stt_opts.get("API_KEY"):
+            os.environ["GROQ_API_KEY"] = stt_opts["API_KEY"]
+        if stt_opts.get("LANGUAGE"):
+            os.environ["STT_LANGUAGE"] = stt_opts["LANGUAGE"]
+        if stt_opts.get("API_URL"):
+            os.environ["STT_API_URL"] = stt_opts["API_URL"]
+        if stt_opts.get("MODEL"):
+            os.environ["STT_MODEL"] = stt_opts["MODEL"]
+
         self._lib_path = Path(lib_path) if lib_path else self._guess_library_path()
         if not self._lib_path.exists():
             self._logger.error("STT library not found: %s", self._lib_path)
@@ -29,8 +44,12 @@ class STTClient:
             self._logger.error("Native STT initialization failed")
             raise STTClientError("Failed to initialize native STT components")
 
-    @staticmethod
-    def _guess_library_path() -> Path:
+    def _guess_library_path(self) -> Path:
+        # Check config first
+        config_path = self._config.get_config("STT_OPTIONS.LIBRARY_PATH")
+        if config_path:
+            return Path(config_path)
+
         env_value = os.environ.get("STT_LIBRARY_PATH")
         if env_value:
             return Path(env_value)

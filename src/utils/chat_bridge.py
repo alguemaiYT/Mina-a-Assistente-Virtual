@@ -4,11 +4,12 @@ import os
 from typing import Awaitable, Callable, Optional
 
 import aiohttp
+from src.utils.config_manager import ConfigManager
 
 TOKEN_END = "<<END>>"
-GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
-DEFAULT_CHAT_MODEL = "llama-3.1-8b-instant"
-DEFAULT_BACKEND = "groq"
+CEREBRAS_API_URL = "https://api.cerebras.ai/v1/chat/completions"
+DEFAULT_CHAT_MODEL = "zai-glm-4.7"
+DEFAULT_BACKEND = "cerebras"
 DEFAULT_SYSTEM_PROMPT = "Voce e a Mina AI."
 MAX_HISTORY = 10
 
@@ -17,19 +18,21 @@ class ChatBridge:
     """Runs the apicomm C binary or Groq chat stream to callbacks."""
 
     def __init__(self, binary_path: Optional[str] = None, backend: Optional[str] = None):
-        backend_value = (backend or os.getenv("CHAT_BACKEND") or DEFAULT_BACKEND).lower()
+        self._config = ConfigManager.get_instance()
+        llm_opts = self._config.get_config("LLM_OPTIONS", {})
+        backend_value = (backend or llm_opts.get("BACKEND") or os.getenv("CHAT_BACKEND") or DEFAULT_BACKEND).lower()
         if backend_value in ("binary", "apicomm"):
             self.backend = "binary"
-        elif backend_value in ("groq", "python"):
-            self.backend = "groq"
         else:
             self.backend = backend_value
         self.binary_path = binary_path or os.path.join(os.path.dirname(__file__), "..", "..", "apicomm")
         self.proc: Optional[asyncio.subprocess.Process] = None
         self._stdout_buffer = ""
+        self._in_text_section = False
         self._lock = asyncio.Lock()
         self._history = []
         self._system_prompt = self._load_system_prompt()
+        self._session: Optional[aiohttp.ClientSession] = None
 
     async def start(self):
         if self.backend != "binary":
@@ -37,16 +40,27 @@ class ChatBridge:
         if self.proc and self.proc.returncode is None:
             return
         try:
+            # Inject options as environment variables for the binary
+            env = os.environ.copy()
+            llm_opts = self._config.get_config("LLM_OPTIONS", {})
+            if llm_opts.get("API_KEY"):
+                env["CEREBRAS_API_KEY"] = llm_opts["API_KEY"]
+            if llm_opts.get("MODEL"):
+                env["CEREBRAS_CHAT_MODEL"] = llm_opts["MODEL"]
+
             self.proc = await asyncio.create_subprocess_exec(
                 self.binary_path,
                 stdin=asyncio.subprocess.PIPE,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
+                env=env,
             )
         except FileNotFoundError as exc:
             raise RuntimeError(f"apicomm binary not found at {self.binary_path}") from exc
 
     async def stop(self):
+        if self._session and not self._session.closed:
+            await self._session.close()
         if self.backend != "binary":
             return
         if self.proc and self.proc.returncode is None:
@@ -180,7 +194,7 @@ class ChatBridge:
 
         return full_response
 
-    async def _send_and_stream_groq(
+    async def _send_and_stream_openai(
         self,
         prompt: str,
         on_token: Optional[Callable[[str], Awaitable[None]]] = None,
@@ -188,63 +202,114 @@ class ChatBridge:
         on_chunk: Optional[Callable[[str, float, Optional[str]], Awaitable[None]]] = None,
         on_control: Optional[Callable[[str], Awaitable[None]]] = None,
     ) -> str:
-        api_key = os.getenv("GROQ_API_KEY")
-        if not api_key:
-            raise RuntimeError("GROQ_API_KEY is not set")
+        llm_opts = self._config.get_config("LLM_OPTIONS", {})
+        backend_name = self.backend
 
-        model = os.getenv("GROQ_CHAT_MODEL") or DEFAULT_CHAT_MODEL
+        # Retrieve key and model with fallback to environment variables
+        api_key = llm_opts.get("API_KEY")
+        if not api_key:
+            if backend_name == "cerebras":
+                api_key = os.getenv("CEREBRAS_API_KEY")
+            elif backend_name == "groq":
+                api_key = os.getenv("GROQ_API_KEY")
+            elif backend_name == "openai":
+                api_key = os.getenv("OPENAI_API_KEY")
+            api_key = api_key or os.getenv("LLM_API_KEY")
+
+        if not api_key and backend_name != "ollama":
+            raise RuntimeError(f"API key for {backend_name} is not set. Please set it in config.json or environment variables.")
+
+        # Determine API URL
+        api_url = llm_opts.get("API_URL")
+        if not api_url:
+            if backend_name == "cerebras":
+                api_url = "https://api.cerebras.ai/v1/chat/completions"
+            elif backend_name == "groq":
+                api_url = "https://api.groq.com/openai/v1/chat/completions"
+            elif backend_name == "openai":
+                api_url = "https://api.openai.com/v1/chat/completions"
+            elif backend_name == "ollama":
+                api_url = "http://localhost:11434/v1/chat/completions"
+            else:
+                api_url = "https://api.cerebras.ai/v1/chat/completions"
+
+        # Determine Model
+        model = llm_opts.get("MODEL")
+        if not model:
+            if backend_name == "cerebras":
+                model = os.getenv("CEREBRAS_CHAT_MODEL") or "zai-glm-4.7"
+            elif backend_name == "groq":
+                model = os.getenv("GROQ_CHAT_MODEL") or "llama3-8b-8192"
+            elif backend_name == "openai":
+                model = os.getenv("OPENAI_CHAT_MODEL") or "gpt-4o-mini"
+            elif backend_name == "ollama":
+                model = os.getenv("OLLAMA_CHAT_MODEL") or "llama3"
+            else:
+                model = "zai-glm-4.7"
+
+        temperature = llm_opts.get("TEMPERATURE", 0.7)
+        max_tokens = llm_opts.get("MAX_TOKENS", 2048)
+
         messages = self._build_messages(prompt)
 
         payload = {
             "model": model,
             "stream": True,
-            "temperature": 0.7,
-            "max_tokens": 512,
+            "temperature": temperature,
+            "max_tokens": max_tokens,
             "messages": messages,
         }
 
         full_response = ""
         raw_response = ""
         timeout = aiohttp.ClientTimeout(total=60)
-        headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
 
-        async with aiohttp.ClientSession(timeout=timeout) as session:
-            async with session.post(GROQ_API_URL, json=payload, headers=headers) as resp:
-                if resp.status != 200:
-                    body = await resp.text()
-                    raise RuntimeError(f"Groq chat error {resp.status}: {body}")
+        headers = {"Content-Type": "application/json"}
+        if api_key:
+            headers["Authorization"] = f"Bearer {api_key}"
 
-                while True:
-                    line = await resp.content.readline()
-                    if not line:
-                        break
-                    text_line = line.decode("utf-8", errors="ignore").strip()
-                    if not text_line:
-                        continue
-                    if not text_line.startswith("data:"):
-                        continue
-                    data = text_line[5:].strip()
-                    if data == "[DONE]":
-                        break
+        if not self._session or self._session.closed:
+            self._session = aiohttp.ClientSession(timeout=timeout)
+
+        async with self._session.post(api_url, json=payload, headers=headers) as resp:
+            if resp.status != 200:
+                body = await resp.text()
+                raise RuntimeError(f"{backend_name.upper()} chat error {resp.status}: {body}")
+
+            while True:
+                line = await resp.content.readline()
+                if not line:
+                    break
+                text_line = line.decode("utf-8", errors="ignore").strip()
+                if not text_line:
+                    continue
+                if not text_line.startswith("data:"):
+                    continue
+                data = text_line[5:].strip()
+                if data == "[DONE]":
+                    break
+                try:
                     event = json.loads(data)
-                    choices = event.get("choices") or []
-                    if not choices:
-                        continue
-                    delta = choices[0].get("delta") or {}
-                    content = delta.get("content")
-                    if not content:
-                        continue
-                    raw_response += content
-                    parsed, done = await self._process_stream_text(
-                        content,
-                        on_token=on_token,
-                        on_emotion=on_emotion,
-                        on_chunk=on_chunk,
-                        on_control=on_control,
-                    )
-                    full_response += parsed
-                    if done:
-                        break
+                except json.JSONDecodeError:
+                    continue
+                choices = event.get("choices") or []
+                if not choices:
+                    continue
+                delta = choices[0].get("delta") or {}
+                content = delta.get("content")
+                if not content:
+                    continue
+                raw_response += content
+                parsed, done = await self._process_stream_text(
+                    content,
+                    on_token=on_token,
+                    on_emotion=on_emotion,
+                    on_chunk=on_chunk,
+                    on_control=on_control,
+                )
+                full_response += parsed
+                if done:
+                    break
 
         if self._stdout_buffer:
             parsed, _ = await self._process_stream_text(
@@ -272,6 +337,7 @@ class ChatBridge:
         """Send prompt to the configured backend and stream tokens."""
         async with self._lock:
             self._stdout_buffer = ""
+            self._in_text_section = False
             if self.backend == "binary":
                 return await self._send_and_stream_binary(
                     prompt,
@@ -280,8 +346,8 @@ class ChatBridge:
                     on_chunk=on_chunk,
                     on_control=on_control,
                 )
-            if self.backend == "groq":
-                return await self._send_and_stream_groq(
+            else:
+                return await self._send_and_stream_openai(
                     prompt,
                     on_token=on_token,
                     on_emotion=on_emotion,

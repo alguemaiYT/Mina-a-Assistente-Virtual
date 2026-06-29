@@ -15,6 +15,7 @@ from src.views.settings.components.camera import CameraWidget
 from src.views.settings.components.shortcuts_settings import ShortcutsSettingsWidget
 from src.views.settings.components.system_options import SystemOptionsWidget
 from src.views.settings.components.wake_word import WakeWordWidget
+from src.views.settings.components.ai_services import AIServicesWidget
 
 
 class SettingsWindow(QDialog):
@@ -33,6 +34,7 @@ class SettingsWindow(QDialog):
         self.camera_tab = None
         self.audio_tab = None
         self.shortcuts_tab = None
+        self.ai_services_tab = None
 
         # UI控件
         self.ui_controls = {}
@@ -297,6 +299,11 @@ class SettingsWindow(QDialog):
             tab_widget.addTab(self.shortcuts_tab, "Shortcuts")
             self.shortcuts_tab.settings_changed.connect(self._on_settings_changed)
 
+            # 创建并添加AI服务组件
+            self.ai_services_tab = AIServicesWidget()
+            tab_widget.addTab(self.ai_services_tab, "AI Services")
+            self.ai_services_tab.settings_changed.connect(self._on_settings_changed)
+
             self.logger.debug("成功添加所有组件选项卡")
 
         except Exception as e:
@@ -402,6 +409,11 @@ class SettingsWindow(QDialog):
                 audio_config = self.audio_tab.get_config_data()
                 all_config_data.update(audio_config)
 
+            # AI服务配置
+            if self.ai_services_tab:
+                ai_config = self.ai_services_tab.get_config_data()
+                all_config_data.update(ai_config)
+
             # 快捷键配置
             if self.shortcuts_tab:
                 # 快捷键组件有自己的保存方法
@@ -453,6 +465,9 @@ class SettingsWindow(QDialog):
 
             if self.shortcuts_tab:
                 self.shortcuts_tab.reset_to_defaults()
+
+            if self.ai_services_tab:
+                self.ai_services_tab.reset_to_defaults()
 
             self.logger.info("所有组件配置已重置为默认值")
 

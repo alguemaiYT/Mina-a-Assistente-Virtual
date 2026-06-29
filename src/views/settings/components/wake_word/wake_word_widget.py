@@ -11,8 +11,8 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
+from src.views.settings.components.base_settings_widget import BaseSettingsWidget
 from src.utils.config_manager import ConfigManager
-from src.utils.logging_config import get_logger
 from src.utils.resource_finder import get_project_root, resource_finder
 
 # 导入拼音转换库
@@ -24,7 +24,7 @@ except ImportError:
     PYPINYIN_AVAILABLE = False
 
 
-class WakeWordWidget(QWidget):
+class WakeWordWidget(BaseSettingsWidget):
     """
     唤醒词设置组件.
     """
@@ -34,11 +34,7 @@ class WakeWordWidget(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.logger = get_logger(__name__)
         self.config_manager = ConfigManager.get_instance()
-
-        # UI控件引用
-        self.ui_controls = {}
 
         # 声母表（用于拼音分割）
         self.initials = [
@@ -220,23 +216,6 @@ class WakeWordWidget(QWidget):
 
         except Exception as e:
             self.logger.error(f"加载唤醒词配置值失败: {e}", exc_info=True)
-
-    def _set_text_value(self, control_name: str, value: str):
-        """
-        设置文本控件的值.
-        """
-        control = self.ui_controls.get(control_name)
-        if control and hasattr(control, "setText"):
-            control.setText(str(value) if value is not None else "")
-
-    def _get_text_value(self, control_name: str) -> str:
-        """
-        获取文本控件的值.
-        """
-        control = self.ui_controls.get(control_name)
-        if control and hasattr(control, "text"):
-            return control.text().strip()
-        return ""
 
     def _on_model_path_browse(self):
         """

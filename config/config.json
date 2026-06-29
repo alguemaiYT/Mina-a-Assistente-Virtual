@@ -1,4 +1,21 @@
 {
+  "LLM_OPTIONS": {
+    "ENABLED": true,
+    "BACKEND": "cerebras",
+    "API_KEY": "",
+    "MODEL": "zai-glm-4.7",
+    "API_URL": "https://api.cerebras.ai/v1/chat/completions",
+    "TEMPERATURE": 0.7,
+    "MAX_TOKENS": 2048
+  },
+  "STT_OPTIONS": {
+    "ENABLED": true,
+    "API_KEY": "",
+    "MODEL": "whisper-large-v3",
+    "LANGUAGE": "pt",
+    "API_URL": "https://api.groq.com/openai/v1/audio/transcriptions",
+    "LIBRARY_PATH": ""
+  },
   "SYSTEM_OPTIONS": {
     "CLIENT_ID": null,
     "DEVICE_ID": null,
@@ -18,11 +35,12 @@
   },
   "WAKE_WORD_OPTIONS": {
     "USE_WAKE_WORD": true,
+    "ACCESS_KEY": "",
     "MODEL_PATH": "models",
     "PORCUPINE_MODEL_PATH": "/home/kali/Documentos/Mina-a-Assistente-Virtual-Do-G.E.R.A/models/porcupine_params_pt.pv",
     "PORCUPINE_KEYWORD_PATH": "/home/kali/Documentos/Mina-a-Assistente-Virtual-Do-G.E.R.A/keywords/abacaxi_linux.ppn",
     "AUDIO_DEVICE_INDEX": 8,
-    "NUM_THREADS": 2,
+    "NUM_THREADS": 4,
     "PROVIDER": "cpu",
     "MAX_ACTIVE_PATHS": 2,
     "KEYWORDS_SCORE": 1.8,
@@ -94,7 +112,7 @@
   },
   "TTS_OPTIONS": {
     "ENABLED": true,
-    "API_URL": "http://localhost:8000",
+    "API_URL": "http://10.129.65.187:8000",
     "VOICE": "pt-BR-FranciscaNeural",
     "RATE": "+15%",
     "PITCH": "+3Hz",

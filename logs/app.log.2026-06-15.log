@@ -1,0 +1,8 @@
+2026-06-15 17:00:26,088[root] - INFO - Logging initialized, log file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-06-15 17:00:26,627[__main__] - INFO - Created qasync event loop - MainThread
+2026-06-15 17:00:26,836[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
+2026-06-15 17:00:26,840[src.utils.config_manager] - INFO - Config directory: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config - MainThread
+2026-06-15 17:00:26,842[src.utils.config_manager] - INFO - Config file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config/config.json - MainThread
+2026-06-15 17:00:26,881[src.utils.tts_client] - WARNING - TTS server unreachable (http://localhost:8000): Cannot connect to host localhost:8000 ssl:default [Multiple exceptions: [Errno 111] Connect call failed ('::1', 8000, 0, 0), [Errno 111] Connect call failed ('127.0.0.1', 8000)] - MainThread
+2026-06-15 17:00:26,883[__main__] - INFO - TTS client ready (enabled=False) - MainThread
+2026-06-15 17:00:29,200[__main__] - INFO - GUI started successfully - MainThread

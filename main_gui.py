@@ -39,6 +39,7 @@ from src.utils.config_manager import ConfigManager
 from src.utils.logging_config import get_logger, setup_logging
 from src.utils.stt_client import STTClient, STTClientError
 from src.utils.tts_client import TTSClient
+from src.utils.system_optimizer import optimize_system
 
 logger = get_logger(__name__)
 
@@ -143,6 +144,7 @@ async def run_gui(fullscreen: bool = False, studio_mode: bool = False, rotation_
     Run the GUI display in standalone mode.
     """
     logger.info("Starting Xiaozhi GUI (standalone mode)")
+    optimize_system()
     
     try:
         chat_bridge = ChatBridge()
@@ -175,6 +177,14 @@ async def run_gui(fullscreen: bool = False, studio_mode: bool = False, rotation_
             await gui_display.update_status("Thinking...", True)
             await gui_display.update_text("")
             await gui_display.update_emotion("neutral")
+
+            # Check if LLM is enabled
+            llm_opts = cfg.get_config("LLM_OPTIONS", {})
+            if not llm_opts.get("ENABLED", True):
+                await gui_display.update_status("LLM Disabled", False)
+                await asyncio.sleep(2.0)
+                await gui_display.update_button_bar_visibility(True)
+                return
 
             SMALL_REPLY_THRESHOLD = 80
             chunk_queue: asyncio.Queue = asyncio.Queue()
@@ -302,11 +312,15 @@ async def run_gui(fullscreen: bool = False, studio_mode: bool = False, rotation_
                 await gui_display.update_button_bar_visibility(True)
 
         stt_controller = None
-        try:
-            stt_client = STTClient()
-            stt_controller = STTController(gui_display, handle_send_text, stt_client)
-        except STTClientError:
-            logger.error("Failed to initialize native STT support", exc_info=True)
+        stt_opts = cfg.get_config("STT_OPTIONS", {})
+        if stt_opts.get("ENABLED", True):
+            try:
+                stt_client = STTClient()
+                stt_controller = STTController(gui_display, handle_send_text, stt_client)
+            except STTClientError:
+                logger.error("Failed to initialize native STT support", exc_info=True)
+        else:
+            logger.info("STT is disabled in configuration")
 
         def schedule_toggle() -> None:
             if stt_controller:

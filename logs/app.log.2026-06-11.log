@@ -1,0 +1,20 @@
+2026-06-11 22:27:41,967[root] - INFO - Logging initialized, log file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-06-11 22:27:51,465[root] - INFO - Logging initialized, log file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-06-11 22:27:51,665[__main__] - INFO - Created qasync event loop - MainThread
+2026-06-11 22:27:51,877[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
+2026-06-11 22:27:51,881[src.utils.config_manager] - INFO - Config directory: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config - MainThread
+2026-06-11 22:27:51,882[src.utils.config_manager] - INFO - Config file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config/config.json - MainThread
+2026-06-11 22:27:51,922[src.utils.tts_client] - WARNING - TTS server unreachable (http://localhost:8000): Cannot connect to host localhost:8000 ssl:default [Multiple exceptions: [Errno 111] Connect call failed ('::1', 8000, 0, 0), [Errno 111] Connect call failed ('127.0.0.1', 8000)] - MainThread
+2026-06-11 22:27:51,923[__main__] - INFO - TTS client ready (enabled=False) - MainThread
+2026-06-11 22:27:54,322[__main__] - INFO - GUI started successfully - MainThread
+2026-06-11 22:29:18,695[GuiDisplay] - INFO - 开始退出应用程序... - MainThread
+2026-06-11 22:29:18,700[src.utils.stt_client] - INFO - Shutting down native STT - Dummy-1
+2026-06-11 22:29:18,712[__main__] - INFO - GUI closed before loop completion - MainThread
+2026-06-11 22:29:26,668[root] - INFO - Logging initialized, log file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-06-11 22:29:26,733[__main__] - INFO - Created qasync event loop - MainThread
+2026-06-11 22:29:26,747[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
+2026-06-11 22:29:26,750[src.utils.config_manager] - INFO - Config directory: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config - MainThread
+2026-06-11 22:29:26,752[src.utils.config_manager] - INFO - Config file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config/config.json - MainThread
+2026-06-11 22:29:26,782[src.utils.tts_client] - WARNING - TTS server unreachable (http://localhost:8000): Cannot connect to host localhost:8000 ssl:default [Multiple exceptions: [Errno 111] Connect call failed ('::1', 8000, 0, 0), [Errno 111] Connect call failed ('127.0.0.1', 8000)] - MainThread
+2026-06-11 22:29:26,784[__main__] - INFO - TTS client ready (enabled=False) - MainThread
+2026-06-11 22:29:27,821[__main__] - INFO - GUI started successfully - MainThread

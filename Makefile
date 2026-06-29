@@ -42,6 +42,9 @@ run-fullscreen:
 run-studio:
 	$(PYTHON) main_gui.py -s
 
+run-tts:
+	$(PYTHON) -m uvicorn tts_api.main:app --host 0.0.0.0 --port 8000
+
 lint:
 	$(PYTHON) -m flake8 .
 

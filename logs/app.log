@@ -1,133 +1,78 @@
-2026-06-09 10:18:41,209[root] - INFO - Logging initialized, log file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
-2026-06-09 10:19:00,256[root] - INFO - Logging initialized, log file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
-2026-06-09 10:19:00,440[__main__] - INFO - Created qasync event loop - MainThread
-2026-06-09 10:19:00,743[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
-2026-06-09 10:19:00,747[src.utils.config_manager] - INFO - Config directory: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config - MainThread
-2026-06-09 10:19:00,748[src.utils.config_manager] - INFO - Config file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config/config.json - MainThread
-2026-06-09 10:19:00,788[src.utils.tts_client] - WARNING - TTS server unreachable (http://localhost:8000): Cannot connect to host localhost:8000 ssl:default [Multiple exceptions: [Errno 111] Connect call failed ('::1', 8000, 0, 0), [Errno 111] Connect call failed ('127.0.0.1', 8000)] - MainThread
-2026-06-09 10:19:00,789[__main__] - INFO - TTS client ready (enabled=False) - MainThread
-2026-06-09 10:19:03,112[__main__] - INFO - GUI started successfully - MainThread
-2026-06-09 10:33:02,939[GuiDisplay] - INFO - 开始退出应用程序... - MainThread
-2026-06-09 10:33:02,948[src.utils.stt_client] - INFO - Shutting down native STT - Dummy-1
-2026-06-09 10:33:02,963[__main__] - INFO - GUI closed before loop completion - MainThread
-2026-06-09 10:33:03,283[qasync._QEventLoop] - ERROR - Task was destroyed but it is pending!
+2026-06-29 16:46:56,251[root] - INFO - Logging initialized, log file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-06-29 16:46:56,436[__main__] - INFO - Created qasync event loop - MainThread
+2026-06-29 16:46:56,574[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
+2026-06-29 16:46:56,576[src.utils.config_manager] - INFO - Config directory: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config - MainThread
+2026-06-29 16:46:56,578[src.utils.config_manager] - INFO - Config file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config/config.json - MainThread
+2026-06-29 16:46:56,614[src.utils.tts_client] - WARNING - TTS server unreachable (http://localhost:8000): Cannot connect to host localhost:8000 ssl:default [Multiple exceptions: [Errno 111] Connect call failed ('::1', 8000, 0, 0), [Errno 111] Connect call failed ('127.0.0.1', 8000)] - MainThread
+2026-06-29 16:46:56,615[__main__] - INFO - TTS client ready (enabled=False) - MainThread
+2026-06-29 16:46:58,351[__main__] - INFO - GUI started successfully - MainThread
+2026-06-29 16:48:19,415[GuiDisplay] - INFO - 开始退出应用程序... - MainThread
+2026-06-29 16:48:19,425[src.utils.stt_client] - INFO - Shutting down native STT - Dummy-1
+2026-06-29 16:48:19,470[__main__] - INFO - GUI closed before loop completion - MainThread
+2026-06-29 17:11:09,543[root] - INFO - Logging initialized, log file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-06-29 17:11:09,715[__main__] - INFO - Created qasync event loop - MainThread
+2026-06-29 17:11:09,738[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
+2026-06-29 17:11:09,740[src.utils.config_manager] - INFO - Config directory: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config - MainThread
+2026-06-29 17:11:09,741[src.utils.config_manager] - INFO - Config file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config/config.json - MainThread
+2026-06-29 17:11:25,404[src.utils.tts_client] - WARNING - TTS server unreachable (http://10.129.65.187:8000):  - MainThread
+2026-06-29 17:14:02,031[root] - INFO - Logging initialized, log file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-06-29 17:14:02,097[__main__] - INFO - Created qasync event loop - MainThread
+2026-06-29 17:14:02,111[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
+2026-06-29 17:14:02,113[src.utils.config_manager] - INFO - Config directory: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config - MainThread
+2026-06-29 17:14:02,115[src.utils.config_manager] - INFO - Config file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config/config.json - MainThread
+2026-06-29 17:14:17,404[src.utils.tts_client] - WARNING - TTS server unreachable (http://10.129.65.187:8000):  - MainThread
+2026-06-29 17:14:17,407[__main__] - INFO - TTS client ready (enabled=False) - MainThread
+2026-06-29 17:14:19,108[__main__] - INFO - GUI started successfully - MainThread
+2026-06-29 17:16:03,979[GuiDisplay] - INFO - 开始退出应用程序... - MainThread
+2026-06-29 17:16:03,984[src.utils.stt_client] - INFO - Shutting down native STT - Dummy-1
+2026-06-29 17:16:04,031[__main__] - INFO - GUI closed before loop completion - MainThread
+2026-06-29 17:16:04,319[qasync._QEventLoop] - ERROR - Task was destroyed but it is pending!
 task: <Task pending name='Task-1' coro=<run_gui() running at /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/main_gui.py:339> wait_for=<Future pending cb=[_chain_future.<locals>._call_check_cancel() at /usr/lib/python3.13/asyncio/futures.py:384, Task.task_wakeup()]>> - MainThread
-2026-06-09 10:33:03,286[qasync._QEventLoop] - ERROR - Unclosed client session
-client_session: <aiohttp.client.ClientSession object at 0xa5c5e030> - MainThread
-2026-06-09 10:33:03,288[src.utils.stt_client] - INFO - Shutting down native STT - MainThread
-2026-06-09 10:33:20,569[root] - INFO - Logging initialized, log file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
-2026-06-09 10:33:20,695[__main__] - INFO - Created qasync event loop - MainThread
-2026-06-09 10:33:20,709[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
-2026-06-09 10:33:20,713[src.utils.config_manager] - INFO - Config directory: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config - MainThread
-2026-06-09 10:33:20,715[src.utils.config_manager] - INFO - Config file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config/config.json - MainThread
-2026-06-09 10:33:20,746[src.utils.tts_client] - WARNING - TTS server unreachable (http://localhost:8000): Cannot connect to host localhost:8000 ssl:default [Multiple exceptions: [Errno 111] Connect call failed ('::1', 8000, 0, 0), [Errno 111] Connect call failed ('127.0.0.1', 8000)] - MainThread
-2026-06-09 10:33:20,747[__main__] - INFO - TTS client ready (enabled=False) - MainThread
-2026-06-09 10:33:22,171[__main__] - INFO - GUI started successfully - MainThread
-2026-06-09 10:33:38,909[GuiDisplay] - INFO - 开始退出应用程序... - MainThread
-2026-06-09 10:33:38,914[src.utils.stt_client] - INFO - Shutting down native STT - Dummy-1
-2026-06-09 10:33:38,936[__main__] - INFO - GUI closed before loop completion - MainThread
-2026-06-09 10:33:39,260[qasync._QEventLoop] - ERROR - Task was destroyed but it is pending!
-task: <Task pending name='Task-1' coro=<run_gui() running at /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/main_gui.py:339> wait_for=<Future pending cb=[_chain_future.<locals>._call_check_cancel() at /usr/lib/python3.13/asyncio/futures.py:384, Task.task_wakeup()]>> - MainThread
-2026-06-09 10:33:39,263[qasync._QEventLoop] - ERROR - Unclosed client session
-client_session: <aiohttp.client.ClientSession object at 0xa5cfe030> - MainThread
-2026-06-09 10:33:39,264[src.utils.stt_client] - INFO - Shutting down native STT - MainThread
-2026-06-09 10:33:47,404[root] - INFO - Logging initialized, log file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
-2026-06-09 10:33:47,470[__main__] - INFO - Created qasync event loop - MainThread
-2026-06-09 10:33:47,483[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
-2026-06-09 10:33:47,487[src.utils.config_manager] - INFO - Config directory: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config - MainThread
-2026-06-09 10:33:47,488[src.utils.config_manager] - INFO - Config file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config/config.json - MainThread
-2026-06-09 10:33:47,519[src.utils.tts_client] - WARNING - TTS server unreachable (http://localhost:8000): Cannot connect to host localhost:8000 ssl:default [Multiple exceptions: [Errno 111] Connect call failed ('::1', 8000, 0, 0), [Errno 111] Connect call failed ('127.0.0.1', 8000)] - MainThread
-2026-06-09 10:33:47,521[__main__] - INFO - TTS client ready (enabled=False) - MainThread
-2026-06-09 10:33:48,580[__main__] - INFO - GUI started successfully - MainThread
-2026-06-09 10:33:51,844[GuiDisplay] - INFO - 开始退出应用程序... - MainThread
-2026-06-09 10:33:51,848[src.utils.stt_client] - INFO - Shutting down native STT - Dummy-1
-2026-06-09 10:33:51,858[__main__] - INFO - GUI closed before loop completion - MainThread
-2026-06-09 10:37:24,905[root] - INFO - Logging initialized, log file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
-2026-06-09 10:37:24,970[__main__] - INFO - Created qasync event loop - MainThread
-2026-06-09 10:37:24,984[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
-2026-06-09 10:37:24,987[src.utils.config_manager] - INFO - Config directory: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config - MainThread
-2026-06-09 10:37:24,988[src.utils.config_manager] - INFO - Config file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config/config.json - MainThread
-2026-06-09 10:37:25,019[src.utils.tts_client] - WARNING - TTS server unreachable (http://localhost:8000): Cannot connect to host localhost:8000 ssl:default [Multiple exceptions: [Errno 111] Connect call failed ('::1', 8000, 0, 0), [Errno 111] Connect call failed ('127.0.0.1', 8000)] - MainThread
-2026-06-09 10:37:25,021[__main__] - INFO - TTS client ready (enabled=False) - MainThread
-2026-06-09 10:37:26,085[__main__] - INFO - GUI started successfully - MainThread
-2026-06-09 10:38:00,441[__main__] - ERROR - Chat error: Cannot connect to host api.groq.com:443 ssl:default [Device or resource busy] - MainThread
-Traceback (most recent call last):
-  File "/usr/local/lib/python3.13/dist-packages/aiohttp/connector.py", line 1512, in _create_direct_connection
-    hosts = await self._resolve_host(host, port, traces=traces)
-            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.13/dist-packages/aiohttp/connector.py", line 1128, in _resolve_host
-    return await asyncio.shield(resolved_host_task)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.13/dist-packages/aiohttp/connector.py", line 1159, in _resolve_host_with_throttle
-    addrs = await self._resolver.resolve(host, port, family=self._family)
-            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.13/dist-packages/aiohttp/resolver.py", line 40, in resolve
-    infos = await self._loop.getaddrinfo(
-            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    ...<5 lines>...
-    )
-    ^
-  File "/usr/lib/python3.13/asyncio/base_events.py", line 939, in getaddrinfo
-    return await self.run_in_executor(
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        None, getaddr_func, host, port, family, type, proto, flags)
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.13/dist-packages/qasync/__init__.py", line 145, in run
-    r = callback(*args, **kwargs)
-  File "/usr/lib/python3.13/socket.py", line 977, in getaddrinfo
-    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
-               ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-OSError: [Errno 16] Device or resource busy
-
-The above exception was the direct cause of the following exception:
-
-Traceback (most recent call last):
-  File "/root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/main_gui.py", line 275, in handle_send_text
-    final_text = await chat_bridge.send_and_stream(
-                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        text, on_chunk=on_chunk, on_emotion=on_emotion, on_control=on_control
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    )
-    ^
-  File "/root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/src/utils/chat_bridge.py", line 284, in send_and_stream
-    return await self._send_and_stream_groq(
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    ...<5 lines>...
-    )
-    ^
-  File "/root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/src/utils/chat_bridge.py", line 212, in _send_and_stream_groq
-    async with session.post(GROQ_API_URL, json=payload, headers=headers) as resp:
-               ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.13/dist-packages/aiohttp/client.py", line 1482, in __aenter__
-    self._resp: _RetType = await self._coro
-                           ^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.13/dist-packages/aiohttp/client.py", line 770, in _request
-    resp = await handler(req)
-           ^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.13/dist-packages/aiohttp/client.py", line 725, in _connect_and_send_request
-    conn = await self._connector.connect(
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        req, traces=traces, timeout=real_timeout
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    )
-    ^
-  File "/usr/local/lib/python3.13/dist-packages/aiohttp/connector.py", line 622, in connect
-    proto = await self._create_connection(req, traces, timeout)
-            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.13/dist-packages/aiohttp/connector.py", line 1189, in _create_connection
-    _, proto = await self._create_direct_connection(req, traces, timeout)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.13/dist-packages/aiohttp/connector.py", line 1518, in _create_direct_connection
-    raise ClientConnectorDNSError(req.connection_key, exc) from exc
-aiohttp.client_exceptions.ClientConnectorDNSError: Cannot connect to host api.groq.com:443 ssl:default [Device or resource busy]
-2026-06-09 10:38:07,402[GuiDisplay] - INFO - 开始退出应用程序... - MainThread
-2026-06-09 10:38:07,405[src.utils.stt_client] - INFO - Shutting down native STT - Dummy-1
-2026-06-09 10:38:07,416[__main__] - INFO - GUI closed before loop completion - MainThread
-2026-06-09 10:38:11,519[root] - INFO - Logging initialized, log file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
-2026-06-09 10:38:11,584[__main__] - INFO - Created qasync event loop - MainThread
-2026-06-09 10:38:11,598[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
-2026-06-09 10:38:11,602[src.utils.config_manager] - INFO - Config directory: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config - MainThread
-2026-06-09 10:38:11,603[src.utils.config_manager] - INFO - Config file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config/config.json - MainThread
-2026-06-09 10:38:11,634[src.utils.tts_client] - WARNING - TTS server unreachable (http://localhost:8000): Cannot connect to host localhost:8000 ssl:default [Multiple exceptions: [Errno 111] Connect call failed ('::1', 8000, 0, 0), [Errno 111] Connect call failed ('127.0.0.1', 8000)] - MainThread
-2026-06-09 10:38:11,636[__main__] - INFO - TTS client ready (enabled=False) - MainThread
-2026-06-09 10:38:12,666[__main__] - INFO - GUI started successfully - MainThread
+2026-06-29 17:16:04,324[qasync._QEventLoop] - ERROR - Unclosed client session
+client_session: <aiohttp.client.ClientSession object at 0xa4d34030> - MainThread
+2026-06-29 17:16:04,325[src.utils.stt_client] - INFO - Shutting down native STT - MainThread
+2026-06-29 17:57:39,743[root] - INFO - Logging initialized, log file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-06-29 17:57:40,602[__main__] - INFO - Created qasync event loop - MainThread
+2026-06-29 17:57:40,652[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
+2026-06-29 17:57:40,655[src.utils.config_manager] - INFO - Config directory: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config - MainThread
+2026-06-29 17:57:40,656[src.utils.config_manager] - INFO - Config file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config/config.json - MainThread
+2026-06-29 17:57:56,403[src.utils.tts_client] - WARNING - TTS server unreachable (http://10.129.65.187:8000):  - MainThread
+2026-06-29 17:57:56,404[__main__] - INFO - TTS client ready (enabled=False) - MainThread
+2026-06-29 17:58:03,204[__main__] - INFO - GUI started successfully - MainThread
+2026-06-29 18:10:04,166[root] - INFO - Logging initialized, log file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-06-29 18:10:04,507[__main__] - INFO - Created qasync event loop - MainThread
+2026-06-29 18:10:04,532[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
+2026-06-29 18:10:04,534[src.utils.config_manager] - INFO - Config directory: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config - MainThread
+2026-06-29 18:10:04,536[src.utils.config_manager] - INFO - Config file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config/config.json - MainThread
+2026-06-29 18:10:20,404[src.utils.tts_client] - WARNING - TTS server unreachable (http://10.129.65.187:8000):  - MainThread
+2026-06-29 18:10:20,407[__main__] - INFO - TTS client ready (enabled=False) - MainThread
+2026-06-29 18:10:24,064[__main__] - INFO - GUI started successfully - MainThread
+2026-06-29 18:20:01,471[root] - INFO - Logging initialized, log file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-06-29 18:20:39,385[root] - INFO - Logging initialized, log file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-06-29 18:20:39,466[__main__] - INFO - Created qasync event loop - MainThread
+2026-06-29 18:20:39,480[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
+2026-06-29 18:20:39,483[src.utils.config_manager] - INFO - Config directory: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config - MainThread
+2026-06-29 18:20:39,485[src.utils.config_manager] - INFO - Config file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config/config.json - MainThread
+2026-06-29 18:20:55,404[src.utils.tts_client] - WARNING - TTS server unreachable (http://10.129.65.187:8000):  - MainThread
+2026-06-29 18:20:55,407[__main__] - INFO - TTS client ready (enabled=False) - MainThread
+2026-06-29 18:22:29,109[root] - INFO - Logging initialized, log file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-06-29 18:22:29,176[__main__] - INFO - Created qasync event loop - MainThread
+2026-06-29 18:22:29,187[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
+2026-06-29 18:22:29,188[src.utils.system_optimizer] - INFO - Process scheduling priority set to high (nice=-15). - MainThread
+2026-06-29 18:22:29,189[src.utils.system_optimizer] - INFO - CPU affinity successfully mapped to all 4 system cores. - MainThread
+2026-06-29 18:22:29,191[src.utils.system_optimizer] - INFO - /tmp is mounted on tmpfs (RAM disk). Temporary audio writes are fully optimized. - MainThread
+2026-06-29 18:22:29,193[src.utils.config_manager] - INFO - Config directory: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config - MainThread
+2026-06-29 18:22:29,194[src.utils.config_manager] - INFO - Config file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config/config.json - MainThread
+2026-06-29 18:22:44,404[src.utils.tts_client] - WARNING - TTS server unreachable (http://10.129.65.187:8000):  - MainThread
+2026-06-29 18:22:44,407[__main__] - INFO - TTS client ready (enabled=False) - MainThread
+2026-06-29 18:30:08,942[root] - INFO - Logging initialized, log file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-06-29 18:30:09,007[__main__] - INFO - Created qasync event loop - MainThread
+2026-06-29 18:30:09,017[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
+2026-06-29 18:30:09,019[src.utils.system_optimizer] - INFO - Process scheduling priority set to high (nice=-15). - MainThread
+2026-06-29 18:30:09,020[src.utils.system_optimizer] - INFO - CPU affinity successfully mapped to all 4 system cores. - MainThread
+2026-06-29 18:30:09,022[src.utils.system_optimizer] - INFO - /tmp is mounted on tmpfs (RAM disk). Temporary audio writes are fully optimized. - MainThread
+2026-06-29 18:30:09,024[src.utils.config_manager] - INFO - Config directory: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config - MainThread
+2026-06-29 18:30:09,026[src.utils.config_manager] - INFO - Config file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config/config.json - MainThread
+2026-06-29 18:30:24,403[src.utils.tts_client] - WARNING - TTS server unreachable (http://10.129.65.187:8000):  - MainThread
+2026-06-29 18:30:24,406[__main__] - INFO - TTS client ready (enabled=False) - MainThread
+2026-06-29 18:30:25,543[__main__] - INFO - GUI started successfully - MainThread

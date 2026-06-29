@@ -37,6 +37,7 @@ class ConfigManager:
         },
         "WAKE_WORD_OPTIONS": {
             "USE_WAKE_WORD": True,
+            "ACCESS_KEY": "",
             "MODEL_PATH": "models",
             "PORCUPINE_MODEL_PATH": "",
             "PORCUPINE_KEYWORD_PATH": "",
@@ -105,6 +106,23 @@ class ConfigManager:
             "RATE": "+15%",
             "PITCH": "+3Hz",
             "VOLUME": "+0%",
+        },
+        "LLM_OPTIONS": {
+            "ENABLED": True,
+            "BACKEND": "cerebras",
+            "API_KEY": "",
+            "MODEL": "zai-glm-4.7",
+            "API_URL": "https://api.cerebras.ai/v1/chat/completions",
+            "TEMPERATURE": 0.7,
+            "MAX_TOKENS": 2048,
+        },
+        "STT_OPTIONS": {
+            "ENABLED": True,
+            "API_KEY": "",
+            "MODEL": "whisper-large-v3",
+            "LANGUAGE": "pt",
+            "API_URL": "https://api.groq.com/openai/v1/audio/transcriptions",
+            "LIBRARY_PATH": "",
         },
     }
 
@@ -276,58 +294,17 @@ class ConfigManager:
             logger.error(f"Failed to reload configuration: {e}")
             return False
 
-    def generate_uuid(self) -> str:
-        """
-        Generate a UUID v4.
-        """
-        return str(uuid.uuid4())
-
     def initialize_client_id(self):
         """
         Ensure a client ID exists.
         """
         if not self.get_config("SYSTEM_OPTIONS.CLIENT_ID"):
-            client_id = self.generate_uuid()
+            client_id = str(uuid.uuid4())
             success = self.update_config("SYSTEM_OPTIONS.CLIENT_ID", client_id)
             if success:
                 logger.info(f"Generated new client ID: {client_id}")
             else:
                 logger.error("Failed to save new client ID.")
-
-    def initialize_device_id_from_fingerprint(self, device_fingerprint):
-        """
-        Initialize device ID from fingerprint.
-        """
-        if not self.get_config("SYSTEM_OPTIONS.DEVICE_ID"):
-            try:
-                # Use MAC address from efuse.json as DEVICE_ID.
-                mac_address = device_fingerprint.get_mac_address_from_efuse()
-                if mac_address:
-                    success = self.update_config(
-                        "SYSTEM_OPTIONS.DEVICE_ID", mac_address
-                    )
-                    if success:
-                        logger.info(f"Using DEVICE_ID from efuse.json: {mac_address}")
-                    else:
-                        logger.error("Failed to save DEVICE_ID.")
-                else:
-                    logger.error("Unable to read MAC address from efuse.json.")
-                    # Fallback: use fingerprint MAC address.
-                    fingerprint = device_fingerprint.generate_fingerprint()
-                    mac_from_fingerprint = fingerprint.get("mac_address")
-                    if mac_from_fingerprint:
-                        success = self.update_config(
-                            "SYSTEM_OPTIONS.DEVICE_ID", mac_from_fingerprint
-                        )
-                        if success:
-                            logger.info(
-                                "Using fingerprint MAC address as DEVICE_ID: "
-                                f"{mac_from_fingerprint}"
-                            )
-                        else:
-                            logger.error("Failed to save fallback DEVICE_ID.")
-            except Exception as e:
-                logger.error(f"Error initializing DEVICE_ID: {e}")
 
     @classmethod
     def get_instance(cls):

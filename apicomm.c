@@ -27,7 +27,7 @@ struct buffer
 
 #define MAX_HISTORY 10
 #define MAX_SYSTEM_PROMPT 4096
-#define DEFAULT_CHAT_MODEL "moonshotai/kimi-k2-instruct"
+#define DEFAULT_CHAT_MODEL "zai-glm-4.7"
 
 char *history_roles[MAX_HISTORY];
 char *history_contents[MAX_HISTORY];
@@ -53,42 +53,6 @@ void add_to_history(const char *role, const char *content)
         history_roles[MAX_HISTORY - 1] = strdup(role);
         history_contents[MAX_HISTORY - 1] = strdup(content);
     }
-}
-
-// Minimal JSON string escaper for content field
-static void json_escape(const char *src, char *dst, size_t cap)
-{
-    size_t j = 0;
-    for (size_t i = 0; src[i] && j + 2 < cap; ++i)
-    {
-        char c = src[i];
-        switch (c)
-        {
-        case '\\':
-            dst[j++] = '\\';
-            dst[j++] = '\\';
-            break;
-        case '"':
-            dst[j++] = '\\';
-            dst[j++] = '"';
-            break;
-        case '\n':
-            dst[j++] = '\\';
-            dst[j++] = 'n';
-            break;
-        case '\r':
-            dst[j++] = '\\';
-            dst[j++] = 'r';
-            break;
-        case '\t':
-            dst[j++] = '\\';
-            dst[j++] = 't';
-            break;
-        default:
-            dst[j++] = c;
-        }
-    }
-    dst[j] = '\0';
 }
 
 // Callback for streaming chunks; keeps partial lines intact between calls
@@ -253,10 +217,10 @@ int main()
     struct curl_slist *headers = NULL;
     struct buffer buf = {NULL, 0, NULL, 0, 0, NULL, 0};
 
-    const char *api_key = getenv("GROQ_API_KEY");
+    const char *api_key = getenv("CEREBRAS_API_KEY");
     if (!api_key)
     {
-        fprintf(stderr, "Set GROQ_API_KEY environment variable!\n");
+        fprintf(stderr, "Set CEREBRAS_API_KEY environment variable!\n");
         return 1;
     }
 
@@ -303,7 +267,7 @@ int main()
 
         add_to_history("user", input);
 
-        const char *chat_model = getenv("GROQ_CHAT_MODEL");
+        const char *chat_model = getenv("CEREBRAS_CHAT_MODEL");
         if (!chat_model || !*chat_model)
         {
             chat_model = DEFAULT_CHAT_MODEL;
@@ -313,7 +277,7 @@ int main()
         cJSON_AddStringToObject(root, "model", chat_model);
         cJSON_AddBoolToObject(root, "stream", true);
         cJSON_AddNumberToObject(root, "temperature", 0.7);
-        cJSON_AddNumberToObject(root, "max_tokens", 512);
+        cJSON_AddNumberToObject(root, "max_tokens", 2048);
 
         cJSON *messages = cJSON_CreateArray();
 
@@ -333,7 +297,7 @@ int main()
 
         char *json_body = cJSON_PrintUnformatted(root);
 
-        curl_easy_setopt(curl, CURLOPT_URL, "https://api.groq.com/openai/v1/chat/completions");
+        curl_easy_setopt(curl, CURLOPT_URL, "https://api.cerebras.ai/v1/chat/completions");
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_body);
 
         buf.len = 0;
