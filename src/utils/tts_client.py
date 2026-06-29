@@ -149,15 +149,16 @@ class TTSClient:
     @staticmethod
     def _play_sync(audio_bytes: bytes) -> None:
         """Decode MP3 and play synchronously (runs in a worker thread)."""
+        import threading
         decoded = miniaudio.decode(audio_bytes, output_format=miniaudio.SampleFormat.SIGNED16)
         if not decoded.samples or decoded.num_frames == 0:
             return
 
-        duration_s = decoded.num_frames / decoded.sample_rate
         nch = decoded.nchannels
         samples = decoded.samples
         total = len(samples)
         pos = [0]
+        finished_event = threading.Event()
 
         def _generator():
             required = yield b""
@@ -168,6 +169,7 @@ class TTSClient:
                 if not chunk:
                     break
                 required = yield chunk
+            finished_event.set()
 
         gen = _generator()
         next(gen)
@@ -179,6 +181,7 @@ class TTSClient:
         )
         try:
             device.start(gen)
-            time.sleep(duration_s + 0.08)
+            finished_event.wait()
+            time.sleep(0.15)
         finally:
             device.close()
