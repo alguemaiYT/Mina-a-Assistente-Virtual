@@ -181,6 +181,7 @@ class TTSClient:
         self._device.start(gen)
 
     def _generator(self):
+        # miniaudio expects bytes or array objects. Yield empty bytes to prime.
         required = yield b""
         
         current_samples = None
@@ -194,13 +195,14 @@ class TTSClient:
                     current_samples, current_event = item
                     current_pos = 0
                 except queue.Empty:
-                    # Output silent frames to keep device alive
-                    n = required * self._channels
-                    required = yield [0] * n
+                    # Output silent bytes (16-bit SIGNED16 has 2 bytes per sample)
+                    bytes_needed = required * self._channels * 2
+                    required = yield b"\x00" * bytes_needed
                     continue
             
-            n = required * self._channels
-            chunk = current_samples[current_pos : current_pos + n]
+            # SIGNED16 format has 2 bytes per sample
+            bytes_needed = required * self._channels * 2
+            chunk = current_samples[current_pos : current_pos + bytes_needed]
             current_pos += len(chunk)
             
             if current_pos >= len(current_samples):
