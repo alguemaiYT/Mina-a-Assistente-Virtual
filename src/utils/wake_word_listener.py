@@ -54,6 +54,9 @@ class WakeWordListener:
         return candidate
 
     def _get_access_key(self) -> Optional[str]:
+        config_key = self._config.get_config("WAKE_WORD_OPTIONS.ACCESS_KEY")
+        if config_key:
+            return config_key
         return os.environ.get("picovoicekey") or os.environ.get("PICOVOICEKEY")
 
     def _run(self) -> None:

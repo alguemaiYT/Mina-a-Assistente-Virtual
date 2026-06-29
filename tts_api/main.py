@@ -22,8 +22,8 @@ log = logging.getLogger("tts_api")
 # ---------------------------------------------------------------------------
 DEFAULT_VOICE = "pt-BR-FranciscaNeural"
 DEFAULT_RATE = "+15%"    # ligeiramente mais rápida = mais animada
-DEFAULT_PITCH = "+3Hz"   # um pouco mais fina
-DEFAULT_VOLUME = "+0%"
+DEFAULT_PITCH = "+1Hz"   # um pouco mais fina
+DEFAULT_VOLUME = "+10%"
 
 # Cache em memória: sha256(params) → bytes MP3
 _AUDIO_CACHE: dict[str, bytes] = {}
@@ -41,7 +41,7 @@ app = FastAPI(
 # ---------------------------------------------------------------------------
 @app.on_event("startup")
 async def warm_up():
-    log.info("Pré-aquecendo Edge TTS...")
+    log.info("Warming up...")
     try:
         await _synthesize_bytes("Olá, estou pronta.", DEFAULT_VOICE, DEFAULT_RATE, DEFAULT_PITCH, DEFAULT_VOLUME)
         log.info("Pré-aquecimento concluído.")

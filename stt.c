@@ -6,8 +6,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 #include <errno.h>
+
+#ifdef _WIN32
+#include <windows.h>
+#include <io.h>
+#define unlink _unlink
+#else
+#include <unistd.h>
+#endif
 
 #define SAMPLE_RATE 16000
 #define CHANNELS 1
@@ -20,6 +27,7 @@ static int frame_index = 0;
 static PaStream *stream = NULL;
 static bool recording = false;
 static bool initialized = false;
+static CURL *shared_curl = NULL;
 
 #define STT_LOG(fmt, ...) fprintf(stderr, "[stt] " fmt "\n", ##__VA_ARGS__)
 
@@ -127,11 +135,24 @@ static bool ensure_initialized(void)
     }
 
     curl_global_init(CURL_GLOBAL_DEFAULT);
+    shared_curl = curl_easy_init();
+    if (!shared_curl)
+    {
+        STT_LOG("shared_curl easy init failed");
+        curl_global_cleanup();
+        Pa_Terminate();
+        return false;
+    }
 
     recorded_samples = calloc(MAX_FRAMES, sizeof(short));
     if (!recorded_samples)
     {
         STT_LOG("recorded_samples allocation failed");
+        if (shared_curl)
+        {
+            curl_easy_cleanup(shared_curl);
+            shared_curl = NULL;
+        }
         curl_global_cleanup();
         Pa_Terminate();
         return false;
@@ -154,24 +175,47 @@ static void cleanup_stream(void)
 
 static char *create_temp_wav_path(void)
 {
-    // Create a temp file that already ends with .wav so downstream tools infer type cleanly
+#ifdef _WIN32
+    char temp_dir[MAX_PATH];
+    DWORD dwRetVal = GetTempPathA(MAX_PATH, temp_dir);
+    if (dwRetVal == 0 || dwRetVal > MAX_PATH)
+    {
+        strncpy(temp_dir, ".", MAX_PATH);
+    }
+    char temp_file[MAX_PATH];
+    UINT uRetVal = GetTempFileNameA(temp_dir, "stt", 0, temp_file);
+    if (uRetVal == 0)
+    {
+        STT_LOG("GetTempFileNameA failed");
+        return NULL;
+    }
+    size_t wav_len = strlen(temp_file) + 5; // ".wav\0"
+    char *wav_path = malloc(wav_len);
+    if (!wav_path)
+        return NULL;
+    snprintf(wav_path, wav_len, "%s.wav", temp_file);
+    // Delete original temp file placeholder created by GetTempFileNameA
+    DeleteFileA(temp_file);
+    return wav_path;
+#else
     char template[] = "/tmp/xiaozhi_stt_XXXXXX.wav";
 #ifdef __GLIBC__
     int fd = mkstemps(template, 4); // 4 chars suffix: ".wav"
 #else
-    // Fallback: create no-suffix file, then append .wav by renaming
     char nosuf[] = "/tmp/xiaozhi_stt_XXXXXX";
     int fd = mkstemp(nosuf);
     if (fd >= 0)
     {
-        char *with_suffix = NULL;
-        if (asprintf(&with_suffix, "%s.wav", nosuf) == -1)
+        size_t len = strlen(nosuf) + 5; // ".wav\0"
+        char *with_suffix = malloc(len);
+        if (!with_suffix)
         {
             close(fd);
             unlink(nosuf);
-            STT_LOG("asprintf failed for temp wav path");
+            STT_LOG("malloc failed for temp wav path");
             return NULL;
         }
+        snprintf(with_suffix, len, "%s.wav", nosuf);
         if (rename(nosuf, with_suffix) != 0)
         {
             int e = errno;
@@ -193,6 +237,7 @@ static char *create_temp_wav_path(void)
     }
     close(fd);
     return strdup(template);
+#endif
 }
 
 static bool write_wav_file(const char *filename, short *data, int samples)
@@ -323,10 +368,10 @@ static char *transcribe_from_file(const char *filepath)
     struct string_buffer response;
     sb_init(&response);
 
-    CURL *curl = curl_easy_init();
+    CURL *curl = shared_curl;
     if (!curl)
     {
-        STT_LOG("curl_easy_init failed");
+        STT_LOG("shared_curl is NULL");
         sb_free(&response);
         return NULL;
     }
@@ -337,7 +382,12 @@ static char *transcribe_from_file(const char *filepath)
     headers = curl_slist_append(headers, auth_header);
     headers = curl_slist_append(headers, "Accept: application/json");
 
-    curl_easy_setopt(curl, CURLOPT_URL, "https://api.groq.com/openai/v1/audio/transcriptions");
+    const char *stt_url = getenv("STT_API_URL");
+    if (!stt_url || stt_url[0] == '\0')
+    {
+        stt_url = "https://api.groq.com/openai/v1/audio/transcriptions";
+    }
+    curl_easy_setopt(curl, CURLOPT_URL, stt_url);
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, response_write);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
@@ -357,7 +407,12 @@ static char *transcribe_from_file(const char *filepath)
 
     part = curl_mime_addpart(mime);
     curl_mime_name(part, "model");
-    curl_mime_data(part, "whisper-large-v3", CURL_ZERO_TERMINATED);
+    const char *stt_model = getenv("STT_MODEL");
+    if (!stt_model || stt_model[0] == '\0')
+    {
+        stt_model = "whisper-large-v3";
+    }
+    curl_mime_data(part, stt_model, CURL_ZERO_TERMINATED);
 
     // Optional: set language if provided (ISO-639-1), improves accuracy/latency
     const char *lang = getenv("STT_LANGUAGE");
@@ -408,7 +463,7 @@ static char *transcribe_from_file(const char *filepath)
 
     curl_mime_free(mime);
     curl_slist_free_all(headers);
-    curl_easy_cleanup(curl);
+    curl_easy_setopt(curl, CURLOPT_MIMEPOST, NULL);
     sb_free(&response);
 
     return result;
@@ -533,6 +588,11 @@ void stt_shutdown(void)
 
     recording = false;
     cleanup_stream();
+    if (shared_curl)
+    {
+        curl_easy_cleanup(shared_curl);
+        shared_curl = NULL;
+    }
     curl_global_cleanup();
     Pa_Terminate();
     free(recorded_samples);

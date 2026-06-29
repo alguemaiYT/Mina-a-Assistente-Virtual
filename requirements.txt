@@ -1,4 +1,4 @@
-# Minimal GUI dependencies for Xiaozhi AI Client (GUI-only version)
+# GUI dependencies for Xiaozhi AI Client (Mina Assistant)
 
 # Qt and GUI framework
 PyQt5==5.15.11
@@ -13,28 +13,22 @@ aiohttp==3.12.13
 # Configuration and device management
 cryptography==44.0.1
 py-machineid==0.8.0
-
-# Calendar and date utilities (used by activation/settings views)
-pendulum==3.1.0
 python-dateutil==2.9.0.post0
-lunar_python==1.4.4
 
-# Web utilities (used by activation views)
-beautifulsoup4==4.12.3
-brotli==1.1.0
-
-# System utilities
-psutil==7.0.0
-
-# TTS audio playback
+# Audio Processing & VAD
+numpy
+sounddevice
+onnxruntime
 miniaudio
 
 # Wake word (Picovoice Porcupine)
 pvporcupine
 pvrecorder
 
+# System utilities
+psutil==7.0.0
+
 # Windows-specific (optional, only for Windows)
 comtypes==1.4.6; sys_platform == "win32"
 pycaw==20240210; sys_platform == "win32"
 pywin32==306; sys_platform == "win32"
-

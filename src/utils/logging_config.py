@@ -88,16 +88,4 @@ def get_logger(name):
         logger.error("Error occurred: %s", error_msg)
     """
     logger = logging.getLogger(name)
-
-    # Add helper methods.
-    def log_error_with_exc(msg, *args, **kwargs):
-        """
-        Log an error and automatically include the exception stack.
-        """
-        kwargs["exc_info"] = True
-        logger.error(msg, *args, **kwargs)
-
-    # Attach to logger.
-    logger.error_exc = log_error_with_exc
-
     return logger

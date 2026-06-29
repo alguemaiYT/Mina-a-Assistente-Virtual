@@ -17,11 +17,11 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
+from src.views.settings.components.base_settings_widget import BaseSettingsWidget
 from src.utils.config_manager import ConfigManager
-from src.utils.logging_config import get_logger
 
 
-class CameraWidget(QWidget):
+class CameraWidget(BaseSettingsWidget):
     """
     摄像头设置组件.
     """
@@ -31,11 +31,7 @@ class CameraWidget(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.logger = get_logger(__name__)
         self.config_manager = ConfigManager.get_instance()
-
-        # UI控件引用
-        self.ui_controls = {}
 
         # 预览相关
         self.camera = None
@@ -139,40 +135,6 @@ class CameraWidget(QWidget):
 
         except Exception as e:
             self.logger.error(f"加载摄像头配置值失败: {e}", exc_info=True)
-
-    def _set_text_value(self, control_name: str, value: str):
-        """
-        设置文本控件的值.
-        """
-        control = self.ui_controls.get(control_name)
-        if control and hasattr(control, "setText"):
-            control.setText(str(value) if value is not None else "")
-
-    def _set_spin_value(self, control_name: str, value: int):
-        """
-        设置数字控件的值.
-        """
-        control = self.ui_controls.get(control_name)
-        if control and hasattr(control, "setValue"):
-            control.setValue(int(value) if value is not None else 0)
-
-    def _get_text_value(self, control_name: str) -> str:
-        """
-        获取文本控件的值.
-        """
-        control = self.ui_controls.get(control_name)
-        if control and hasattr(control, "text"):
-            return control.text().strip()
-        return ""
-
-    def _get_spin_value(self, control_name: str) -> int:
-        """
-        获取数字控件的值.
-        """
-        control = self.ui_controls.get(control_name)
-        if control and hasattr(control, "value"):
-            return control.value()
-        return 0
 
     def _on_scan_camera(self):
         """

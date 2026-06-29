@@ -1,13 +1,11 @@
 from pathlib import Path
-
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QCheckBox, QComboBox, QLineEdit, QWidget, QSpinBox
-
+from PyQt5.QtWidgets import QCheckBox, QComboBox, QLineEdit, QSpinBox
+from src.views.settings.components.base_settings_widget import BaseSettingsWidget
 from src.utils.config_manager import ConfigManager
-from src.utils.logging_config import get_logger
 
 
-class SystemOptionsWidget(QWidget):
+class SystemOptionsWidget(BaseSettingsWidget):
     """
     系统选项设置组件.
     """
@@ -17,11 +15,7 @@ class SystemOptionsWidget(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.logger = get_logger(__name__)
         self.config_manager = ConfigManager.get_instance()
-
-        # UI控件引用
-        self.ui_controls = {}
 
         # 初始化UI
         self._setup_ui()
@@ -202,40 +196,6 @@ class SystemOptionsWidget(QWidget):
 
         except Exception as e:
             self.logger.error(f"加载系统选项配置值失败: {e}", exc_info=True)
-
-    def _set_text_value(self, control_name: str, value: str):
-        """
-        设置文本控件的值.
-        """
-        control = self.ui_controls.get(control_name)
-        if control and hasattr(control, "setText"):
-            control.setText(str(value) if value is not None else "")
-
-    def _get_text_value(self, control_name: str) -> str:
-        """
-        获取文本控件的值.
-        """
-        control = self.ui_controls.get(control_name)
-        if control and hasattr(control, "text"):
-            return control.text().strip()
-        return ""
-
-    def _set_check_value(self, control_name: str, value: bool):
-        """
-        设置复选框控件的值.
-        """
-        control = self.ui_controls.get(control_name)
-        if control and hasattr(control, "setChecked"):
-            control.setChecked(bool(value))
-
-    def _get_check_value(self, control_name: str) -> bool:
-        """
-        获取复选框控件的值.
-        """
-        control = self.ui_controls.get(control_name)
-        if control and hasattr(control, "isChecked"):
-            return control.isChecked()
-        return False
 
     def get_config_data(self) -> dict:
         """
