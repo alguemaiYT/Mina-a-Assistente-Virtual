@@ -3,7 +3,7 @@
     "ENABLED": true,
     "BACKEND": "cerebras",
     "API_KEY": "",
-    "MODEL": "zai-glm-4.7",
+    "MODEL": "gpt-oss-120b",
     "API_URL": "https://api.cerebras.ai/v1/chat/completions",
     "TEMPERATURE": 0.7,
     "MAX_TOKENS": 2048,
