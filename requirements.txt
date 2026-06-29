@@ -27,6 +27,7 @@ pvrecorder
 
 # System utilities
 psutil==7.0.0
+edge-tts
 
 # Windows-specific (optional, only for Windows)
 comtypes==1.4.6; sys_platform == "win32"

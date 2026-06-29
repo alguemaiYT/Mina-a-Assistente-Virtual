@@ -1,16 +1,15 @@
 """
-TTS Client — async HTTP client for the Edge TTS FastAPI server.
+TTS Client — Direct local edge-tts integration inside the application.
 
-Pre-synthesises audio in background tasks so playback is nearly instant
-when the chunk_emitter is ready to play.  Playback uses miniaudio in a
-worker thread (asyncio.to_thread) so the Qt event-loop never blocks.
+Synthesises audio in the background directly inside the python client, using edge-tts.
+Eliminates the FastAPI HTTP server daemon and reduces latency.
 """
 
 import asyncio
+import io
 import time
+import hashlib
 from typing import Optional
-
-import aiohttp
 
 from src.utils.logging_config import get_logger
 
@@ -18,33 +17,39 @@ logger = get_logger(__name__)
 
 try:
     import miniaudio
-
     _HAS_MINIAUDIO = True
 except ImportError:
     _HAS_MINIAUDIO = False
     logger.warning("miniaudio not installed — TTS playback disabled")
 
+try:
+    import edge_tts
+    _HAS_EDGE_TTS = True
+except ImportError:
+    _HAS_EDGE_TTS = False
+    logger.warning("edge-tts not installed — TTS synthesis disabled")
+
 
 class TTSClient:
-    """Lightweight async wrapper around the TTS API server."""
+    """Direct, embedded wrapper around the local edge-tts engine."""
 
     def __init__(
         self,
-        base_url: str = "http://localhost:8000",
+        base_url: str = "http://localhost:8000",  # Kept for compatibility with views
         enabled: bool = True,
         voice: str = "pt-BR-FranciscaNeural",
         rate: str = "+15%",
         pitch: str = "+3Hz",
         volume: str = "+0%",
     ):
-        self._base_url = base_url.rstrip("/")
-        self._enabled = enabled and _HAS_MINIAUDIO
+        self._enabled = enabled and _HAS_MINIAUDIO and _HAS_EDGE_TTS
         self._voice = voice
         self._rate = rate
         self._pitch = pitch
         self._volume = volume
-        self._session: Optional[aiohttp.ClientSession] = None
         self._audio_lock = asyncio.Lock()
+        self._cache: dict[str, bytes] = {}
+        self._cache_max = 128
 
     # ------------------------------------------------------------------
     # Properties
@@ -55,40 +60,27 @@ class TTSClient:
         return self._enabled
 
     # ------------------------------------------------------------------
-    # Session management
+    # Embedding Management
     # ------------------------------------------------------------------
 
-    async def _get_session(self) -> aiohttp.ClientSession:
-        if self._session is None or self._session.closed:
-            connector = aiohttp.TCPConnector(keepalive_timeout=30, limit=4)
-            self._session = aiohttp.ClientSession(
-                connector=connector,
-                timeout=aiohttp.ClientTimeout(total=15),
-            )
-        return self._session
-
     async def close(self) -> None:
-        if self._session and not self._session.closed:
-            await self._session.close()
-            self._session = None
+        pass
 
     # ------------------------------------------------------------------
     # Health check
     # ------------------------------------------------------------------
 
     async def health_check(self) -> bool:
-        """GET /health — disables TTS if the server is unreachable."""
+        """Verify the edge-tts local module functions properly."""
         if not self._enabled:
             return False
         try:
-            session = await self._get_session()
-            async with session.get(f"{self._base_url}/health") as resp:
-                if resp.status == 200:
-                    logger.info("TTS server healthy at %s", self._base_url)
-                    return True
-                logger.warning("TTS health check returned %d", resp.status)
+            # Test if edge_tts can query voices (requires internet access)
+            await edge_tts.list_voices()
+            logger.info("Local embedded TTS engine initialized (voice=%s)", self._voice)
+            return True
         except Exception as exc:
-            logger.warning("TTS server unreachable (%s): %s", self._base_url, exc)
+            logger.warning("Embedded TTS engine check failed (no internet?): %s", exc)
         self._enabled = False
         return False
 
@@ -102,28 +94,42 @@ class TTSClient:
             return None
         return asyncio.create_task(self._fetch_audio(text))
 
+    def _cache_key(self, text: str) -> str:
+        raw = f"{text}|{self._voice}|{self._rate}|{self._pitch}|{self._volume}"
+        return hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
     async def _fetch_audio(self, text: str) -> Optional[bytes]:
-        """POST /synthesize and return the MP3 bytes (or None on error)."""
+        """Synthesize MP3 bytes directly using edge_tts (non-blocking)."""
+        key = self._cache_key(text)
+        if key in self._cache:
+            logger.debug("TTS cache hit for: '%s'", text[:30])
+            return self._cache[key]
+
         try:
-            session = await self._get_session()
-            payload = {
-                "text": text,
-                "voice": self._voice,
-                "rate": self._rate,
-                "pitch": self._pitch,
-                "volume": self._volume,
-                "stream": False,
-            }
-            async with session.post(
-                f"{self._base_url}/synthesize", json=payload
-            ) as resp:
-                if resp.status != 200:
-                    body = await resp.text()
-                    logger.warning("TTS synthesis HTTP %d: %s", resp.status, body[:120])
-                    return None
-                return await resp.read()
+            t0 = time.perf_counter()
+            communicate = edge_tts.Communicate(
+                text,
+                self._voice,
+                rate=self._rate,
+                pitch=self._pitch,
+                volume=self._volume
+            )
+            buf = io.BytesIO()
+            async for chunk in communicate.stream():
+                if chunk["type"] == "audio":
+                    buf.write(chunk["data"])
+            audio = buf.getvalue()
+
+            elapsed = time.perf_counter() - t0
+            logger.info("TTS local synthesis OK | chars=%d | latency=%.3fs | cache=%d", len(text), elapsed, len(self._cache))
+
+            if len(self._cache) >= self._cache_max:
+                oldest = next(iter(self._cache))
+                del self._cache[oldest]
+            self._cache[key] = audio
+            return audio
         except Exception as exc:
-            logger.warning("TTS fetch error: %s", exc)
+            logger.warning("Local TTS synthesis error: %s", exc)
             return None
 
     # ------------------------------------------------------------------
