@@ -338,24 +338,135 @@ class ChatBridge:
         async with self._lock:
             self._stdout_buffer = ""
             self._in_text_section = False
-            if self.backend == "binary":
-                return await self._send_and_stream_binary(
-                    prompt,
-                    on_token=on_token,
-                    on_emotion=on_emotion,
-                    on_chunk=on_chunk,
-                    on_control=on_control,
-                )
-            else:
-                return await self._send_and_stream_openai(
-                    prompt,
-                    on_token=on_token,
-                    on_emotion=on_emotion,
-                    on_chunk=on_chunk,
-                    on_control=on_control,
-                )
+            try:
+                if self.backend == "binary":
+                    return await self._send_and_stream_binary(
+                        prompt,
+                        on_token=on_token,
+                        on_emotion=on_emotion,
+                        on_chunk=on_chunk,
+                        on_control=on_control,
+                    )
+                else:
+                    return await self._send_and_stream_openai(
+                        prompt,
+                        on_token=on_token,
+                        on_emotion=on_emotion,
+                        on_chunk=on_chunk,
+                        on_control=on_control,
+                    )
+            except Exception as exc:
+                if "429" in str(exc):
+                    fallback_backend = self._config.get_config("LLM_OPTIONS", {}).get("FALLBACK_BACKEND")
+                    if fallback_backend:
+                        import logging
+                        logging.getLogger("src.utils.chat_bridge").warning(
+                            "Primary backend %s returned 429 rate limit. Triggering fallback to %s!",
+                            self.backend, fallback_backend
+                        )
+                        return await self._send_and_stream_fallback(
+                            prompt,
+                            on_token=on_token,
+                            on_emotion=on_emotion,
+                            on_chunk=on_chunk,
+                            on_control=on_control,
+                        )
+                raise exc
 
-            raise RuntimeError(f"Unsupported chat backend: {self.backend}")
+    async def _send_and_stream_fallback(
+        self,
+        prompt: str,
+        on_token: Optional[Callable[[str], Awaitable[None]]] = None,
+        on_emotion: Optional[Callable[[str], Awaitable[None]]] = None,
+        on_chunk: Optional[Callable[[str, float, Optional[str]], Awaitable[None]]] = None,
+        on_control: Optional[Callable[[str], Awaitable[None]]] = None,
+    ) -> str:
+        llm_opts = self._config.get_config("LLM_OPTIONS", {})
+        backend_name = llm_opts.get("FALLBACK_BACKEND", "groq").lower()
+        env_key_name = f"{backend_name.upper()}_API_KEY"
+        api_key = os.getenv(env_key_name) or os.getenv("LLM_API_KEY") or llm_opts.get("FALLBACK_API_KEY")
+        
+        api_url = llm_opts.get("FALLBACK_API_URL") or "https://api.groq.com/openai/v1/chat/completions"
+        model = llm_opts.get("FALLBACK_MODEL") or "llama3-8b-8192"
+        temperature = llm_opts.get("TEMPERATURE", 0.7)
+        max_tokens = llm_opts.get("MAX_TOKENS", 2048)
+
+        messages = [{"role": "system", "content": self._system_prompt}]
+        for msg in self._history[-MAX_HISTORY:]:
+            messages.append({"role": msg["role"], "content": msg["content"]})
+        messages.append({"role": "user", "content": prompt})
+
+        payload = {
+            "model": model,
+            "stream": True,
+            "temperature": temperature,
+            "max_tokens": max_tokens,
+            "messages": messages,
+        }
+
+        full_response = ""
+        raw_response = ""
+        timeout = aiohttp.ClientTimeout(total=60)
+        headers = {"Content-Type": "application/json"}
+        if api_key:
+            headers["Authorization"] = f"Bearer {api_key}"
+
+        if not self._session or self._session.closed:
+            self._session = aiohttp.ClientSession(timeout=timeout)
+
+        async with self._session.post(api_url, json=payload, headers=headers) as resp:
+            if resp.status != 200:
+                body = await resp.text()
+                raise RuntimeError(f"Fallback {backend_name.upper()} chat error {resp.status}: {body}")
+
+            while True:
+                line = await resp.content.readline()
+                if not line:
+                    break
+                text_line = line.decode("utf-8", errors="ignore").strip()
+                if not text_line:
+                    continue
+                if not text_line.startswith("data:"):
+                    continue
+                data = text_line[5:].strip()
+                if data == "[DONE]":
+                    break
+                try:
+                    event = json.loads(data)
+                except json.JSONDecodeError:
+                    continue
+                choices = event.get("choices") or []
+                if not choices:
+                    continue
+                delta = choices[0].get("delta") or {}
+                content = delta.get("content")
+                if not content:
+                    continue
+                raw_response += content
+                parsed, done = await self._process_stream_text(
+                    content,
+                    on_token=on_token,
+                    on_emotion=on_emotion,
+                    on_chunk=on_chunk,
+                    on_control=on_control,
+                )
+                full_response += parsed
+                if done:
+                    break
+
+        if self._stdout_buffer:
+            parsed, _ = await self._process_stream_text(
+                "\n",
+                on_token=on_token,
+                on_emotion=on_emotion,
+                on_chunk=on_chunk,
+                on_control=on_control,
+            )
+            full_response += parsed
+
+        self._append_history("user", prompt)
+        self._append_history("assistant", raw_response)
+        return full_response
 
     async def read_stderr(self) -> str:
         if self.backend != "binary":
