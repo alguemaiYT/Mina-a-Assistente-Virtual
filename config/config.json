@@ -9,7 +9,7 @@
     "MAX_TOKENS": 2048,
     "FALLBACK_BACKEND": "groq",
     "FALLBACK_API_KEY": "",
-    "FALLBACK_MODEL": "llama3-8b-8192",
+    "FALLBACK_MODEL": "gpt-oss-120b",
     "FALLBACK_API_URL": "https://api.groq.com/openai/v1/chat/completions"
   },
   "STT_OPTIONS": {
