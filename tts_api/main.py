@@ -7,12 +7,19 @@ import hashlib
 import io
 import logging
 import time
+import socket
 from typing import AsyncIterator
 
 import edge_tts
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import Response, StreamingResponse
 from pydantic import BaseModel, Field
+
+try:
+    from zeroconf import IPVersion, ServiceInfo, Zeroconf
+    _HAS_ZEROCONF = True
+except ImportError:
+    _HAS_ZEROCONF = False
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger("tts_api")
@@ -39,14 +46,65 @@ app = FastAPI(
 # ---------------------------------------------------------------------------
 # Startup: pré-aquecimento
 # ---------------------------------------------------------------------------
+zeroconf_instance = None
+service_info_instance = None
+
+def get_local_ip():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect(('8.8.8.8', 1))
+        IP = s.getsockname()[0]
+    except Exception:
+        IP = '127.0.0.1'
+    finally:
+        s.close()
+    return IP
+
+
+# ---------------------------------------------------------------------------
+# Startup & Shutdown with mDNS Zeroconf
+# ---------------------------------------------------------------------------
 @app.on_event("startup")
 async def warm_up():
+    global zeroconf_instance, service_info_instance
     log.info("Warming up...")
     try:
         await _synthesize_bytes("Olá, estou pronta.", DEFAULT_VOICE, DEFAULT_RATE, DEFAULT_PITCH, DEFAULT_VOLUME)
         log.info("Pré-aquecimento concluído.")
     except Exception as exc:
         log.warning("Pré-aquecimento falhou: %s", exc)
+
+    if _HAS_ZEROCONF:
+        try:
+            local_ip = get_local_ip()
+            log.info(f"Registering mDNS service for local IP: {local_ip}")
+            desc = {'path': '/synthesize'}
+            service_info_instance = ServiceInfo(
+                "_http._tcp.local.",
+                "MinaTTS._http._tcp.local.",
+                addresses=[socket.inet_aton(local_ip)],
+                port=8000,
+                properties=desc,
+                server="mina-tts.local."
+            )
+            zeroconf_instance = Zeroconf(ip_version=IPVersion.V4Only)
+            zeroconf_instance.register_service(service_info_instance)
+            log.info("mDNS service successfully registered: mina-tts.local on port 8000")
+        except Exception as exc:
+            log.error("Failed to register mDNS service: %s", exc)
+
+
+@app.on_event("shutdown")
+def shutdown_mdns():
+    global zeroconf_instance, service_info_instance
+    if zeroconf_instance and service_info_instance:
+        try:
+            log.info("Unregistering mDNS service...")
+            zeroconf_instance.unregister_service(service_info_instance)
+            zeroconf_instance.close()
+            log.info("mDNS service unregistered.")
+        except Exception as exc:
+            log.error("Error during mDNS shutdown: %s", exc)
 
 
 # ---------------------------------------------------------------------------
