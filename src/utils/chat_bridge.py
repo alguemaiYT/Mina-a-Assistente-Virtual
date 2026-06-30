@@ -87,9 +87,20 @@ class ChatBridge:
         if len(self._history) > MAX_HISTORY:
             self._history = self._history[-MAX_HISTORY:]
 
+    def _get_system_prompt_with_memories(self) -> str:
+        from src.utils.memory_db import get_all_memories
+        memories = get_all_memories()
+        system_content = self._system_prompt
+        if memories:
+            memory_block = "\n\nCONVERSAS ANTERIORES / MEMÓRIA DO LABORATÓRIO G.E.R.A:\n"
+            for user, keypoint in memories:
+                memory_block += f"- [{user}]: {keypoint}\n"
+            system_content += memory_block
+        return system_content
+
     def _build_messages(self, prompt: str) -> list:
         self._append_history("user", prompt)
-        messages = [{"role": "system", "content": self._system_prompt}]
+        messages = [{"role": "system", "content": self._get_system_prompt_with_memories()}]
         messages.extend(self._history)
         return messages
 
@@ -128,6 +139,18 @@ class ChatBridge:
                 if on_control:
                     await on_control(pline)
                 # do not include pause lines in the textual response
+                continue
+
+            # handle memory lines: MEMORY|<username>|<keypoint>
+            if pline.upper().startswith("MEMORY|"):
+                parts = pline.split("|", 2)
+                if len(parts) == 3:
+                    _, username, keypoint = parts
+                    username = username.strip()
+                    keypoint = keypoint.strip()
+                    if username and keypoint:
+                        from src.utils.memory_db import save_memory
+                        save_memory(username, keypoint)
                 continue
 
             # check sentinel
@@ -391,7 +414,7 @@ class ChatBridge:
         temperature = llm_opts.get("TEMPERATURE", 0.7)
         max_tokens = llm_opts.get("MAX_TOKENS", 2048)
 
-        messages = [{"role": "system", "content": self._system_prompt}]
+        messages = [{"role": "system", "content": self._get_system_prompt_with_memories()}]
         for msg in self._history[-MAX_HISTORY:]:
             messages.append({"role": msg["role"], "content": msg["content"]})
         messages.append({"role": "user", "content": prompt})
