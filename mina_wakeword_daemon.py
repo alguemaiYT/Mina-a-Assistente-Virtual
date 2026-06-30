@@ -5,6 +5,11 @@ import contextlib
 import queue
 import threading
 import numpy as np
+
+# Force PulseAudio server socket path on Linux before importing sounddevice
+if sys.platform.startswith("linux"):
+    os.environ["PULSE_SERVER"] = "unix:/var/run/pulse/native"
+
 import sounddevice as sd
 
 @contextlib.contextmanager
@@ -26,22 +31,19 @@ def suppress_stderr():
             pass
 
 def find_input_device():
-    """Find the best input audio device index, prioritizing raw Kinect hardware."""
+    """Find the best input audio device index, prioritizing PulseAudio on Linux."""
     try:
         devices = sd.query_devices()
-        # 1. Prioritize raw Kinect USB Audio
-        for i, d in enumerate(devices):
-            if d['max_input_channels'] > 0 and "kinect usb audio" in d['name'].lower():
-                return i
-        # 2. Try any Kinect device
-        for i, d in enumerate(devices):
-            if d['max_input_channels'] > 0 and "kinect" in d['name'].lower():
-                return i
-        # 3. Fallback to default
+        # 1. On Linux, search for "pulse" device
+        if sys.platform.startswith("linux"):
+            for i, d in enumerate(devices):
+                if d['max_input_channels'] > 0 and d['name'].lower() == "pulse":
+                    return i
+        # 2. Fallback to default
         default_idx = sd.default.device[0]
         if default_idx >= 0:
             return default_idx
-        # 4. First device with input channels
+        # 3. First device with input channels
         for i, d in enumerate(devices):
             if d['max_input_channels'] > 0:
                 return i
@@ -50,7 +52,7 @@ def find_input_device():
     return None
 
 def main():
-    print("=== Mina Assistant Wake Word Daemon (openWakeWord) ===")
+    print("=== Mina Assistant Wake Word Daemon (openWakeWord + PulseAudio) ===")
     print("This daemon runs locally, requires NO API keys, and uses standard audio devices.")
     print("Active Wake Words (Chaves): 'alexa' and 'hey jarvis'\n")
     
@@ -67,16 +69,11 @@ def main():
         print("Warning: No audio input device found!", file=sys.stderr)
         sys.exit(1)
         
-    is_raw_kinect = "kinect usb audio" in device_name.lower() or "hw:3,0" in device_name.lower()
-    
-    if is_raw_kinect:
-        channels = 4
-        dtype = 'int32'
-        print(">>> RAW Kinect Mode Enabled (4 channels, 32-bit downmixed to 16-bit PCM in real-time)")
-    else:
-        channels = 1
-        dtype = 'int16'
-        print(">>> Standard Mode Enabled (1 channel, 16-bit PCM)")
+    # PulseAudio handles all channel mixing, format conversion (S32_LE to S16_LE)
+    # and hardware interfacing in the background!
+    channels = 1
+    dtype = 'int16'
+    print(">>> Mode: 1 channel, 16-bit PCM (Resampled and downmixed by PulseAudio/System)")
         
     print("\nInitializing openWakeWord models...")
     try:
@@ -111,14 +108,8 @@ def main():
     def audio_callback(indata, frames, time_info, status):
         if status:
             pass
-            
-        if is_raw_kinect:
-            # Extract channel 0 and convert 32-bit to 16-bit PCM (boost gain using 3072 divisor and clip)
-            scaled = indata[:, 0] // 3072
-            audio_frame = np.clip(scaled, -32768, 32767).astype(np.int16)
-        else:
-            audio_frame = indata[:, 0].copy()
-            
+        # Indata is already 1 channel, 16-bit PCM (int16)
+        audio_frame = indata[:, 0].copy()
         audio_queue.put(audio_frame)
 
     def processing_worker():
