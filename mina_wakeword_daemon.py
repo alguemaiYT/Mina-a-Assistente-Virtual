@@ -2,6 +2,8 @@ import os
 import sys
 import time
 import contextlib
+import queue
+import threading
 import numpy as np
 import sounddevice as sd
 
@@ -65,16 +67,13 @@ def main():
         print("Warning: No audio input device found!", file=sys.stderr)
         sys.exit(1)
         
-    # Check if selected device is raw Kinect
     is_raw_kinect = "kinect usb audio" in device_name.lower() or "hw:3,0" in device_name.lower()
     
     if is_raw_kinect:
-        # Kinect USB Audio requires S32_LE (int32) and 4 channels
         channels = 4
         dtype = 'int32'
         print(">>> RAW Kinect Mode Enabled (4 channels, 32-bit downmixed to 16-bit PCM in real-time)")
     else:
-        # Standard microphone
         channels = 1
         dtype = 'int16'
         print(">>> Standard Mode Enabled (1 channel, 16-bit PCM)")
@@ -103,33 +102,59 @@ def main():
     envelope = np.exp(-12 * t)
     audio = (wave * envelope * 32767).astype(np.int16)
 
+    # Thread-safe queue to pass audio frames from callback thread to processing worker thread
+    audio_queue = queue.Queue()
+    stop_event = threading.Event()
+
     def audio_callback(indata, frames, time_info, status):
         if status:
-            print(f"Status: {status}", file=sys.stderr)
+            # We print status warnings to stderr, but avoid logging full traces in real-time
+            pass
             
         if is_raw_kinect:
-            # Extract channel 0 and convert 32-bit signed to 16-bit signed PCM
+            # Extract channel 0 and convert 32-bit to 16-bit PCM
             audio_frame = (indata[:, 0] // 65536).astype(np.int16)
         else:
-            # Standard 16-bit mono
-            audio_frame = indata[:, 0]
+            audio_frame = indata[:, 0].copy()
             
-        prediction = model.predict(audio_frame)
-        
-        for name, prob in prediction.items():
-            if prob > 0.6:
-                print(f"🎉 [DETECTED: '{name}'] - Playing chime...")
-                sd.play(audio, samplerate=16000)
+        audio_queue.put(audio_frame)
+
+    def processing_worker():
+        while not stop_event.is_set():
+            try:
+                # Retrieve frame from queue with a short timeout
+                audio_frame = audio_queue.get(timeout=0.2)
+            except queue.Empty:
+                continue
+                
+            # Perform inference on worker thread
+            prediction = model.predict(audio_frame)
+            
+            for name, prob in prediction.items():
+                if prob > 0.6:
+                    print(f"🎉 [DETECTED: '{name}'] - Playing chime...")
+                    try:
+                        sd.play(audio, samplerate=16000)
+                    except Exception as e:
+                        print(f"Chime error: {e}", file=sys.stderr)
+            
+            audio_queue.task_done()
+
+    # Launch the processing worker thread
+    worker_thread = threading.Thread(target=processing_worker, daemon=True)
+    worker_thread.start()
 
     try:
+        # Start input stream using selected device
         with sd.InputStream(device=device_idx, samplerate=16000, channels=channels, dtype=dtype, blocksize=1280, callback=audio_callback):
             while True:
                 sd.sleep(100)
     except KeyboardInterrupt:
         print("\nStopping wake word daemon...")
-    except Exception as e:
-        print(f"Fatal error in daemon stream: {e}", file=sys.stderr)
-        sys.exit(1)
+    finally:
+        stop_event.set()
+        worker_thread.join(timeout=1.0)
+        print("Cleaned up resources. Goodbye!")
 
 if __name__ == "__main__":
     main()
