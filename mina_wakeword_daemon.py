@@ -80,12 +80,14 @@ def main():
         
     print("\nInitializing openWakeWord models...")
     try:
+        # Only suppress stderr during the imports to silence C++ schema registration logs
         with suppress_stderr():
             import openwakeword.utils
             from openwakeword.model import Model
-            # Auto-download models if missing
-            openwakeword.utils.download_models()
-            model = Model(wakeword_models=["alexa", "hey_jarvis"], inference_framework="onnx")
+            
+        # Run downloads and model initialization outside suppress_stderr block
+        openwakeword.utils.download_models()
+        model = Model(wakeword_models=["alexa", "hey_jarvis"], inference_framework="onnx")
     except Exception as e:
         print(f"Failed to initialize openWakeWord: {e}", file=sys.stderr)
         sys.exit(1)
@@ -108,7 +110,6 @@ def main():
 
     def audio_callback(indata, frames, time_info, status):
         if status:
-            # We print status warnings to stderr, but avoid logging full traces in real-time
             pass
             
         if is_raw_kinect:
