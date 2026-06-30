@@ -24,26 +24,22 @@ def suppress_stderr():
             pass
 
 def find_input_device():
-    """Find the best input audio device index, prioritizing Kinect."""
+    """Find the best input audio device index, prioritizing raw Kinect hardware."""
     try:
         devices = sd.query_devices()
-        # 1. Prioritize kinect_clean
+        # 1. Prioritize raw Kinect USB Audio
         for i, d in enumerate(devices):
-            if d['max_input_channels'] > 0 and "kinect_clean" in d['name'].lower():
+            if d['max_input_channels'] > 0 and "kinect usb audio" in d['name'].lower():
                 return i
-        # 2. Try kinect_mono
-        for i, d in enumerate(devices):
-            if d['max_input_channels'] > 0 and "kinect_mono" in d['name'].lower():
-                return i
-        # 3. Try Kinect USB Audio
+        # 2. Try any Kinect device
         for i, d in enumerate(devices):
             if d['max_input_channels'] > 0 and "kinect" in d['name'].lower():
                 return i
-        # 4. Fallback to default
+        # 3. Fallback to default
         default_idx = sd.default.device[0]
         if default_idx >= 0:
             return default_idx
-        # 5. First device with input channels
+        # 4. First device with input channels
         for i, d in enumerate(devices):
             if d['max_input_channels'] > 0:
                 return i
@@ -59,14 +55,31 @@ def main():
     device_idx = find_input_device()
     if device_idx is not None:
         try:
-            device_name = sd.query_devices(device_idx)['name']
+            device_info = sd.query_devices(device_idx)
+            device_name = device_info['name']
             print(f"Selected audio input device index: {device_idx} ({device_name})")
         except Exception:
+            device_name = "Unknown"
             print(f"Selected audio input device index: {device_idx}")
     else:
         print("Warning: No audio input device found!", file=sys.stderr)
+        sys.exit(1)
         
-    print("Initializing openWakeWord models...")
+    # Check if selected device is raw Kinect
+    is_raw_kinect = "kinect usb audio" in device_name.lower() or "hw:3,0" in device_name.lower()
+    
+    if is_raw_kinect:
+        # Kinect USB Audio requires S32_LE (int32) and 4 channels
+        channels = 4
+        dtype = 'int32'
+        print(">>> RAW Kinect Mode Enabled (4 channels, 32-bit downmixed to 16-bit PCM in real-time)")
+    else:
+        # Standard microphone
+        channels = 1
+        dtype = 'int16'
+        print(">>> Standard Mode Enabled (1 channel, 16-bit PCM)")
+        
+    print("\nInitializing openWakeWord models...")
     try:
         with suppress_stderr():
             import openwakeword.utils
@@ -91,7 +104,16 @@ def main():
     audio = (wave * envelope * 32767).astype(np.int16)
 
     def audio_callback(indata, frames, time_info, status):
-        audio_frame = indata[:, 0]
+        if status:
+            print(f"Status: {status}", file=sys.stderr)
+            
+        if is_raw_kinect:
+            # Extract channel 0 and convert 32-bit signed to 16-bit signed PCM
+            audio_frame = (indata[:, 0] // 65536).astype(np.int16)
+        else:
+            # Standard 16-bit mono
+            audio_frame = indata[:, 0]
+            
         prediction = model.predict(audio_frame)
         
         for name, prob in prediction.items():
@@ -100,8 +122,7 @@ def main():
                 sd.play(audio, samplerate=16000)
 
     try:
-        # Start input stream at 16kHz using selected device
-        with sd.InputStream(device=device_idx, samplerate=16000, channels=1, dtype='int16', blocksize=1280, callback=audio_callback):
+        with sd.InputStream(device=device_idx, samplerate=16000, channels=channels, dtype=dtype, blocksize=1280, callback=audio_callback):
             while True:
                 sd.sleep(100)
     except KeyboardInterrupt:
