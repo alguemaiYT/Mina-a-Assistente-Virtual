@@ -58,6 +58,10 @@ class TTSClient:
         self._device = None
         self._sample_rate = 24000
         self._channels = 1
+        
+        # mDNS / Remote API
+        self._base_url = base_url
+        self._resolved_url = None
 
     @property
     def enabled(self) -> bool:
@@ -75,14 +79,47 @@ class TTSClient:
         """Verify the edge-tts local module functions properly."""
         if not self._enabled:
             return False
+            
+        # Resolve mDNS if base_url is set to mina-tts.local or mdns
+        if "mina-tts.local" in self._base_url or self._base_url == "mdns":
+            self._resolved_url = await asyncio.to_thread(self._resolve_mdns)
+        elif self._base_url and self._base_url != "local":
+            self._resolved_url = self._base_url
+            
         try:
             await edge_tts.list_voices()
-            logger.info("Local embedded TTS engine initialized (voice=%s)", self._voice)
+            logger.info("Local embedded TTS engine initialized (voice=%s, resolved_remote=%s)", self._voice, self._resolved_url)
             return True
         except Exception as exc:
             logger.warning("Embedded TTS engine check failed (no internet?): %s", exc)
         self._enabled = False
         return False
+
+    def _resolve_mdns(self) -> Optional[str]:
+        """Discover the MinaTTS FastAPI service dynamically using Zeroconf."""
+        try:
+            from zeroconf import Zeroconf
+            import socket
+            zc = Zeroconf()
+            logger.info("Performing mDNS discovery for MinaTTS._http._tcp.local...")
+            info = zc.get_service_info("_http._tcp.local.", "MinaTTS._http._tcp.local.", timeout=2000)
+            if info:
+                addresses = info.addresses
+                if addresses:
+                    ip = socket.inet_ntoa(addresses[0])
+                    port = info.port
+                    resolved = f"http://{ip}:{port}"
+                    logger.info("mDNS discovered MinaTTS at %s", resolved)
+                    return resolved
+            logger.warning("mDNS service MinaTTS._http._tcp.local not found (timeout)")
+        except Exception as exc:
+            logger.warning("mDNS Zeroconf lookup error: %s", exc)
+        finally:
+            try:
+                zc.close()
+            except Exception:
+                pass
+        return None
 
     def pre_synthesize(self, text: str) -> Optional[asyncio.Task]:
         """Fire-and-forget synthesis — returns a Task that resolves to bytes."""
@@ -95,11 +132,40 @@ class TTSClient:
         return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
     async def _fetch_audio(self, text: str) -> Optional[bytes]:
-        """Synthesize MP3 bytes directly using edge_tts (non-blocking)."""
+        """Synthesize MP3 bytes using remote server if available, falling back to local edge_tts."""
         key = self._cache_key(text)
         if key in self._cache:
             logger.debug("TTS cache hit for: '%s'", text[:30])
             return self._cache[key]
+
+        if self._resolved_url:
+            try:
+                t0 = time.perf_counter()
+                import aiohttp
+                async with aiohttp.ClientSession() as session:
+                    payload = {
+                        "text": text,
+                        "voice": self._voice,
+                        "rate": self._rate,
+                        "pitch": self._pitch,
+                        "volume": self._volume
+                    }
+                    async with session.post(f"{self._resolved_url}/synthesize", json=payload, timeout=5) as resp:
+                        if resp.status == 200:
+                            audio = await resp.read()
+                            elapsed = time.perf_counter() - t0
+                            logger.info("TTS remote synthesis OK | chars=%d | latency=%.3fs | server=%s", len(text), elapsed, self._resolved_url)
+                            
+                            if len(self._cache) >= self._cache_max:
+                                oldest = next(iter(self._cache))
+                                del self._cache[oldest]
+                            self._cache[key] = audio
+                            return audio
+                        else:
+                            body = await resp.text()
+                            logger.warning("Remote TTS synthesis returned error status %d: %s", resp.status, body)
+            except Exception as exc:
+                logger.warning("Failed to fetch remote TTS audio, falling back to local: %s", exc)
 
         try:
             t0 = time.perf_counter()
@@ -145,9 +211,12 @@ class TTSClient:
                 # Ensure the playback device is initialized and active
                 self._ensure_device_started(decoded.sample_rate, decoded.nchannels)
                 
+                # Convert array of samples to raw bytes
+                samples_bytes = decoded.samples.tobytes()
+                
                 # Create a completion event for this specific chunk
                 chunk_finished = threading.Event()
-                self._queue.put((decoded.samples, chunk_finished))
+                self._queue.put((samples_bytes, chunk_finished))
                 
                 # Block until this chunk finishes playing
                 await asyncio.to_thread(chunk_finished.wait)

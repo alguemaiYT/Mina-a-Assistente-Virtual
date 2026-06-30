@@ -145,3 +145,95 @@ Traceback (most recent call last):
   File "/root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/src/utils/chat_bridge.py", line 277, in _send_and_stream_openai
     raise RuntimeError(f"{backend_name.upper()} chat error {resp.status}: {body}")
 RuntimeError: CEREBRAS chat error 429: {"message":"We're experiencing high traffic right now! Please try again soon.","type":"too_many_requests_error","param":"queue","code":"queue_exceeded"}
+2026-06-29 20:28:42,886[GuiDisplay] - INFO - 开始退出应用程序... - MainThread
+2026-06-29 20:28:42,889[src.utils.stt_client] - INFO - Shutting down native STT - Dummy-1
+2026-06-29 20:28:42,946[__main__] - INFO - GUI closed before loop completion - MainThread
+2026-06-29 20:29:30,315[root] - INFO - Logging initialized, log file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-06-29 20:29:30,381[__main__] - INFO - Created qasync event loop - MainThread
+2026-06-29 20:29:30,391[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
+2026-06-29 20:29:30,393[src.utils.system_optimizer] - INFO - Process scheduling priority set to high (nice=-15). - MainThread
+2026-06-29 20:29:30,395[src.utils.system_optimizer] - INFO - CPU affinity successfully mapped to all 4 system cores. - MainThread
+2026-06-29 20:29:30,396[src.utils.system_optimizer] - INFO - /tmp is mounted on tmpfs (RAM disk). Temporary audio writes are fully optimized. - MainThread
+2026-06-29 20:29:30,399[src.utils.config_manager] - INFO - Config directory: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config - MainThread
+2026-06-29 20:29:30,400[src.utils.config_manager] - INFO - Config file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config/config.json - MainThread
+2026-06-29 20:29:31,506[src.utils.tts_client] - INFO - Local embedded TTS engine initialized (voice=pt-BR-FranciscaNeural) - MainThread
+2026-06-29 20:29:31,507[__main__] - INFO - TTS client ready (enabled=True) - MainThread
+2026-06-29 20:29:32,539[__main__] - INFO - GUI started successfully - MainThread
+2026-06-29 20:29:39,367[src.utils.tts_client] - INFO - TTS local synthesis OK | chars=27 | latency=2.050s | cache=0 - MainThread
+2026-06-29 20:29:58,158[src.utils.tts_client] - INFO - TTS local synthesis OK | chars=35 | latency=2.131s | cache=1 - MainThread
+2026-06-29 20:31:46,930[GuiDisplay] - INFO - 开始退出应用程序... - MainThread
+2026-06-29 20:31:46,937[src.utils.stt_client] - INFO - Shutting down native STT - Dummy-1
+2026-06-29 20:31:46,982[__main__] - INFO - GUI closed before loop completion - MainThread
+2026-06-29 20:31:47,323[qasync._QEventLoop] - ERROR - Task was destroyed but it is pending!
+task: <Task pending name='Task-1' coro=<run_gui() running at /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/main_gui.py:353> wait_for=<Future pending cb=[_chain_future.<locals>._call_check_cancel() at /usr/lib/python3.13/asyncio/futures.py:384, Task.task_wakeup()]>> - MainThread
+2026-06-29 20:31:47,326[src.utils.stt_client] - INFO - Shutting down native STT - MainThread
+2026-06-29 20:31:47,328[qasync._QEventLoop] - ERROR - Unclosed client session
+client_session: <aiohttp.client.ClientSession object at 0xa5610ea0> - MainThread
+2026-06-29 20:31:51,409[root] - INFO - Logging initialized, log file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-06-29 20:31:51,474[__main__] - INFO - Created qasync event loop - MainThread
+2026-06-29 20:31:51,485[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
+2026-06-29 20:31:51,487[src.utils.system_optimizer] - INFO - Process scheduling priority set to high (nice=-15). - MainThread
+2026-06-29 20:31:51,488[src.utils.system_optimizer] - INFO - CPU affinity successfully mapped to all 4 system cores. - MainThread
+2026-06-29 20:31:51,490[src.utils.system_optimizer] - INFO - /tmp is mounted on tmpfs (RAM disk). Temporary audio writes are fully optimized. - MainThread
+2026-06-29 20:31:51,492[src.utils.config_manager] - INFO - Config directory: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config - MainThread
+2026-06-29 20:31:51,494[src.utils.config_manager] - INFO - Config file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config/config.json - MainThread
+2026-06-29 20:31:52,589[src.utils.tts_client] - INFO - Local embedded TTS engine initialized (voice=pt-BR-FranciscaNeural) - MainThread
+2026-06-29 20:31:52,591[__main__] - INFO - TTS client ready (enabled=True) - MainThread
+2026-06-29 20:31:53,615[__main__] - INFO - GUI started successfully - MainThread
+2026-06-29 20:32:01,361[src.utils.tts_client] - INFO - TTS local synthesis OK | chars=22 | latency=1.775s | cache=0 - MainThread
+2026-06-29 20:32:14,693[src.utils.tts_client] - INFO - TTS local synthesis OK | chars=52 | latency=2.256s | cache=1 - MainThread
+2026-06-29 20:32:59,834[src.utils.tts_client] - INFO - TTS local synthesis OK | chars=36 | latency=1.763s | cache=2 - MainThread
+2026-06-29 20:34:32,832[src.utils.tts_client] - INFO - TTS local synthesis OK | chars=39 | latency=2.013s | cache=3 - MainThread
+2026-06-29 20:34:44,508[GuiDisplay] - INFO - 开始退出应用程序... - MainThread
+2026-06-29 20:34:44,512[src.utils.stt_client] - INFO - Shutting down native STT - Dummy-1
+2026-06-29 20:34:44,561[__main__] - INFO - GUI closed before loop completion - MainThread
+2026-06-29 20:34:49,661[root] - INFO - Logging initialized, log file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-06-29 20:34:49,726[__main__] - INFO - Created qasync event loop - MainThread
+2026-06-29 20:34:49,737[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
+2026-06-29 20:34:49,739[src.utils.system_optimizer] - INFO - Process scheduling priority set to high (nice=-15). - MainThread
+2026-06-29 20:34:49,740[src.utils.system_optimizer] - INFO - CPU affinity successfully mapped to all 4 system cores. - MainThread
+2026-06-29 20:34:49,742[src.utils.system_optimizer] - INFO - /tmp is mounted on tmpfs (RAM disk). Temporary audio writes are fully optimized. - MainThread
+2026-06-29 20:34:49,744[src.utils.config_manager] - INFO - Config directory: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config - MainThread
+2026-06-29 20:34:49,746[src.utils.config_manager] - INFO - Config file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config/config.json - MainThread
+2026-06-29 20:34:50,853[src.utils.tts_client] - INFO - Local embedded TTS engine initialized (voice=pt-BR-FranciscaNeural) - MainThread
+2026-06-29 20:34:50,855[__main__] - INFO - TTS client ready (enabled=True) - MainThread
+2026-06-29 20:34:51,881[__main__] - INFO - GUI started successfully - MainThread
+2026-06-29 20:34:59,739[src.utils.tts_client] - INFO - TTS local synthesis OK | chars=40 | latency=2.139s | cache=0 - MainThread
+2026-06-29 20:34:59,848[src.utils.tts_client] - INFO - Starting persistent miniaudio PlaybackDevice (rate=44100, channels=2) - MainThread
+2026-06-29 20:35:18,778[src.utils.tts_client] - INFO - TTS local synthesis OK | chars=42 | latency=6.756s | cache=1 - MainThread
+2026-06-29 20:35:32,987[src.utils.tts_client] - INFO - TTS local synthesis OK | chars=49 | latency=2.292s | cache=2 - MainThread
+2026-06-29 20:35:47,120[src.utils.tts_client] - INFO - TTS local synthesis OK | chars=37 | latency=2.411s | cache=3 - MainThread
+2026-06-29 20:37:52,170[src.utils.tts_client] - INFO - TTS local synthesis OK | chars=38 | latency=7.082s | cache=4 - MainThread
+2026-06-29 20:39:08,445[GuiDisplay] - INFO - 开始退出应用程序... - MainThread
+2026-06-29 20:39:08,452[src.utils.stt_client] - INFO - Shutting down native STT - Dummy-1
+2026-06-29 20:39:08,466[__main__] - INFO - GUI closed before loop completion - MainThread
+2026-06-29 20:39:13,121[root] - INFO - Logging initialized, log file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-06-29 20:39:13,187[__main__] - INFO - Created qasync event loop - MainThread
+2026-06-29 20:39:13,198[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
+2026-06-29 20:39:13,199[src.utils.system_optimizer] - INFO - Process scheduling priority set to high (nice=-15). - MainThread
+2026-06-29 20:39:13,201[src.utils.system_optimizer] - INFO - CPU affinity successfully mapped to all 4 system cores. - MainThread
+2026-06-29 20:39:13,203[src.utils.system_optimizer] - INFO - /tmp is mounted on tmpfs (RAM disk). Temporary audio writes are fully optimized. - MainThread
+2026-06-29 20:39:13,205[src.utils.config_manager] - INFO - Config directory: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config - MainThread
+2026-06-29 20:39:13,206[src.utils.config_manager] - INFO - Config file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config/config.json - MainThread
+2026-06-29 20:39:14,295[src.utils.tts_client] - INFO - Local embedded TTS engine initialized (voice=pt-BR-FranciscaNeural) - MainThread
+2026-06-29 20:39:14,297[__main__] - INFO - TTS client ready (enabled=True) - MainThread
+2026-06-29 20:39:15,327[__main__] - INFO - GUI started successfully - MainThread
+2026-06-29 20:39:21,458[src.utils.tts_client] - INFO - TTS local synthesis OK | chars=26 | latency=2.339s | cache=0 - MainThread
+2026-06-29 20:39:21,507[src.utils.tts_client] - INFO - Starting persistent miniaudio PlaybackDevice (rate=44100, channels=2) - MainThread
+2026-06-29 20:39:34,080[GuiDisplay] - INFO - 开始退出应用程序... - MainThread
+2026-06-29 20:39:34,084[src.utils.stt_client] - INFO - Shutting down native STT - Dummy-1
+2026-06-29 20:45:22,767[root] - INFO - Logging initialized, log file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-06-29 20:45:22,832[__main__] - INFO - Created qasync event loop - MainThread
+2026-06-29 20:45:22,843[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
+2026-06-29 20:45:22,845[src.utils.system_optimizer] - INFO - Process scheduling priority set to high (nice=-15). - MainThread
+2026-06-29 20:45:22,846[src.utils.system_optimizer] - INFO - CPU affinity successfully mapped to all 4 system cores. - MainThread
+2026-06-29 20:45:22,848[src.utils.system_optimizer] - INFO - /tmp is mounted on tmpfs (RAM disk). Temporary audio writes are fully optimized. - MainThread
+2026-06-29 20:45:22,851[src.utils.config_manager] - INFO - Config directory: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config - MainThread
+2026-06-29 20:45:22,852[src.utils.config_manager] - INFO - Config file: /root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/config/config.json - MainThread
+2026-06-29 20:45:23,937[src.utils.tts_client] - INFO - Local embedded TTS engine initialized (voice=pt-BR-FranciscaNeural) - MainThread
+2026-06-29 20:45:23,939[__main__] - INFO - TTS client ready (enabled=True) - MainThread
+2026-06-29 20:45:24,962[__main__] - INFO - GUI started successfully - MainThread
+2026-06-29 20:45:31,819[src.utils.tts_client] - INFO - TTS local synthesis OK | chars=35 | latency=2.120s | cache=0 - MainThread
+2026-06-29 20:45:31,873[src.utils.tts_client] - INFO - Starting persistent miniaudio PlaybackDevice (rate=44100, channels=2) - MainThread
+2026-06-29 20:45:41,761[src.utils.tts_client] - INFO - TTS local synthesis OK | chars=36 | latency=2.087s | cache=1 - MainThread
+2026-06-29 20:45:55,802[src.utils.tts_client] - INFO - TTS local synthesis OK | chars=47 | latency=1.851s | cache=2 - MainThread

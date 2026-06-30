@@ -116,7 +116,7 @@
   },
   "TTS_OPTIONS": {
     "ENABLED": true,
-    "API_URL": "http://10.129.65.187:8000",
+    "API_URL": "http://mina-tts.local:8000",
     "VOICE": "pt-BR-FranciscaNeural",
     "RATE": "+15%",
     "PITCH": "+3Hz",
