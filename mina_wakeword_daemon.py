@@ -113,8 +113,9 @@ def main():
             pass
             
         if is_raw_kinect:
-            # Extract channel 0 and convert 32-bit to 16-bit PCM
-            audio_frame = (indata[:, 0] // 65536).astype(np.int16)
+            # Extract channel 0 and convert 32-bit to 16-bit PCM (boost gain using 3072 divisor and clip)
+            scaled = indata[:, 0] // 3072
+            audio_frame = np.clip(scaled, -32768, 32767).astype(np.int16)
         else:
             audio_frame = indata[:, 0].copy()
             
