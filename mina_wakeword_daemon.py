@@ -11,6 +11,7 @@ if sys.platform.startswith("linux"):
     os.environ["PULSE_SERVER"] = "unix:/var/run/pulse/native"
 
 import sounddevice as sd
+import sherpa_onnx
 
 @contextlib.contextmanager
 def suppress_stderr():
@@ -52,7 +53,7 @@ def find_input_device():
     return None
 
 def main():
-    print("=== Mina Assistant Wake Word Daemon (openWakeWord + PulseAudio) ===")
+    print("=== Mina Assistant Wake Word Daemon (sherpa-onnx + PulseAudio) ===")
     print("This daemon runs locally, requires NO API keys, and uses standard audio devices.")
     print("Active Wake Words (Chaves): 'alexa' and 'hey jarvis'\n")
     
@@ -69,24 +70,34 @@ def main():
         print("Warning: No audio input device found!", file=sys.stderr)
         sys.exit(1)
         
-    # PulseAudio handles all channel mixing, format conversion (S32_LE to S16_LE)
-    # and hardware interfacing in the background!
-    channels = 1
-    dtype = 'int16'
-    print(">>> Mode: 1 channel, 16-bit PCM (Resampled and downmixed by PulseAudio/System)")
-        
-    print("\nInitializing openWakeWord models...")
-    try:
-        # Only suppress stderr during the imports to silence C++ schema registration logs
-        with suppress_stderr():
-            import openwakeword.utils
-            from openwakeword.model import Model
+    model_dir = "sherpa-onnx-kws-zipformer-gigaspeech-3.3M-2024-01-01"
+    
+    encoder = f"{model_dir}/encoder-epoch-12-avg-2-chunk-16-left-64.int8.onnx"
+    decoder = f"{model_dir}/decoder-epoch-12-avg-2-chunk-16-left-64.int8.onnx"
+    joiner = f"{model_dir}/joiner-epoch-12-avg-2-chunk-16-left-64.int8.onnx"
+    tokens = f"{model_dir}/tokens.txt"
+    keywords = f"{model_dir}/keywords.txt"
+    
+    # Verify file paths exist
+    for f in [encoder, decoder, joiner, tokens, keywords]:
+        if not os.path.exists(f):
+            print(f"Error: Required model file {f} does not exist!")
+            sys.exit(1)
             
-        # Run downloads and model initialization outside suppress_stderr block
-        openwakeword.utils.download_models()
-        model = Model(wakeword_models=["alexa", "hey_jarvis"], inference_framework="onnx")
+    print("Initializing sherpa-onnx KeywordSpotter...")
+    try:
+        with suppress_stderr():
+            kws = sherpa_onnx.KeywordSpotter(
+                tokens=tokens,
+                encoder=encoder,
+                decoder=decoder,
+                joiner=joiner,
+                keywords_file=keywords,
+                num_threads=2,
+                provider="cpu"
+            )
     except Exception as e:
-        print(f"Failed to initialize openWakeWord: {e}", file=sys.stderr)
+        print(f"Failed to initialize sherpa-onnx: {e}", file=sys.stderr)
         sys.exit(1)
 
     print("\nStarting background listener...")
@@ -104,15 +115,19 @@ def main():
     # Thread-safe queue to pass audio frames from callback thread to processing worker thread
     audio_queue = queue.Queue()
     stop_event = threading.Event()
+    
+    stream_lock = threading.Lock()
+    stream = kws.create_stream()
 
     def audio_callback(indata, frames, time_info, status):
         if status:
             pass
-        # Indata is already 1 channel, 16-bit PCM (int16)
+        # Indata is normalized float32
         audio_frame = indata[:, 0].copy()
         audio_queue.put(audio_frame)
 
     def processing_worker():
+        nonlocal stream
         while not stop_event.is_set():
             try:
                 # Retrieve frame from queue with a short timeout
@@ -120,16 +135,28 @@ def main():
             except queue.Empty:
                 continue
                 
-            # Perform inference on worker thread
-            prediction = model.predict(audio_frame)
-            
-            for name, prob in prediction.items():
-                if prob > 0.6:
-                    print(f"🎉 [DETECTED: '{name}'] - Playing chime...")
+            with stream_lock:
+                stream.accept_waveform(16000, audio_frame)
+                
+                while kws.is_ready(stream):
+                    kws.decode_stream(stream)
+                    
+                result = kws.get_result(stream)
+                
+                if hasattr(result, "keyword") and result.keyword:
+                    print(f"🎉 [DETECTED: '{result.keyword}'] - Playing chime...")
                     try:
                         sd.play(audio, samplerate=16000)
                     except Exception as e:
                         print(f"Chime error: {e}", file=sys.stderr)
+                    stream = kws.create_stream()
+                elif isinstance(result, str) and result:
+                    print(f"🎉 [DETECTED: '{result}'] - Playing chime...")
+                    try:
+                        sd.play(audio, samplerate=16000)
+                    except Exception as e:
+                        print(f"Chime error: {e}", file=sys.stderr)
+                    stream = kws.create_stream()
             
             audio_queue.task_done()
 
@@ -138,8 +165,8 @@ def main():
     worker_thread.start()
 
     try:
-        # Start input stream using selected device
-        with sd.InputStream(device=device_idx, samplerate=16000, channels=channels, dtype=dtype, blocksize=1280, callback=audio_callback):
+        # Start input stream using selected device (Float32 for sherpa-onnx)
+        with sd.InputStream(device=device_idx, samplerate=16000, channels=1, dtype='float32', blocksize=1280, callback=audio_callback):
             while True:
                 sd.sleep(100)
     except KeyboardInterrupt:
