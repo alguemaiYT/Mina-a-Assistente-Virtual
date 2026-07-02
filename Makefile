@@ -22,7 +22,7 @@ help:
 	@echo "  test           Alias for check"
 	@echo "  install-deps   Install system deps (Debian/Ubuntu)"
 	@echo "  compile        Builds apicomm"
-	@echo "  apicomm        Compile apicomm.c"
+	@echo "  apicomm        Compile c_src/apicomm.c"
 	@echo "  stt-linux      Build libs/stt/libstt.so"
 	@echo "  stt-windows    Build libs/stt/stt.dll"
 	@echo "  all            install-deps + compile (Debian/Ubuntu helper)"
@@ -66,9 +66,9 @@ install-deps:
 
 compile: apicomm
 
-apicomm: apicomm.c
+apicomm: c_src/apicomm.c
 	@echo "Compiling apicomm..."
-	$(CC) -O2 -march=native -Wall -Wextra -o apicomm apicomm.c -lcurl -lcjson
+	$(CC) -O2 -march=native -Wall -Wextra -o apicomm c_src/apicomm.c -lcurl -lcjson
 	@ls -lh apicomm
 
 clean:
@@ -77,10 +77,10 @@ clean:
 
 stt-linux:
 	@echo "Building STT helper for Linux..."
-	$(CC) -shared -fPIC stt.c -o $(STT_LINUX) -lportaudio -lcurl
+	$(CC) -shared -fPIC c_src/stt.c -o $(STT_LINUX) -lportaudio -lcurl
 
 stt-windows:
 	@echo "Building STT helper for Windows..."
-	$(CC) -shared -fPIC stt.c -o $(STT_WINDOWS) -lportaudio -lcurl
+	$(CC) -shared -fPIC c_src/stt.c -o $(STT_WINDOWS) -lportaudio -lcurl
 
 all: install-deps compile
