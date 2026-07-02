@@ -25,7 +25,18 @@ class ChatBridge:
             self.backend = "binary"
         else:
             self.backend = backend_value
-        self.binary_path = binary_path or os.path.join(os.path.dirname(__file__), "..", "..", "apicomm")
+        if not binary_path:
+            try:
+                from src.utils.binary_manager import binary_manager
+                resolved = binary_manager.ensure_apicomm()
+                if resolved:
+                    self.binary_path = str(resolved)
+                else:
+                    self.binary_path = os.path.join(os.path.dirname(__file__), "..", "..", "apicomm")
+            except Exception:
+                self.binary_path = os.path.join(os.path.dirname(__file__), "..", "..", "apicomm")
+        else:
+            self.binary_path = binary_path
         self.proc: Optional[asyncio.subprocess.Process] = None
         self._stdout_buffer = ""
         self._in_text_section = False

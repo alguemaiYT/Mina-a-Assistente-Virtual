@@ -54,12 +54,31 @@ class STTClient:
         if env_value:
             return Path(env_value)
 
+        try:
+            from src.utils.binary_manager import binary_manager
+            path = binary_manager.ensure_stt_lib()
+            if path and path.exists():
+                return path
+        except Exception as e:
+            self._logger.warning("Could not resolve STT library path using binary_manager: %s", e)
+
         platform_map = {
             "Linux": "libstt.so",
             "Darwin": "libstt.dylib",
             "Windows": "stt.dll",
         }
         suffix = platform_map.get(platform.system(), "libstt.so")
+        
+        # Check architecture-specific subfolder in libs
+        arch = platform.machine().lower()
+        if arch == "aarch64":
+            arch = "arm64"
+        elif arch in ("i386", "i686"):
+            arch = "x86"
+        arch_path = Path(__file__).resolve().parents[2] / "libs" / arch / suffix
+        if arch_path.exists():
+            return arch_path
+
         return Path(__file__).resolve().parents[2] / "libs" / "stt" / suffix
 
     def _configure_prototypes(self) -> None:

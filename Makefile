@@ -3,8 +3,26 @@
 PYTHON ?= python
 PIP ?= $(PYTHON) -m pip
 CC ?= gcc
-STT_LINUX ?= libs/stt/libstt.so
-STT_WINDOWS ?= libs/stt/stt.dll
+
+# Detect and normalize architecture
+ARCH ?= $(shell uname -m | tr '[:upper:]' '[:lower:]')
+ifeq ($(ARCH),aarch64)
+  ARCH := arm64
+endif
+ifeq ($(ARCH),i386)
+  ARCH := x86
+endif
+ifeq ($(ARCH),i686)
+  ARCH := x86
+endif
+
+EXE_SUFFIX =
+ifeq ($(OS),Windows_NT)
+  EXE_SUFFIX = .exe
+endif
+
+STT_LINUX ?= libs/$(ARCH)/libstt.so
+STT_WINDOWS ?= libs/$(ARCH)/stt.dll
 
 .PHONY: help install install-mac run run-fullscreen run-studio lint format sort-imports check test install-deps compile apicomm clean stt-linux stt-windows all
 
@@ -22,9 +40,9 @@ help:
 	@echo "  test           Alias for check"
 	@echo "  install-deps   Install system deps (Debian/Ubuntu)"
 	@echo "  compile        Builds apicomm"
-	@echo "  apicomm        Compile c_src/apicomm.c"
-	@echo "  stt-linux      Build libs/stt/libstt.so"
-	@echo "  stt-windows    Build libs/stt/stt.dll"
+	@echo "  apicomm        Compile apicomm.c"
+	@echo "  stt-linux      Build libs/$(ARCH)/libstt.so"
+	@echo "  stt-windows    Build libs/$(ARCH)/stt.dll"
 	@echo "  all            install-deps + compile (Debian/Ubuntu helper)"
 
 install:
@@ -68,19 +86,22 @@ compile: apicomm
 
 apicomm: c_src/apicomm.c
 	@echo "Compiling apicomm..."
-	$(CC) -O2 -march=native -Wall -Wextra -o apicomm c_src/apicomm.c -lcurl -lcjson
-	@ls -lh apicomm
+	mkdir -p bin/$(ARCH)
+	$(CC) -O2 -march=native -Wall -Wextra -o bin/$(ARCH)/apicomm$(EXE_SUFFIX) c_src/apicomm.c -lcurl -lcjson
+	@ls -lh bin/$(ARCH)/apicomm$(EXE_SUFFIX)
 
 clean:
 	@echo "Cleaning binaries..."
-	rm -f apicomm stt *.o
+	rm -rf bin/$(ARCH) libs/$(ARCH)/libstt.so libs/$(ARCH)/stt.dll *.o
 
 stt-linux:
 	@echo "Building STT helper for Linux..."
+	mkdir -p libs/$(ARCH)
 	$(CC) -shared -fPIC c_src/stt.c -o $(STT_LINUX) -lportaudio -lcurl
 
 stt-windows:
 	@echo "Building STT helper for Windows..."
+	mkdir -p libs/$(ARCH)
 	$(CC) -shared -fPIC c_src/stt.c -o $(STT_WINDOWS) -lportaudio -lcurl
 
 all: install-deps compile
