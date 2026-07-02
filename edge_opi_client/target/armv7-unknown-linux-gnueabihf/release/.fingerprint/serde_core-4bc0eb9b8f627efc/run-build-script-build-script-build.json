@@ -1,0 +1,1 @@
+{"rustc":5391851738765093524,"features":"","declared_features":"","target":0,"profile":0,"path":0,"deps":[[11899261697793765154,"build_script_build",false,2347674958011086304]],"local":[{"RerunIfChanged":{"output":"armv7-unknown-linux-gnueabihf/release/build/serde_core-4bc0eb9b8f627efc/output","paths":["build.rs"]}}],"rustflags":[],"config":0,"compile_kind":0}

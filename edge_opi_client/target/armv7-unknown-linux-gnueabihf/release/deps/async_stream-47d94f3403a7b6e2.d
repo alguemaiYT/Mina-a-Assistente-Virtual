@@ -1,0 +1,10 @@
+/home/kali/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/edge_opi_client/target/armv7-unknown-linux-gnueabihf/release/deps/async_stream-47d94f3403a7b6e2.d: /home/kali/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/async-stream-0.3.6/src/lib.rs /home/kali/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/async-stream-0.3.6/src/async_stream.rs /home/kali/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/async-stream-0.3.6/src/next.rs /home/kali/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/async-stream-0.3.6/src/yielder.rs
+
+/home/kali/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/edge_opi_client/target/armv7-unknown-linux-gnueabihf/release/deps/libasync_stream-47d94f3403a7b6e2.rlib: /home/kali/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/async-stream-0.3.6/src/lib.rs /home/kali/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/async-stream-0.3.6/src/async_stream.rs /home/kali/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/async-stream-0.3.6/src/next.rs /home/kali/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/async-stream-0.3.6/src/yielder.rs
+
+/home/kali/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A/edge_opi_client/target/armv7-unknown-linux-gnueabihf/release/deps/libasync_stream-47d94f3403a7b6e2.rmeta: /home/kali/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/async-stream-0.3.6/src/lib.rs /home/kali/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/async-stream-0.3.6/src/async_stream.rs /home/kali/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/async-stream-0.3.6/src/next.rs /home/kali/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/async-stream-0.3.6/src/yielder.rs
+
+/home/kali/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/async-stream-0.3.6/src/lib.rs:
+/home/kali/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/async-stream-0.3.6/src/async_stream.rs:
+/home/kali/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/async-stream-0.3.6/src/next.rs:
+/home/kali/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/async-stream-0.3.6/src/yielder.rs:

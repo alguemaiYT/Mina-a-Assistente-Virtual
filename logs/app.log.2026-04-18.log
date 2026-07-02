@@ -1,0 +1,175 @@
+2026-03-08 17:58:38,013[root] - INFO - Logging initialized, log file: /home/kali/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-03-08 17:58:39,405[__main__] - INFO - Created qasync event loop - MainThread
+2026-03-08 17:58:39,414[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
+2026-03-08 17:58:40,387[src.utils.config_manager] - INFO - Config directory: /home/kali/Mina-a-Assistente-Virtual-Do-G.E.R.A/config - MainThread
+2026-03-08 17:58:40,388[src.utils.config_manager] - INFO - Config file: /home/kali/Mina-a-Assistente-Virtual-Do-G.E.R.A/config/config.json - MainThread
+2026-03-08 17:58:45,388[__main__] - INFO - GUI started successfully - MainThread
+2026-03-08 17:59:05,257[GuiDisplay] - INFO - 开始退出应用程序... - MainThread
+2026-03-08 17:59:05,258[__main__] - INFO - GUI closed before loop completion - MainThread
+2026-03-08 19:08:17,536[root] - INFO - Logging initialized, log file: /home/kali/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-03-08 19:08:18,564[__main__] - INFO - Created qasync event loop - MainThread
+2026-03-08 19:08:18,572[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
+2026-03-08 19:08:19,398[src.utils.config_manager] - INFO - Config directory: /home/kali/Mina-a-Assistente-Virtual-Do-G.E.R.A/config - MainThread
+2026-03-08 19:08:19,398[src.utils.config_manager] - INFO - Config file: /home/kali/Mina-a-Assistente-Virtual-Do-G.E.R.A/config/config.json - MainThread
+2026-03-08 19:08:23,612[__main__] - INFO - GUI started successfully - MainThread
+2026-03-08 19:10:45,369[GuiDisplay] - INFO - 开始退出应用程序... - MainThread
+2026-03-08 19:10:45,371[__main__] - INFO - GUI closed before loop completion - MainThread
+2026-03-08 19:13:56,613[root] - INFO - Logging initialized, log file: /home/kali/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-03-08 19:13:56,660[__main__] - INFO - Created qasync event loop - MainThread
+2026-03-08 19:13:56,662[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
+2026-03-08 19:13:56,949[src.utils.config_manager] - INFO - Config directory: /home/kali/Mina-a-Assistente-Virtual-Do-G.E.R.A/config - MainThread
+2026-03-08 19:13:56,950[src.utils.config_manager] - INFO - Config file: /home/kali/Mina-a-Assistente-Virtual-Do-G.E.R.A/config/config.json - MainThread
+2026-03-08 19:13:57,286[__main__] - INFO - GUI started successfully - MainThread
+2026-03-08 19:14:21,823[GuiDisplay] - INFO - 开始退出应用程序... - MainThread
+2026-03-08 19:14:21,827[__main__] - INFO - GUI closed before loop completion - MainThread
+2026-03-08 19:16:14,060[root] - INFO - Logging initialized, log file: /home/kali/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-03-08 19:16:14,109[__main__] - INFO - Created qasync event loop - MainThread
+2026-03-08 19:16:14,110[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
+2026-03-08 19:16:14,387[src.utils.config_manager] - INFO - Config directory: /home/kali/Mina-a-Assistente-Virtual-Do-G.E.R.A/config - MainThread
+2026-03-08 19:16:14,387[src.utils.config_manager] - INFO - Config file: /home/kali/Mina-a-Assistente-Virtual-Do-G.E.R.A/config/config.json - MainThread
+2026-03-08 19:16:14,641[__main__] - INFO - GUI started successfully - MainThread
+2026-03-08 19:16:18,354[GuiDisplay] - INFO - 开始退出应用程序... - MainThread
+2026-03-08 19:16:18,355[__main__] - INFO - GUI closed before loop completion - MainThread
+2026-03-08 19:16:24,116[root] - INFO - Logging initialized, log file: /home/kali/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-03-08 19:16:24,164[__main__] - INFO - Created qasync event loop - MainThread
+2026-03-08 19:16:24,165[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
+2026-03-08 19:16:24,242[src.utils.config_manager] - INFO - Config directory: /home/kali/Mina-a-Assistente-Virtual-Do-G.E.R.A/config - MainThread
+2026-03-08 19:16:24,243[src.utils.config_manager] - INFO - Config file: /home/kali/Mina-a-Assistente-Virtual-Do-G.E.R.A/config/config.json - MainThread
+2026-03-08 19:16:24,530[__main__] - INFO - GUI started successfully - MainThread
+2026-03-08 19:18:04,846[GuiDisplay] - INFO - 开始退出应用程序... - MainThread
+2026-03-08 19:18:04,852[__main__] - INFO - GUI closed before loop completion - MainThread
+2026-03-09 10:42:47,124[root] - INFO - Logging initialized, log file: /root/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-03-09 10:43:27,130[root] - INFO - Logging initialized, log file: /root/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-03-09 10:43:27,519[__main__] - INFO - Created qasync event loop - MainThread
+2026-03-09 10:43:27,655[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
+2026-03-09 10:43:27,665[__main__] - ERROR - GUI error: /root/Mina-a-Assistente-Virtual-Do-G.E.R.A/libs/stt/libstt.so: classe ELF errada: ELFCLASS64 - MainThread
+Traceback (most recent call last):
+  File "/root/Mina-a-Assistente-Virtual-Do-G.E.R.A/main_gui.py", line 237, in run_gui
+    stt_client = STTClient()
+                 ^^^^^^^^^^^
+  File "/root/Mina-a-Assistente-Virtual-Do-G.E.R.A/src/utils/stt_client.py", line 25, in __init__
+    self._lib = ctypes.CDLL(str(self._lib_path))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/ctypes/__init__.py", line 376, in __init__
+    self._handle = _dlopen(self._name, mode)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+OSError: /root/Mina-a-Assistente-Virtual-Do-G.E.R.A/libs/stt/libstt.so: classe ELF errada: ELFCLASS64
+2026-03-09 10:43:27,675[src.utils.stt_client] - INFO - Shutting down native STT - MainThread
+2026-03-09 11:06:08,812[root] - INFO - Logging initialized, log file: /root/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-03-09 11:06:09,252[__main__] - INFO - Created qasync event loop - MainThread
+2026-03-09 11:06:09,387[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
+2026-03-09 11:06:09,401[__main__] - ERROR - GUI error: /root/Mina-a-Assistente-Virtual-Do-G.E.R.A/libs/stt/libstt.so: classe ELF errada: ELFCLASS64 - MainThread
+Traceback (most recent call last):
+  File "/root/Mina-a-Assistente-Virtual-Do-G.E.R.A/main_gui.py", line 237, in run_gui
+    stt_client = STTClient()
+                 ^^^^^^^^^^^
+  File "/root/Mina-a-Assistente-Virtual-Do-G.E.R.A/src/utils/stt_client.py", line 25, in __init__
+    self._lib = ctypes.CDLL(str(self._lib_path))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/ctypes/__init__.py", line 376, in __init__
+    self._handle = _dlopen(self._name, mode)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+OSError: /root/Mina-a-Assistente-Virtual-Do-G.E.R.A/libs/stt/libstt.so: classe ELF errada: ELFCLASS64
+2026-03-09 11:06:09,411[src.utils.stt_client] - INFO - Shutting down native STT - MainThread
+2026-03-09 11:10:36,129[root] - INFO - Logging initialized, log file: /root/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-03-09 11:11:03,325[root] - INFO - Logging initialized, log file: /root/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-03-09 11:11:03,401[__main__] - INFO - Created qasync event loop - MainThread
+2026-03-09 11:11:03,412[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
+2026-03-09 11:11:03,419[__main__] - ERROR - GUI error: /root/Mina-a-Assistente-Virtual-Do-G.E.R.A/libs/stt/libstt.so: classe ELF errada: ELFCLASS64 - MainThread
+Traceback (most recent call last):
+  File "/root/Mina-a-Assistente-Virtual-Do-G.E.R.A/main_gui.py", line 237, in run_gui
+    stt_client = STTClient()
+                 ^^^^^^^^^^^
+  File "/root/Mina-a-Assistente-Virtual-Do-G.E.R.A/src/utils/stt_client.py", line 25, in __init__
+    self._lib = ctypes.CDLL(str(self._lib_path))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/ctypes/__init__.py", line 376, in __init__
+    self._handle = _dlopen(self._name, mode)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+OSError: /root/Mina-a-Assistente-Virtual-Do-G.E.R.A/libs/stt/libstt.so: classe ELF errada: ELFCLASS64
+2026-03-09 11:11:03,425[src.utils.stt_client] - INFO - Shutting down native STT - MainThread
+2026-03-09 11:17:39,402[root] - INFO - Logging initialized, log file: /root/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-03-09 11:17:39,503[__main__] - INFO - Created qasync event loop - MainThread
+2026-03-09 11:17:39,514[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
+2026-03-09 11:17:39,521[__main__] - ERROR - GUI error: /root/Mina-a-Assistente-Virtual-Do-G.E.R.A/libs/stt/libstt.so: classe ELF errada: ELFCLASS64 - MainThread
+Traceback (most recent call last):
+  File "/root/Mina-a-Assistente-Virtual-Do-G.E.R.A/main_gui.py", line 237, in run_gui
+    stt_client = STTClient()
+                 ^^^^^^^^^^^
+  File "/root/Mina-a-Assistente-Virtual-Do-G.E.R.A/src/utils/stt_client.py", line 25, in __init__
+    self._lib = ctypes.CDLL(str(self._lib_path))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/ctypes/__init__.py", line 376, in __init__
+    self._handle = _dlopen(self._name, mode)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+OSError: /root/Mina-a-Assistente-Virtual-Do-G.E.R.A/libs/stt/libstt.so: classe ELF errada: ELFCLASS64
+2026-03-09 11:17:39,528[src.utils.stt_client] - INFO - Shutting down native STT - MainThread
+2026-03-09 11:18:05,164[root] - INFO - Logging initialized, log file: /root/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-03-09 11:18:05,238[__main__] - INFO - Created qasync event loop - MainThread
+2026-03-09 11:18:05,249[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
+2026-03-09 11:18:05,256[__main__] - ERROR - GUI error: /root/Mina-a-Assistente-Virtual-Do-G.E.R.A/libs/stt/libstt.so: classe ELF errada: ELFCLASS64 - MainThread
+Traceback (most recent call last):
+  File "/root/Mina-a-Assistente-Virtual-Do-G.E.R.A/main_gui.py", line 237, in run_gui
+    stt_client = STTClient()
+                 ^^^^^^^^^^^
+  File "/root/Mina-a-Assistente-Virtual-Do-G.E.R.A/src/utils/stt_client.py", line 25, in __init__
+    self._lib = ctypes.CDLL(str(self._lib_path))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/ctypes/__init__.py", line 376, in __init__
+    self._handle = _dlopen(self._name, mode)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+OSError: /root/Mina-a-Assistente-Virtual-Do-G.E.R.A/libs/stt/libstt.so: classe ELF errada: ELFCLASS64
+2026-03-09 11:18:05,263[src.utils.stt_client] - INFO - Shutting down native STT - MainThread
+2026-03-09 11:22:11,123[root] - INFO - Logging initialized, log file: /root/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-03-09 11:22:11,197[__main__] - INFO - Created qasync event loop - MainThread
+2026-03-09 11:22:11,208[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
+2026-03-09 11:22:11,215[__main__] - ERROR - GUI error: /root/Mina-a-Assistente-Virtual-Do-G.E.R.A/libs/stt/libstt.so: classe ELF errada: ELFCLASS64 - MainThread
+Traceback (most recent call last):
+  File "/root/Mina-a-Assistente-Virtual-Do-G.E.R.A/main_gui.py", line 237, in run_gui
+    stt_client = STTClient()
+                 ^^^^^^^^^^^
+  File "/root/Mina-a-Assistente-Virtual-Do-G.E.R.A/src/utils/stt_client.py", line 25, in __init__
+    self._lib = ctypes.CDLL(str(self._lib_path))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/ctypes/__init__.py", line 376, in __init__
+    self._handle = _dlopen(self._name, mode)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+OSError: /root/Mina-a-Assistente-Virtual-Do-G.E.R.A/libs/stt/libstt.so: classe ELF errada: ELFCLASS64
+2026-03-09 11:22:11,222[src.utils.stt_client] - INFO - Shutting down native STT - MainThread
+2026-03-09 11:24:03,304[root] - INFO - Logging initialized, log file: /root/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-03-09 11:24:03,378[__main__] - INFO - Created qasync event loop - MainThread
+2026-03-09 11:24:03,389[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
+2026-03-09 11:24:04,657[src.utils.config_manager] - INFO - Config directory: /root/Mina-a-Assistente-Virtual-Do-G.E.R.A/config - MainThread
+2026-03-09 11:24:04,659[src.utils.config_manager] - INFO - Config file: /root/Mina-a-Assistente-Virtual-Do-G.E.R.A/config/config.json - MainThread
+2026-03-09 11:24:04,662[src.utils.config_manager] - INFO - Created cache directory: /root/Mina-a-Assistente-Virtual-Do-G.E.R.A/cache - MainThread
+2026-03-09 11:24:09,627[__main__] - INFO - GUI started successfully - MainThread
+2026-03-09 11:25:35,279[GuiDisplay] - INFO - 开始退出应用程序... - MainThread
+2026-03-09 11:25:35,287[src.utils.stt_client] - INFO - Shutting down native STT - Dummy-1
+2026-03-09 11:25:35,424[__main__] - INFO - GUI closed before loop completion - MainThread
+2026-03-09 11:25:35,709[qasync._QEventLoop] - ERROR - Task was destroyed but it is pending!
+task: <Task pending name='Task-1' coro=<run_gui() running at /root/Mina-a-Assistente-Virtual-Do-G.E.R.A/main_gui.py:270> wait_for=<Future pending cb=[_chain_future.<locals>._call_check_cancel() at /usr/lib/python3.11/asyncio/futures.py:387, Task.task_wakeup()]>> - MainThread
+2026-03-09 11:25:35,712[src.utils.stt_client] - INFO - Shutting down native STT - MainThread
+2026-03-09 11:25:47,894[root] - INFO - Logging initialized, log file: /root/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-03-09 11:25:47,987[__main__] - INFO - Created qasync event loop - MainThread
+2026-03-09 11:25:47,998[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
+2026-03-09 11:25:49,064[src.utils.config_manager] - INFO - Config directory: /root/Mina-a-Assistente-Virtual-Do-G.E.R.A/config - MainThread
+2026-03-09 11:25:49,066[src.utils.config_manager] - INFO - Config file: /root/Mina-a-Assistente-Virtual-Do-G.E.R.A/config/config.json - MainThread
+2026-03-09 11:25:51,288[__main__] - INFO - GUI started successfully - MainThread
+2026-03-09 11:32:00,698[root] - INFO - Logging initialized, log file: /root/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-03-09 11:32:01,115[__main__] - INFO - Created qasync event loop - MainThread
+2026-03-09 11:32:01,193[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
+2026-03-09 11:32:02,160[src.utils.config_manager] - INFO - Config directory: /root/Mina-a-Assistente-Virtual-Do-G.E.R.A/config - MainThread
+2026-03-09 11:32:02,161[src.utils.config_manager] - INFO - Config file: /root/Mina-a-Assistente-Virtual-Do-G.E.R.A/config/config.json - MainThread
+2026-03-09 11:32:04,913[__main__] - INFO - GUI started successfully - MainThread
+2026-03-09 11:33:13,231[GuiDisplay] - INFO - 开始退出应用程序... - MainThread
+2026-03-09 11:33:13,236[src.utils.stt_client] - INFO - Shutting down native STT - Dummy-1
+2026-03-09 11:33:13,373[__main__] - INFO - GUI closed before loop completion - MainThread
+2026-03-09 11:33:13,636[qasync._QEventLoop] - ERROR - Task was destroyed but it is pending!
+task: <Task pending name='Task-1' coro=<run_gui() running at /root/Mina-a-Assistente-Virtual-Do-G.E.R.A/main_gui.py:270> wait_for=<Future pending cb=[_chain_future.<locals>._call_check_cancel() at /usr/lib/python3.11/asyncio/futures.py:387, Task.task_wakeup()]>> - MainThread
+2026-03-09 11:33:13,639[src.utils.stt_client] - INFO - Shutting down native STT - MainThread
+2026-03-09 11:34:19,145[root] - INFO - Logging initialized, log file: /root/Mina-a-Assistente-Virtual-Do-G.E.R.A/logs/app.log - MainThread
+2026-03-09 11:34:19,223[__main__] - INFO - Created qasync event loop - MainThread
+2026-03-09 11:34:19,234[__main__] - INFO - Starting Xiaozhi GUI (standalone mode) - MainThread
+2026-03-09 11:34:19,677[src.utils.config_manager] - INFO - Config directory: /root/Mina-a-Assistente-Virtual-Do-G.E.R.A/config - MainThread
+2026-03-09 11:34:19,678[src.utils.config_manager] - INFO - Config file: /root/Mina-a-Assistente-Virtual-Do-G.E.R.A/config/config.json - MainThread
+2026-03-09 11:34:22,062[__main__] - INFO - GUI started successfully - MainThread
