@@ -25,19 +25,40 @@ def init_db():
     logger.info("Memories database initialized at %s", DB_PATH)
 
 def save_memory(username: str, keypoint: str):
-    """Save a new memory keypoint."""
+    """Save a new memory keypoint, updating it if it already exists, or deleting if keypoint is 'DELETE'."""
     init_db()  # Ensure DB is created
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    # Check if exact keypoint already exists for user to avoid redundancy
-    cursor.execute("SELECT id FROM memories WHERE username = ? AND keypoint = ?", (username, keypoint))
-    if cursor.fetchone():
+    
+    username = username.strip()
+    keypoint = keypoint.strip()
+    
+    if keypoint.upper() == "DELETE":
+        cursor.execute("DELETE FROM memories WHERE username = ?", (username,))
+        conn.commit()
         conn.close()
+        logger.info("Deleted all memories for user: %s", username)
         return
-    cursor.execute("INSERT INTO memories (username, keypoint) VALUES (?, ?)", (username, keypoint))
-    conn.commit()
+
+    # Check if any memories already exist for this username
+    cursor.execute("SELECT id FROM memories WHERE username = ? ORDER BY timestamp DESC", (username,))
+    rows = cursor.fetchall()
+    
+    if rows:
+        # Update the most recent one and delete any duplicates
+        primary_id = rows[0][0]
+        cursor.execute("UPDATE memories SET keypoint = ?, timestamp = CURRENT_TIMESTAMP WHERE id = ?", (keypoint, primary_id))
+        if len(rows) > 1:
+            other_ids = [r[0] for r in rows[1:]]
+            cursor.execute(f"DELETE FROM memories WHERE id IN ({','.join('?' for _ in other_ids)})", other_ids)
+        conn.commit()
+        logger.info("Updated memory and cleaned duplicates: [%s] -> %s", username, keypoint)
+    else:
+        cursor.execute("INSERT INTO memories (username, keypoint) VALUES (?, ?)", (username, keypoint))
+        conn.commit()
+        logger.info("Saved memory: [%s] -> %s", username, keypoint)
+        
     conn.close()
-    logger.info("Saved memory: [%s] -> %s", username, keypoint)
 
 def get_all_memories() -> List[Tuple[str, str]]:
     """Retrieve all saved memories."""
