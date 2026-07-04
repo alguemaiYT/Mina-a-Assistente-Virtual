@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 UNESP Background Scraper & Seeder for Mina SQLite DB.
-Collects Jornal da Unesp news/events, and registers Bauru Computer Science courses and rooms.
+Collects Jornal da Unesp news/events, and registers Sorocaba (ECA/EA) courses and rooms.
 Can be executed daily via cron.
 """
 
@@ -18,55 +18,38 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 
 from src.utils.academic_db import init_db, save_professor, save_schedule, save_news_event, clear_schedules
 
-# Predefined list of UNESP Bauru Department of Computing Faculty & Rooms (with realistic/actual details)
+# Predefined list of UNESP Sorocaba Faculty & Rooms (ECA / Ambiental)
 PROFESSORS_DATA = [
-    {"name": "Prof. René Pegoraro", "room": "Sala 12 - Depto. Computação", "email": "rene.pegoraro@unesp.br", "dept": "Computação"},
-    {"name": "Prof. Marcos Cavenaghi", "room": "Sala 15 - Depto. Computação", "email": "marcos.cavenaghi@unesp.br", "dept": "Computação"},
-    {"name": "Prof. João Fernando Marar", "room": "Sala 08 - Depto. Computação", "email": "joao.marar@unesp.br", "dept": "Computação"},
-    {"name": "Profa. Roberta Spolon", "room": "Sala 10 - Depto. Computação", "email": "roberta.spolon@unesp.br", "dept": "Computação"},
-    {"name": "Profa. Sandra Racca", "room": "Sala 05 - Depto. Computação", "email": "sandra.racca@unesp.br", "dept": "Computação"},
-    {"name": "Prof. Eduardo Morgado", "room": "Sala 02 - Depto. Computação", "email": "eduardo.morgado@unesp.br", "dept": "Computação"},
-    {"name": "Profa. Simone Milani", "room": "Sala 04 - Depto. Computação", "email": "simone.milani@unesp.br", "dept": "Computação"},
-    {"name": "Prof. Kelton Costa", "room": "Sala 11 - Depto. Computação", "email": "kelton.costa@unesp.br", "dept": "Computação"},
-    {"name": "Profa. Julia Silva", "room": "Sala 07 - Depto. Computação", "email": "julia.silva@unesp.br", "dept": "Computação"},
-    {"name": "Prof. Carlos Reis", "room": "Sala 09 - Depto. Computação", "email": "carlos.reis@unesp.br", "dept": "Computação"},
-    {"name": "Profa. Ana Santos", "room": "Sala 03 - Depto. Computação", "email": "ana.santos@unesp.br", "dept": "Computação"},
-    {"name": "Prof. Pedro Souza", "room": "Sala 14 - Depto. Computação", "email": "pedro.souza@unesp.br", "dept": "Computação"},
-    {"name": "Prof. Lucas Lima", "room": "Sala 16 - Depto. Computação", "email": "lucas.lima@unesp.br", "dept": "Computação"},
-    {"name": "Prof. Fernando Garcia", "room": "Sala 18 - Depto. Computação", "email": "fernando.garcia@unesp.br", "dept": "Computação"},
-    {"name": "Prof. Ricardo Oliveira", "room": "Sala 06 - Depto. Computação", "email": "ricardo.oliveira@unesp.br", "dept": "Computação"},
-    {"name": "Prof. Roberto Mendes", "room": "Sala 17 - Depto. Computação", "email": "roberto.mendes@unesp.br", "dept": "Computação"},
+    {"name": "Prof. Eduardo", "room": "Sala 01 - Depto. ECA", "email": "eduardo@unesp.br", "dept": "Controle e Automação"},
+    {"name": "Profa. Maria", "room": "Sala 02 - Depto. Matemática", "email": "maria@unesp.br", "dept": "Matemática"},
+    {"name": "Prof. José Silva", "room": "Sala 03 - Depto. ECA", "email": "jose.silva@unesp.br", "dept": "Controle e Automação"},
+    {"name": "Profa. Ana Costa", "room": "Sala 04 - Depto. Ambiental", "email": "ana.costa@unesp.br", "dept": "Ambiental"},
+    {"name": "Prof. Marcos Paulo", "room": "Sala 05 - Depto. ECA", "email": "marcos.paulo@unesp.br", "dept": "Controle e Automação"},
+    {"name": "Profa. Juliana", "room": "Sala 06 - Depto. Ambiental", "email": "juliana@unesp.br", "dept": "Ambiental"},
+    {"name": "Prof. Roberto", "room": "Sala 07 - Depto. Física", "email": "roberto@unesp.br", "dept": "Física"},
 ]
 
-# Semester class schedule for Computer Science (BCC)
+# Semester class schedule for UNESP Sorocaba
 SCHEDULES_DATA = [
     # Segunda-feira (0)
-    {"subject": "Cálculo Diferencial e Integral I", "weekday": 0, "start": "08:00", "end": "11:40", "room": "Sala 1 (BCC 1º Termo)", "teacher": "Prof. João Fernando Marar"},
-    {"subject": "Estruturas de Dados II", "weekday": 0, "start": "08:00", "end": "11:40", "room": "Lab 3 (BCC 3º Termo)", "teacher": "Profa. Julia Silva"},
-    {"subject": "Algoritmos e Programação", "weekday": 0, "start": "14:00", "end": "17:40", "room": "Lab 1 (BCC 1º Termo)", "teacher": "Profa. Simone Milani"},
-    {"subject": "Engenharia de Software", "weekday": 0, "start": "14:00", "end": "17:40", "room": "Sala 2 (BCC 5º Termo)", "teacher": "Prof. Carlos Reis"},
-    {"subject": "Ética e Computação", "weekday": 0, "start": "19:00", "end": "22:00", "room": "Sala 3 (BCC 7º Termo)", "teacher": "Profa. Ana Santos"},
-
+    {"subject": "Cálculo Diferencial e Integral I", "weekday": 0, "start": "08:00", "end": "11:40", "room": "Sala 1 (ECA 1º Termo)", "teacher": "Profa. Maria"},
+    {"subject": "Química Geral", "weekday": 0, "start": "14:00", "end": "17:40", "room": "Lab 1 (Amb 1º Termo)", "teacher": "Profa. Ana Costa"},
+    
     # Terça-feira (1)
-    {"subject": "Geometria Analítica e Álgebra Linear", "weekday": 1, "start": "08:00", "end": "09:40", "room": "Sala 2 (BCC 1º Termo)", "teacher": "Prof. Pedro Souza"},
-    {"subject": "Introdução à Computação", "weekday": 1, "start": "10:00", "end": "11:40", "room": "Sala 4 (BCC 1º Termo)", "teacher": "Profa. Ana Santos"},
-    {"subject": "Sistemas Operacionais", "weekday": 1, "start": "14:00", "end": "17:40", "room": "Lab 5 (BCC 5º Termo)", "teacher": "Prof. Lucas Lima"},
-    {"subject": "Redes de Computadores", "weekday": 1, "start": "14:00", "end": "17:40", "room": "Lab 2 (BCC 7º Termo)", "teacher": "Prof. Marcos Cavenaghi"},
-
+    {"subject": "Física I", "weekday": 1, "start": "08:00", "end": "11:40", "room": "Sala 2 (ECA 1º Termo)", "teacher": "Prof. Roberto"},
+    {"subject": "Introdução à Engenharia de Controle e Automação", "weekday": 1, "start": "14:00", "end": "16:00", "room": "Sala 1 (ECA 1º Termo)", "teacher": "Prof. Eduardo"},
+    
     # Quarta-feira (2)
-    {"subject": "Física Geral I", "weekday": 2, "start": "08:00", "end": "11:40", "room": "Sala 1 (BCC 1º Termo)", "teacher": "Prof. Marcos Cavenaghi"},
-    {"subject": "Estrutura de Dados I", "weekday": 2, "start": "14:00", "end": "17:40", "room": "Lab 3 (BCC 3º Termo)", "teacher": "Profa. Julia Silva"},
-    {"subject": "Inteligência Artificial", "weekday": 2, "start": "14:00", "end": "17:40", "room": "Lab 4 (BCC 7º Termo)", "teacher": "Prof. Fernando Garcia"},
-
+    {"subject": "Circuitos Elétricos I", "weekday": 2, "start": "08:00", "end": "11:40", "room": "Lab 2 (ECA 3º Termo)", "teacher": "Prof. José Silva"},
+    {"subject": "Ecologia Básica", "weekday": 2, "start": "14:00", "end": "17:40", "room": "Sala 3 (Amb 3º Termo)", "teacher": "Profa. Juliana"},
+    
     # Quinta-feira (3)
-    {"subject": "Álgebra Linear Aplicada", "weekday": 3, "start": "08:00", "end": "11:40", "room": "Sala 2 (BCC 3º Termo)", "teacher": "Prof. Pedro Souza"},
-    {"subject": "Circuitos Digitais", "weekday": 3, "start": "14:00", "end": "17:40", "room": "Lab 2 (BCC 3º Termo)", "teacher": "Prof. Ricardo Oliveira"},
-    {"subject": "Banco de Dados II", "weekday": 3, "start": "19:00", "end": "21:00", "room": "Lab 1 (BCC 5º Termo)", "teacher": "Profa. Sandra Racca"},
-
+    {"subject": "Sistemas de Controle I", "weekday": 3, "start": "08:00", "end": "11:40", "room": "Lab 3 (ECA 5º Termo)", "teacher": "Prof. Marcos Paulo"},
+    {"subject": "Tratamento de Água", "weekday": 3, "start": "14:00", "end": "17:40", "room": "Lab 1 (Amb 5º Termo)", "teacher": "Profa. Ana Costa"},
+    
     # Sexta-feira (4)
-    {"subject": "Cálculo Diferencial e Integral II", "weekday": 4, "start": "08:00", "end": "11:40", "room": "Sala 1 (BCC 3º Termo)", "teacher": "Prof. João Fernando Marar"},
-    {"subject": "Banco de Dados I", "weekday": 4, "start": "14:00", "end": "17:40", "room": "Lab 1 (BCC 3º Termo)", "teacher": "Profa. Sandra Racca"},
-    {"subject": "Compiladores", "weekday": 4, "start": "14:00", "end": "17:40", "room": "Sala 3 (BCC 5º Termo)", "teacher": "Prof. Roberto Mendes"},
+    {"subject": "Instrumentação Industrial", "weekday": 4, "start": "08:00", "end": "11:40", "room": "Lab 2 (ECA 5º Termo)", "teacher": "Prof. Eduardo"},
+    {"subject": "Gestão Ambiental", "weekday": 4, "start": "14:00", "end": "17:40", "room": "Sala 4 (Amb 7º Termo)", "teacher": "Profa. Juliana"},
 ]
 
 def scrape_unesp_rss():
@@ -112,13 +95,19 @@ def scrape_unesp_rss():
         print(f"Failed to scrape RSS feed: {e}", file=sys.stderr)
 
 def main():
-    print("=== Running UNESP SQLite Scraper/Seeder ===")
+    print("=== Running UNESP Sorocaba SQLite Scraper/Seeder ===")
     
     # 1. Initialize tables
     init_db()
     
     # 2. Seed/Scrape Professors list
     print("Updating professors database...")
+    # Clear existing professors for clean slate
+    conn = __import__('sqlite3').connect(os.path.join(os.path.dirname(os.path.dirname(__file__)), "config", "academic.db"))
+    conn.execute("DELETE FROM professors")
+    conn.commit()
+    conn.close()
+
     for p in PROFESSORS_DATA:
         save_professor(
             name=p["name"],

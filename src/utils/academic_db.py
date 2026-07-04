@@ -196,7 +196,7 @@ def get_academic_context() -> str:
     now_br = datetime.now(timezone.utc).astimezone(tz_br)
     
     parts = []
-    parts.append("=== CONTEXTO ACADÊMICO ATUAL DA UNESP (Mina Local DB) ===")
+    parts.append("=== CONTEXTO ACADÊMICO ATUAL DA UNESP SOROCABA (Mina Local DB) ===")
     parts.append(f"Data/Hora do Sistema: {now_br.strftime('%d/%m/%Y %H:%M')} (Horário de Brasília)")
     
     # 1. Active Classes Right Now
