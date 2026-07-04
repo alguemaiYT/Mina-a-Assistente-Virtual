@@ -100,8 +100,16 @@ class ChatBridge:
 
     def _get_system_prompt_with_memories(self) -> str:
         from src.utils.memory_db import get_all_memories
+        from src.utils.academic_db import get_academic_context
+        
         memories = get_all_memories()
+        academic_ctx = get_academic_context()
+        
         system_content = self._system_prompt
+        
+        if academic_ctx:
+            system_content += f"\n\n{academic_ctx}"
+            
         if memories:
             memory_block = "\n\nCONVERSAS ANTERIORES / MEMÓRIA DO LABORATÓRIO G.E.R.A:\n"
             for user, keypoint in memories:
