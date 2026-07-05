@@ -6,6 +6,7 @@ import asyncio
 import hashlib
 import io
 import logging
+import re
 import time
 import socket
 from typing import AsyncIterator
@@ -28,7 +29,7 @@ log = logging.getLogger("tts_api")
 # Configuração de voz padrão (edge_feminina_suave)
 # ---------------------------------------------------------------------------
 DEFAULT_VOICE = "pt-BR-FranciscaNeural"
-DEFAULT_RATE = "+15%"    # ligeiramente mais rápida = mais animada
+DEFAULT_RATE = "-13%"    # reduzida para 87% da velocidade normal
 DEFAULT_PITCH = "+1Hz"   # um pouco mais fina
 DEFAULT_VOLUME = "+10%"
 
@@ -108,8 +109,36 @@ def shutdown_mdns():
 
 
 # ---------------------------------------------------------------------------
-# Helpers
+# # Helpers
 # ---------------------------------------------------------------------------
+def _normalize_text(text: str) -> str:
+    if not text:
+        return ""
+    # Remove espaços duplos ou quebras de linha
+    text = " ".join(text.split())
+    
+    # Substitui múltiplos pontos/reticências por "..."
+    text = re.sub(r'\.{2,}', '...', text)
+    
+    # Garante que haja um espaço após pontuações comuns
+    for punct in [".", ",", "!", "?", ";", ":"]:
+        text = text.replace(f" {punct}", punct)
+        text = text.replace(punct, f"{punct} ")
+        
+    # Corrige reticências espaçadas (ex: ". . .") geradas pelo loop anterior de volta para "..."
+    text = re.sub(r'\.\s*\.\s*\.\s*', '... ', text)
+    
+    # Reduz espaços repetidos gerados
+    text = " ".join(text.split())
+    
+    # Garante que o texto termine com alguma pontuação para fechar a entonação
+    if text and text[-1] not in [".", "!", "?", "..."]:
+        if not text.endswith("..."):
+            text += "."
+        
+    return text.strip()
+
+
 def _cache_key(text: str, voice: str, rate: str, pitch: str, volume: str) -> str:
     raw = f"{text}|{voice}|{rate}|{pitch}|{volume}"
     return hashlib.sha256(raw.encode()).hexdigest()
@@ -184,6 +213,7 @@ async def list_voices(locale: str = Query(None, description="Filtrar por locale,
 @app.post("/synthesize", tags=["tts"])
 async def synthesize(req: SynthesizeRequest):
     t0 = time.perf_counter()
+    req.text = _normalize_text(req.text)
 
     if req.stream:
         gen = _stream_generator(req.text, req.voice, req.rate, req.pitch, req.volume)

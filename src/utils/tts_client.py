@@ -7,6 +7,7 @@ Eliminates the FastAPI HTTP server daemon and reduces latency.
 
 import asyncio
 import io
+import re
 import time
 import hashlib
 import queue
@@ -40,7 +41,7 @@ class TTSClient:
         base_url: str = "http://localhost:8000",  # Kept for compatibility
         enabled: bool = True,
         voice: str = "pt-BR-FranciscaNeural",
-        rate: str = "+15%",
+        rate: str = "-13%",
         pitch: str = "+3Hz",
         volume: str = "+0%",
     ):
@@ -127,12 +128,40 @@ class TTSClient:
             return None
         return asyncio.create_task(self._fetch_audio(text))
 
+    def _normalize_text(self, text: str) -> str:
+        if not text:
+            return ""
+        # Remove espaços duplos ou quebras de linha
+        text = " ".join(text.split())
+        
+        # Substitui múltiplos pontos/reticências por "..."
+        text = re.sub(r'\.{2,}', '...', text)
+        
+        # Garante que haja um espaço após pontuações comuns
+        for punct in [".", ",", "!", "?", ";", ":"]:
+            text = text.replace(f" {punct}", punct)
+            text = text.replace(punct, f"{punct} ")
+            
+        # Corrige reticências espaçadas (ex: ". . .") geradas pelo loop anterior de volta para "..."
+        text = re.sub(r'\.\s*\.\s*\.\s*', '... ', text)
+        
+        # Reduz espaços repetidos gerados
+        text = " ".join(text.split())
+        
+        # Garante que o texto termine com alguma pontuação para fechar a entonação
+        if text and text[-1] not in [".", "!", "?", "..."]:
+            if not text.endswith("..."):
+                text += "."
+            
+        return text.strip()
+
     def _cache_key(self, text: str) -> str:
         raw = f"{text}|{self._voice}|{self._rate}|{self._pitch}|{self._volume}"
         return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
     async def _fetch_audio(self, text: str) -> Optional[bytes]:
         """Synthesize MP3 bytes using remote server if available, falling back to local edge_tts."""
+        text = self._normalize_text(text)
         key = self._cache_key(text)
         if key in self._cache:
             logger.debug("TTS cache hit for: '%s'", text[:30])

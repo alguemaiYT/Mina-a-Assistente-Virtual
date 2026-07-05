@@ -173,7 +173,12 @@ class ChatBridge:
                 continue
 
             # check sentinel
-            if pline == TOKEN_END:
+            if TOKEN_END in pline:
+                before = pline.split(TOKEN_END, 1)[0].strip()
+                if before:
+                    full_response += before
+                    if on_token:
+                        await on_token(before)
                 return full_response, True
 
             # handle chunked output with metadata
@@ -186,10 +191,16 @@ class ChatBridge:
                     except ValueError:
                         delay = 2.5
                     chunk_text = chunk_text.strip()
+                    is_done = False
+                    if TOKEN_END in chunk_text:
+                        chunk_text = chunk_text.split(TOKEN_END, 1)[0].strip()
+                        is_done = True
                     if chunk_text:
                         full_response += chunk_text
                         if on_chunk:
                             await on_chunk(chunk_text, delay, chunk_emotion.strip() or None)
+                    if is_done:
+                        return full_response, True
                 continue
 
             # regular text line
@@ -236,64 +247,18 @@ class ChatBridge:
 
         return full_response
 
-    async def _send_and_stream_openai(
+    async def _stream_api_request(
         self,
+        api_url: str,
+        api_key: str,
+        model: str,
+        temperature: float,
+        max_tokens: int,
         prompt: str,
-        on_token: Optional[Callable[[str], Awaitable[None]]] = None,
-        on_emotion: Optional[Callable[[str], Awaitable[None]]] = None,
-        on_chunk: Optional[Callable[[str, float, Optional[str]], Awaitable[None]]] = None,
-        on_control: Optional[Callable[[str], Awaitable[None]]] = None,
+        backend_name: str,
+        on_token=None, on_emotion=None, on_chunk=None, on_control=None
     ) -> str:
-        llm_opts = self._config.get_config("LLM_OPTIONS", {})
-        backend_name = self.backend
-
-        # Retrieve key and model with fallback to environment variables
-        api_key = llm_opts.get("API_KEY")
-        if not api_key:
-            if backend_name == "cerebras":
-                api_key = os.getenv("CEREBRAS_API_KEY")
-            elif backend_name == "groq":
-                api_key = os.getenv("GROQ_API_KEY")
-            elif backend_name == "openai":
-                api_key = os.getenv("OPENAI_API_KEY")
-            api_key = api_key or os.getenv("LLM_API_KEY")
-
-        if not api_key and backend_name != "ollama":
-            raise RuntimeError(f"API key for {backend_name} is not set. Please set it in config.json or environment variables.")
-
-        # Determine API URL
-        api_url = llm_opts.get("API_URL")
-        if not api_url:
-            if backend_name == "cerebras":
-                api_url = "https://api.cerebras.ai/v1/chat/completions"
-            elif backend_name == "groq":
-                api_url = "https://api.groq.com/openai/v1/chat/completions"
-            elif backend_name == "openai":
-                api_url = "https://api.openai.com/v1/chat/completions"
-            elif backend_name == "ollama":
-                api_url = "http://localhost:11434/v1/chat/completions"
-            else:
-                api_url = "https://api.cerebras.ai/v1/chat/completions"
-
-        # Determine Model
-        model = llm_opts.get("MODEL")
-        if not model:
-            if backend_name == "cerebras":
-                model = os.getenv("CEREBRAS_CHAT_MODEL") or "zai-glm-4.7"
-            elif backend_name == "groq":
-                model = os.getenv("GROQ_CHAT_MODEL") or "llama3-8b-8192"
-            elif backend_name == "openai":
-                model = os.getenv("OPENAI_CHAT_MODEL") or "gpt-4o-mini"
-            elif backend_name == "ollama":
-                model = os.getenv("OLLAMA_CHAT_MODEL") or "llama3"
-            else:
-                model = "zai-glm-4.7"
-
-        temperature = llm_opts.get("TEMPERATURE", 0.7)
-        max_tokens = llm_opts.get("MAX_TOKENS", 2048)
-
         messages = self._build_messages(prompt)
-
         payload = {
             "model": model,
             "stream": True,
@@ -304,14 +269,12 @@ class ChatBridge:
 
         full_response = ""
         raw_response = ""
-        timeout = aiohttp.ClientTimeout(total=60)
-
         headers = {"Content-Type": "application/json"}
         if api_key:
             headers["Authorization"] = f"Bearer {api_key}"
 
         if not self._session or self._session.closed:
-            self._session = aiohttp.ClientSession(timeout=timeout)
+            self._session = aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=60))
 
         async with self._session.post(api_url, json=payload, headers=headers) as resp:
             if resp.status != 200:
@@ -323,31 +286,25 @@ class ChatBridge:
                 if not line:
                     break
                 text_line = line.decode("utf-8", errors="ignore").strip()
-                if not text_line:
-                    continue
-                if not text_line.startswith("data:"):
+                if not text_line or not text_line.startswith("data:"):
                     continue
                 data = text_line[5:].strip()
                 if data == "[DONE]":
                     break
                 try:
-                    event = json.loads(data)
-                except json.JSONDecodeError:
+                    event = __import__('json').loads(data)
+                except Exception:
                     continue
                 choices = event.get("choices") or []
                 if not choices:
                     continue
-                delta = choices[0].get("delta") or {}
-                content = delta.get("content")
+                content = (choices[0].get("delta") or {}).get("content")
                 if not content:
                     continue
                 raw_response += content
                 parsed, done = await self._process_stream_text(
-                    content,
-                    on_token=on_token,
-                    on_emotion=on_emotion,
-                    on_chunk=on_chunk,
-                    on_control=on_control,
+                    content, on_token=on_token, on_emotion=on_emotion,
+                    on_chunk=on_chunk, on_control=on_control
                 )
                 full_response += parsed
                 if done:
@@ -355,11 +312,8 @@ class ChatBridge:
 
         if self._stdout_buffer:
             parsed, _ = await self._process_stream_text(
-                "\n",
-                on_token=on_token,
-                on_emotion=on_emotion,
-                on_chunk=on_chunk,
-                on_control=on_control,
+                "\n", on_token=on_token, on_emotion=on_emotion,
+                on_chunk=on_chunk, on_control=on_control
             )
             full_response += parsed
 
@@ -368,147 +322,72 @@ class ChatBridge:
 
         return full_response
 
-    async def send_and_stream(
+    async def _send_and_stream_openai(
         self,
         prompt: str,
-        on_token: Optional[Callable[[str], Awaitable[None]]] = None,
-        on_emotion: Optional[Callable[[str], Awaitable[None]]] = None,
-        on_chunk: Optional[Callable[[str, float, Optional[str]], Awaitable[None]]] = None,
-        on_control: Optional[Callable[[str], Awaitable[None]]] = None,
+        on_token=None, on_emotion=None, on_chunk=None, on_control=None
     ) -> str:
-        """Send prompt to the configured backend and stream tokens."""
+        opts = self._config.get_config("LLM_OPTIONS", {})
+        bk = self.backend
+        
+        key = opts.get("API_KEY") or os.getenv(f"{bk.upper()}_API_KEY") or os.getenv("LLM_API_KEY")
+        if not key and bk != "ollama":
+            raise RuntimeError(f"API key for {bk} not set.")
+
+        url_map = {
+            "cerebras": "https://api.cerebras.ai/v1/chat/completions",
+            "groq": "https://api.groq.com/openai/v1/chat/completions",
+            "openai": "https://api.openai.com/v1/chat/completions",
+            "ollama": "http://localhost:11434/v1/chat/completions"
+        }
+        url = opts.get("API_URL") or url_map.get(bk, url_map["cerebras"])
+        
+        model_map = {
+            "cerebras": os.getenv("CEREBRAS_CHAT_MODEL") or "zai-glm-4.7",
+            "groq": os.getenv("GROQ_CHAT_MODEL") or "llama3-8b-8192",
+            "openai": os.getenv("OPENAI_CHAT_MODEL") or "gpt-4o-mini",
+            "ollama": os.getenv("OLLAMA_CHAT_MODEL") or "llama3"
+        }
+        model = opts.get("MODEL") or model_map.get(bk, model_map["cerebras"])
+
+        return await self._stream_api_request(
+            url, key, model, opts.get("TEMPERATURE", 0.7), opts.get("MAX_TOKENS", 2048),
+            prompt, bk, on_token, on_emotion, on_chunk, on_control
+        )
+
+    async def send_and_stream(
+        self, prompt: str, on_token=None, on_emotion=None, on_chunk=None, on_control=None
+    ) -> str:
         async with self._lock:
             self._stdout_buffer = ""
             self._in_text_section = False
             try:
                 if self.backend == "binary":
-                    return await self._send_and_stream_binary(
-                        prompt,
-                        on_token=on_token,
-                        on_emotion=on_emotion,
-                        on_chunk=on_chunk,
-                        on_control=on_control,
-                    )
-                else:
-                    return await self._send_and_stream_openai(
-                        prompt,
-                        on_token=on_token,
-                        on_emotion=on_emotion,
-                        on_chunk=on_chunk,
-                        on_control=on_control,
-                    )
+                    return await self._send_and_stream_binary(prompt, on_token, on_emotion, on_chunk, on_control)
+                return await self._send_and_stream_openai(prompt, on_token, on_emotion, on_chunk, on_control)
             except Exception as exc:
                 if "429" in str(exc):
-                    fallback_backend = self._config.get_config("LLM_OPTIONS", {}).get("FALLBACK_BACKEND")
-                    if fallback_backend:
+                    opts = self._config.get_config("LLM_OPTIONS", {})
+                    fb_bk = opts.get("FALLBACK_BACKEND", "groq").lower()
+                    if fb_bk:
                         import logging
-                        logging.getLogger("src.utils.chat_bridge").warning(
-                            "Primary backend %s returned 429 rate limit. Triggering fallback to %s!",
-                            self.backend, fallback_backend
-                        )
-                        return await self._send_and_stream_fallback(
-                            prompt,
-                            on_token=on_token,
-                            on_emotion=on_emotion,
-                            on_chunk=on_chunk,
-                            on_control=on_control,
+                        logging.getLogger("src.utils.chat_bridge").warning(f"429 Rate limit on {self.backend}. Falling back to {fb_bk}!")
+                        
+                        fb_key = os.getenv(f"{fb_bk.upper()}_API_KEY") or os.getenv("LLM_API_KEY") or opts.get("FALLBACK_API_KEY")
+                        fb_url = opts.get("FALLBACK_API_URL") or "https://api.groq.com/openai/v1/chat/completions"
+                        fb_model = opts.get("FALLBACK_MODEL") or "llama3-8b-8192"
+                        
+                        # Fix history since _send_and_stream_openai might have appended the user prompt already?
+                        # No, _stream_api_request appends history only after sending via _build_messages.
+                        # Wait, _build_messages DOES append user prompt! So we must pop it!
+                        if self._history and self._history[-1]["role"] == "user" and self._history[-1]["content"] == prompt:
+                            self._history.pop()
+                            
+                        return await self._stream_api_request(
+                            fb_url, fb_key, fb_model, opts.get("TEMPERATURE", 0.7), opts.get("MAX_TOKENS", 2048),
+                            prompt, fb_bk, on_token, on_emotion, on_chunk, on_control
                         )
                 raise exc
-
-    async def _send_and_stream_fallback(
-        self,
-        prompt: str,
-        on_token: Optional[Callable[[str], Awaitable[None]]] = None,
-        on_emotion: Optional[Callable[[str], Awaitable[None]]] = None,
-        on_chunk: Optional[Callable[[str, float, Optional[str]], Awaitable[None]]] = None,
-        on_control: Optional[Callable[[str], Awaitable[None]]] = None,
-    ) -> str:
-        llm_opts = self._config.get_config("LLM_OPTIONS", {})
-        backend_name = llm_opts.get("FALLBACK_BACKEND", "groq").lower()
-        env_key_name = f"{backend_name.upper()}_API_KEY"
-        api_key = os.getenv(env_key_name) or os.getenv("LLM_API_KEY") or llm_opts.get("FALLBACK_API_KEY")
-        
-        api_url = llm_opts.get("FALLBACK_API_URL") or "https://api.groq.com/openai/v1/chat/completions"
-        model = llm_opts.get("FALLBACK_MODEL") or "llama3-8b-8192"
-        temperature = llm_opts.get("TEMPERATURE", 0.7)
-        max_tokens = llm_opts.get("MAX_TOKENS", 2048)
-
-        messages = [{"role": "system", "content": self._get_system_prompt_with_memories(prompt)}]
-        for msg in self._history[-MAX_HISTORY:]:
-            messages.append({"role": msg["role"], "content": msg["content"]})
-        messages.append({"role": "user", "content": prompt})
-
-        payload = {
-            "model": model,
-            "stream": True,
-            "temperature": temperature,
-            "max_tokens": max_tokens,
-            "messages": messages,
-        }
-
-        full_response = ""
-        raw_response = ""
-        timeout = aiohttp.ClientTimeout(total=60)
-        headers = {"Content-Type": "application/json"}
-        if api_key:
-            headers["Authorization"] = f"Bearer {api_key}"
-
-        if not self._session or self._session.closed:
-            self._session = aiohttp.ClientSession(timeout=timeout)
-
-        async with self._session.post(api_url, json=payload, headers=headers) as resp:
-            if resp.status != 200:
-                body = await resp.text()
-                raise RuntimeError(f"Fallback {backend_name.upper()} chat error {resp.status}: {body}")
-
-            while True:
-                line = await resp.content.readline()
-                if not line:
-                    break
-                text_line = line.decode("utf-8", errors="ignore").strip()
-                if not text_line:
-                    continue
-                if not text_line.startswith("data:"):
-                    continue
-                data = text_line[5:].strip()
-                if data == "[DONE]":
-                    break
-                try:
-                    event = json.loads(data)
-                except json.JSONDecodeError:
-                    continue
-                choices = event.get("choices") or []
-                if not choices:
-                    continue
-                delta = choices[0].get("delta") or {}
-                content = delta.get("content")
-                if not content:
-                    continue
-                raw_response += content
-                parsed, done = await self._process_stream_text(
-                    content,
-                    on_token=on_token,
-                    on_emotion=on_emotion,
-                    on_chunk=on_chunk,
-                    on_control=on_control,
-                )
-                full_response += parsed
-                if done:
-                    break
-
-        if self._stdout_buffer:
-            parsed, _ = await self._process_stream_text(
-                "\n",
-                on_token=on_token,
-                on_emotion=on_emotion,
-                on_chunk=on_chunk,
-                on_control=on_control,
-            )
-            full_response += parsed
-
-        self._append_history("user", prompt)
-        self._append_history("assistant", raw_response)
-        return full_response
 
     async def read_stderr(self) -> str:
         if self.backend != "binary":

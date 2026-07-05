@@ -216,6 +216,15 @@ Rectangle {
                 spacing: 8
                 z: 1  // 按钮层在拖动层上方
 
+                // Logo UNESP
+                Image {
+                    source: "../../assets/logo.png"
+                    fillMode: Image.PreserveAspectFit
+                    Layout.preferredHeight: 24
+                    Layout.preferredWidth: 72
+                    Layout.alignment: Qt.AlignVCenter
+                }
+
                 // Status indicator + text in title bar
                 RowLayout {
                     Layout.fillWidth: false
@@ -232,10 +241,10 @@ Rectangle {
                         }
                         color: {
                             var st = displayModel ? displayModel.statusText : ""
-                            if (st.indexOf("Ready") !== -1 || st.indexOf("GUI Ready") !== -1) return layoutValue("statusDot", "colorReady", "#00b42a")
-                            if (st.indexOf("Listening") !== -1 || st.indexOf("hearing") !== -1) return layoutValue("statusDot", "colorListening", "#ff7d00")
-                            if (st.indexOf("Thinking") !== -1 || st.indexOf("Transcribing") !== -1) return layoutValue("statusDot", "colorThinking", "#165dff")
-                            if (st.indexOf("error") !== -1 || st.indexOf("fail") !== -1 || st.indexOf("unavailable") !== -1) return layoutValue("statusDot", "colorError", "#f53f3f")
+                            if (st.indexOf("Ready") !== -1 || st.indexOf("GUI Ready") !== -1 || st.indexOf("Pront") !== -1) return layoutValue("statusDot", "colorReady", "#00b42a")
+                            if (st.indexOf("Listening") !== -1 || st.indexOf("hearing") !== -1 || st.indexOf("Ouvindo") !== -1 || st.indexOf("ouvindo") !== -1) return layoutValue("statusDot", "colorListening", "#ff7d00")
+                            if (st.indexOf("Thinking") !== -1 || st.indexOf("Transcribing") !== -1 || st.indexOf("Pensando") !== -1 || st.indexOf("Transcrevendo") !== -1) return layoutValue("statusDot", "colorThinking", "#165dff")
+                            if (st.indexOf("error") !== -1 || st.indexOf("fail") !== -1 || st.indexOf("unavailable") !== -1 || st.indexOf("Erro") !== -1 || st.indexOf("Falha") !== -1 || st.indexOf("indispon") !== -1) return layoutValue("statusDot", "colorError", "#f53f3f")
                             return layoutValue("statusDot", "colorDefault", "#c9cdd4")
                         }
                         Behavior on color { ColorAnimation { duration: 300; easing.type: Easing.OutCubic } }
@@ -377,7 +386,7 @@ Rectangle {
 
                         property bool isActive: {
                             var st = displayModel ? displayModel.statusText : ""
-                            return st.indexOf("Listening") !== -1 || st.indexOf("hearing") !== -1
+                            return st.indexOf("Listening") !== -1 || st.indexOf("hearing") !== -1 || st.indexOf("Ouvindo") !== -1 || st.indexOf("ouvindo") !== -1
                         }
 
                         RadialGradient {
@@ -557,7 +566,7 @@ Rectangle {
                     Layout.fillWidth: true
                     Layout.maximumWidth: layoutValue("autoButton", "maxWidth", 140)
                     Layout.preferredHeight: layoutValue("autoButton", "height", 38)
-                    text: displayModel ? displayModel.buttonText : "Start Conversation"
+                    text: displayModel ? displayModel.buttonText : "Iniciar Conversa"
                     visible: true
                     transform: Translate {
                         x: layoutValue("autoButton", "offsetX", 0)
@@ -594,7 +603,7 @@ Rectangle {
                     Layout.fillWidth: true
                     Layout.maximumWidth: layoutValue("abortButton", "maxWidth", 120)
                     Layout.preferredHeight: layoutValue("abortButton", "height", 38)
-                    text: "Interrupt"
+                    text: "Interromper"
                     transform: Translate {
                         x: layoutValue("abortButton", "offsetX", 0)
                         y: layoutValue("abortButton", "offsetY", 0)
@@ -660,7 +669,7 @@ Rectangle {
                             // 占位符 - visible when empty (even when focused)
                             Text {
                                 anchors.fill: parent
-                                text: "Type a message..."
+                                text: "Digite uma mensagem..."
                                 font: textInput.font
                                 color: layoutValue("textInput", "placeholderColor", "#c9cdd4")
                                 verticalAlignment: Text.AlignVCenter
@@ -678,7 +687,7 @@ Rectangle {
                         Layout.preferredWidth: layoutValue("sendButton", "preferredWidth", 60)
                         Layout.maximumWidth: layoutValue("sendButton", "maxWidth", 84)
                         Layout.preferredHeight: layoutValue("sendButton", "height", 38)
-                        text: "Send"
+                        text: "Enviar"
                         enabled: textInput.text.trim().length > 0
                         transform: Translate {
                             x: layoutValue("sendButton", "offsetX", 0)

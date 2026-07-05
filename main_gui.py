@@ -66,7 +66,7 @@ class STTController:
         finally:
             self._busy = False
 
-    async def _start(self, status_text: str = "Listening...", button_text: str = "Stop"):
+    async def _start(self, status_text: str = "Ouvindo...", button_text: str = "Parar"):
         await self._gui_display.update_status(status_text, True)
         await self._gui_display.update_button_status(button_text)
         await self._gui_display.update_emotion("listening")
@@ -75,8 +75,8 @@ class STTController:
             await asyncio.to_thread(self._stt_client.start_recording)
         except STTClientError:
             logger.error("STT: start_recording failed", exc_info=True)
-            await self._gui_display.update_status("STT unavailable", False)
-            await self._gui_display.update_button_status("Talk")
+            await self._gui_display.update_status("STT indisponível", False)
+            await self._gui_display.update_button_status("Falar")
             await self._gui_display.update_emotion("neutral")
             return
         self._recording = True
@@ -86,7 +86,7 @@ class STTController:
             return
         self._busy = True
         try:
-            await self._start("Wake detected, hearing", "Stop hearing")
+            await self._start("Acordado, ouvindo", "Parar de ouvir")
         finally:
             self._busy = False
 
@@ -94,7 +94,7 @@ class STTController:
         transcription = ""
         stt_failed = False
         try:
-            await self._gui_display.update_status("Transcribing...", True)
+            await self._gui_display.update_status("Transcrevendo...", True)
             logger.info("STT: stopping recording and transcribing")
             raw_response = (await asyncio.to_thread(self._stt_client.stop_recording)).strip()
             if raw_response:
@@ -110,10 +110,10 @@ class STTController:
         except STTClientError:
             stt_failed = True
             logger.error("STT: stop_recording failed", exc_info=True)
-            await self._gui_display.update_status("STT failed", False)
+            await self._gui_display.update_status("Falha no STT", False)
         finally:
             self._recording = False
-            await self._gui_display.update_button_status("Talk")
+            await self._gui_display.update_button_status("Falar")
             await self._gui_display.update_emotion("neutral")
 
         if transcription:
@@ -174,14 +174,14 @@ async def run_gui(fullscreen: bool = False, studio_mode: bool = False, rotation_
             chunk, and only start displaying text + emoji once the first
             audio chunk has been received from the TTS server."""
             await gui_display.update_button_bar_visibility(False)
-            await gui_display.update_status("Thinking...", True)
+            await gui_display.update_status("Pensando...", True)
             await gui_display.update_text("")
             await gui_display.update_emotion("neutral")
 
             # Check if LLM is enabled
             llm_opts = cfg.get_config("LLM_OPTIONS", {})
             if not llm_opts.get("ENABLED", True):
-                await gui_display.update_status("LLM Disabled", False)
+                await gui_display.update_status("LLM Desativado", False)
                 await asyncio.sleep(2.0)
                 await gui_display.update_button_bar_visibility(True)
                 return
@@ -290,10 +290,10 @@ async def run_gui(fullscreen: bool = False, studio_mode: bool = False, rotation_
                 stderr_chunk = await chat_bridge.read_stderr()
                 if stderr_chunk:
                     logger.info(stderr_chunk.strip())
-                await gui_display.update_status("Ready", True)
+                await gui_display.update_status("Pronto", True)
             except Exception as exc:
                 logger.error(f"Chat error: {exc}", exc_info=True)
-                await gui_display.update_status("Chat error", False)
+                await gui_display.update_status("Erro no Chat", False)
             finally:
                 first_audio_ready.set()  # ensure emitter isn't stuck
                 await chunk_queue.put(None)
@@ -340,7 +340,7 @@ async def run_gui(fullscreen: bool = False, studio_mode: bool = False, rotation_
         await gui_display.start()
         
         # Set initial status
-        await gui_display.update_status("GUI Ready (C backend)", True)
+        await gui_display.update_status("Interface Pronta", True)
         await gui_display.update_emotion("neutral")
 
         logger.info("GUI started successfully")

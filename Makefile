@@ -24,7 +24,7 @@ endif
 STT_LINUX ?= libs/$(ARCH)/libstt.so
 STT_WINDOWS ?= libs/$(ARCH)/stt.dll
 
-.PHONY: help install install-mac run run-fullscreen run-studio lint format sort-imports check test install-deps compile apicomm clean stt-linux stt-windows all
+.PHONY: help install install-mac run run-fullscreen run-studio cli lint format sort-imports check test install-deps compile apicomm clean stt-linux stt-windows all
 
 help:
 	@echo "Available targets:"
@@ -33,6 +33,7 @@ help:
 	@echo "  run            Launch the GUI"
 	@echo "  run-fullscreen Launch the GUI in fullscreen"
 	@echo "  run-studio     Launch the GUI in studio/layout mode"
+	@echo "  cli            Launch the CLI interface"
 	@echo "  lint           Run Flake8"
 	@echo "  format         Run Black"
 	@echo "  sort-imports   Run isort"
@@ -61,6 +62,9 @@ run-fullscreen:
 
 run-studio:
 	$(PYTHON) main_gui.py -s
+
+cli:
+	$(PYTHON) main_cli.py
 
 run-tts:
 	$(PYTHON) -m uvicorn tts_api.main:app --host 0.0.0.0 --port 8000

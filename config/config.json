@@ -1,142 +1,139 @@
 {
-    "LLM_OPTIONS": {
-        "ENABLED": true,
-        "BACKEND": "cerebras",
-        "API_KEY": "csk-dfy6852ehce9pyv2vmh66tfnp9p4kttefx4jhj9eyrf9fthh",
-        "MODEL": "gpt-oss-120b",
-        "API_URL": "https://api.cerebras.ai/v1/chat/completions",
-        "TEMPERATURE": 0.7,
-        "MAX_TOKENS": 2048,
-        "FALLBACK_BACKEND": "groq",
-        "FALLBACK_API_KEY": "",
-        "FALLBACK_MODEL": "gpt-oss-120b",
-        "FALLBACK_API_URL": "https://api.groq.com/openai/v1/chat/completions"
+  "LLM_OPTIONS": {
+    "ENABLED": true,
+    "BACKEND": "cerebras",
+    "API_KEY": "csk-dfy6852ehce9pyv2vmh66tfnp9p4kttefx4jhj9eyrf9fthh",
+    "MODEL": "gpt-oss-120b",
+    "API_URL": "https://api.cerebras.ai/v1/chat/completions",
+    "TEMPERATURE": 0.7,
+    "MAX_TOKENS": 2048,
+    "FALLBACK_BACKEND": "groq",
+    "FALLBACK_API_KEY": "",
+    "FALLBACK_MODEL": "gpt-oss-120b",
+    "FALLBACK_API_URL": "https://api.groq.com/openai/v1/chat/completions"
+  },
+  "STT_OPTIONS": {
+    "ENABLED": true,
+    "API_KEY": "",
+    "MODEL": "whisper-large-v3",
+    "LANGUAGE": "pt",
+    "API_URL": "https://api.groq.com/openai/v1/audio/transcriptions",
+    "LIBRARY_PATH": ""
+  },
+  "SYSTEM_OPTIONS": {
+    "CLIENT_ID": null,
+    "DEVICE_ID": null,
+    "NETWORK": {
+      "OTA_VERSION_URL": "https://api.tenclass.net/xiaozhi/ota/",
+      "WEBSOCKET_URL": null,
+      "WEBSOCKET_ACCESS_TOKEN": null,
+      "MQTT_INFO": null,
+      "ACTIVATION_VERSION": "v2",
+      "AUTHORIZATION_URL": "https://xiaozhi.me/"
     },
-    "STT_OPTIONS": {
-        "ENABLED": true,
-        "API_KEY": "",
-        "MODEL": "whisper-large-v3",
-        "LANGUAGE": "pt",
-        "API_URL": "https://api.groq.com/openai/v1/audio/transcriptions",
-        "LIBRARY_PATH": ""
+    "LISTENING_AUTO_STOP_SECONDS": 60
+  },
+  "WEBHOOKS": {
+    "on_listening_start": null,
+    "on_listening_stop": null
+  },
+  "WAKE_WORD_OPTIONS": {
+    "USE_WAKE_WORD": true,
+    "ACCESS_KEY": "",
+    "MODEL_PATH": "models",
+    "PORCUPINE_MODEL_PATH": "/home/kali/Documentos/Mina-a-Assistente-Virtual-Do-G.E.R.A/models/porcupine_params_pt.pv",
+    "PORCUPINE_KEYWORD_PATH": "/home/kali/Documentos/Mina-a-Assistente-Virtual-Do-G.E.R.A/keywords/abacaxi_linux.ppn",
+    "AUDIO_DEVICE_INDEX": 8,
+    "NUM_THREADS": 4,
+    "PROVIDER": "cpu",
+    "MAX_ACTIVE_PATHS": 2,
+    "KEYWORDS_SCORE": 1.8,
+    "KEYWORDS_THRESHOLD": 0.2,
+    "NUM_TRAILING_BLANKS": 1
+  },
+  "CAMERA": {
+    "camera_index": 0,
+    "frame_width": 640,
+    "frame_height": 480,
+    "fps": 30,
+    "Local_VL_url": "https://open.bigmodel.cn/api/paas/v4/",
+    "VLapi_key": "",
+    "models": "glm-4v-plus"
+  },
+  "SHORTCUTS": {
+    "ENABLED": true,
+    "MANUAL_PRESS": {
+      "modifier": "ctrl",
+      "key": "j",
+      "description": "Hold to talk"
     },
-    "SYSTEM_OPTIONS": {
-        "CLIENT_ID": null,
-        "DEVICE_ID": null,
-        "NETWORK": {
-            "OTA_VERSION_URL": "https://api.tenclass.net/xiaozhi/ota/",
-            "WEBSOCKET_URL": null,
-            "WEBSOCKET_ACCESS_TOKEN": null,
-            "MQTT_INFO": null,
-            "ACTIVATION_VERSION": "v2",
-            "AUTHORIZATION_URL": "https://xiaozhi.me/"
-        },
-        "LISTENING_AUTO_STOP_SECONDS": 60
+    "tts": {
+      "enabled": true,
+      "url": "http://localhost:8000",
+      "voice": "pt-BR-FranciscaNeural",
+      "rate": "-13%",
+      "pitch": "+3Hz",
+      "volume": "+0%"
     },
-    "WEBHOOKS": {
-        "on_listening_start": null,
-        "on_listening_stop": null
-    },
-    "WAKE_WORD_OPTIONS": {
-        "USE_WAKE_WORD": true,
-        "ACCESS_KEY": "",
-        "MODEL_PATH": "models",
-        "PORCUPINE_MODEL_PATH": "/home/kali/Documentos/Mina-a-Assistente-Virtual-Do-G.E.R.A/models/porcupine_params_pt.pv",
-        "PORCUPINE_KEYWORD_PATH": "/home/kali/Documentos/Mina-a-Assistente-Virtual-Do-G.E.R.A/keywords/abacaxi_linux.ppn",
-        "AUDIO_DEVICE_INDEX": 8,
-        "NUM_THREADS": 4,
-        "PROVIDER": "cpu",
-        "MAX_ACTIVE_PATHS": 2,
-        "KEYWORDS_SCORE": 1.8,
-        "KEYWORDS_THRESHOLD": 0.2,
-        "NUM_TRAILING_BLANKS": 1
-    },
-    "CAMERA": {
-        "camera_index": 0,
-        "frame_width": 640,
-        "frame_height": 480,
-        "fps": 30,
-        "Local_VL_url": "https://open.bigmodel.cn/api/paas/v4/",
-        "VLapi_key": "",
-        "models": "glm-4v-plus"
-    },
-    "SHORTCUTS": {
-        "ENABLED": true,
-        "MANUAL_PRESS": {
-            "modifier": "ctrl",
-            "key": "j",
-            "description": "Hold to talk"
-        },
-        "tts": {
-            "enabled": true,
-            "url": "http://localhost:8000",
-            "voice": "pt-BR-FranciscaNeural",
-            "rate": "+15%",
-            "pitch": "+3Hz",
-            "volume": "+0%"
-        },
-        "stt": {
-            "enabled": true,
-            "provider": "native",
-            "language": "pt-BR"
-        }
-    },
-    "hardware": {
-        "audio": {
-            "input_device_index": 8,
-            "output_device_index": null,
-            "sample_rate": 16000,
-            "channels": 1
-        },
-        "wake_word": {
-            "enabled": true,
-            "engine": "porcupine",
-            "model_path": "models/porcupine_params_pt.pv",
-            "keyword_path": "keywords/abacaxi_linux.ppn",
-            "sensitivity": 0.5
-        },
-        "vad": {
-            "enabled": true,
-            "model_path": "models/silero_vad.onnx",
-            "threshold": 0.4,
-            "timeout": 1.0
-        },
-        "camera": {
-            "index": 0,
-            "resolution": [
-                640,
-                480
-            ],
-            "fps": 30
-        }
-    },
-    "gui": {
-        "theme": "dark",
-        "fullscreen": false,
-        "studio_mode": false,
-        "rotation": null,
-        "shortcuts": {
-            "enabled": true,
-            "talk": "ctrl+j",
-            "auto": "ctrl+k",
-            "abort": "ctrl+q"
-        }
-    },
-    "VAD_OPTIONS": {
-        "ENABLED": true,
-        "MODEL_PATH": "models/silero_vad.onnx",
-        "SAMPLE_RATE": 16000,
-        "FRAME_SIZE": 512,
-        "CHANNELS": 1,
-        "THRESHOLD": 0.4,
-        "TIMEOUT_SECONDS": 1.0
-    },
-    "TTS_OPTIONS": {
-        "ENABLED": true,
-        "API_URL": "http://mina-tts.local:8000",
-        "VOICE": "pt-BR-FranciscaNeural",
-        "RATE": "+15%",
-        "PITCH": "+3Hz",
-        "VOLUME": "+0%"
+    "stt": {
+      "enabled": true,
+      "provider": "native",
+      "language": "pt-BR"
     }
+  },
+  "hardware": {
+    "audio": {
+      "input_device_index": 8,
+      "output_device_index": null,
+      "sample_rate": 16000,
+      "channels": 1
+    },
+    "wake_word": {
+      "enabled": true,
+      "engine": "porcupine",
+      "model_path": "models/porcupine_params_pt.pv",
+      "keyword_path": "keywords/abacaxi_linux.ppn",
+      "sensitivity": 0.5
+    },
+    "vad": {
+      "enabled": true,
+      "model_path": "models/silero_vad.onnx",
+      "threshold": 0.4,
+      "timeout": 1.0
+    },
+    "camera": {
+      "index": 0,
+      "resolution": [640, 480],
+      "fps": 30
+    }
+  },
+  "gui": {
+    "theme": "dark",
+    "fullscreen": false,
+    "studio_mode": false,
+    "rotation": null,
+    "shortcuts": {
+      "enabled": true,
+      "talk": "ctrl+j",
+      "auto": "ctrl+k",
+      "abort": "ctrl+q"
+    }
+  },
+  "VAD_OPTIONS": {
+    "ENABLED": true,
+    "MODEL_PATH": "models/silero_vad.onnx",
+    "SAMPLE_RATE": 16000,
+    "FRAME_SIZE": 512,
+    "CHANNELS": 1,
+    "THRESHOLD": 0.40,
+    "TIMEOUT_SECONDS": 1.0
+  },
+  "TTS_OPTIONS": {
+    "ENABLED": true,
+    "API_URL": "http://mina-tts.local:8000",
+    "VOICE": "pt-BR-FranciscaNeural",
+    "RATE": "-13%",
+    "PITCH": "+3Hz",
+    "VOLUME": "+0%"
+  }
 }
