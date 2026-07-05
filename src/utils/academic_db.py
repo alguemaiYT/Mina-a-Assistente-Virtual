@@ -187,33 +187,84 @@ def get_upcoming_classes_today() -> List[Dict[str, Any]]:
     
     return [{"subject": r[0], "start_time": r[1], "end_time": r[2], "room": r[3], "teacher_name": r[4]} for r in rows]
 
-def get_academic_context() -> str:
-    """Format all SQLite database tables into a prompt-friendly context text block."""
+def get_academic_context(user_query: str = None) -> str:
+    """Format SQLite database tables into a prompt-friendly context text block, 
+    dynamically filtering schedules based on the user's query keywords to save tokens."""
     if not os.path.exists(DB_PATH):
         return "Nenhum dado acadêmico da UNESP disponível no momento."
         
     tz_br = timezone(timedelta(hours=-3))
     now_br = datetime.now(timezone.utc).astimezone(tz_br)
+    today_weekday = now_br.weekday()
+    
+    # 1. Parse weekday filter from user query
+    target_weekday = None
+    query_lower = user_query.lower() if user_query else ""
+    
+    weekday_map = {
+        "segunda": 0, "segundão": 0, "monday": 0,
+        "terça": 1, "tercinha": 1, "tuesday": 1,
+        "quarta": 2, "wednesday": 2,
+        "quinta": 3, "thursday": 3,
+        "sexta": 4, "friday": 4,
+        "sábado": 5, "sabado": 5, "saturday": 5,
+        "domingo": 6, "sunday": 6
+    }
+    
+    for kw, val in weekday_map.items():
+        if kw in query_lower:
+            target_weekday = val
+            break
+            
+    if "amanhã" in query_lower or "amanha" in query_lower or "tomorrow" in query_lower:
+        target_weekday = (today_weekday + 1) % 7
+    elif "ontem" in query_lower or "yesterday" in query_lower:
+        target_weekday = (today_weekday - 1) % 7
+        
+    # Determine if we should show the whole week
+    show_all_week = any(x in query_lower for x in ["semana", "mês", "mes", "todos", "todas", "agenda", "calendário", "calendario"])
     
     parts = []
     parts.append("=== CONTEXTO ACADÊMICO ATUAL DA UNESP SOROCABA (Mina Local DB) ===")
     parts.append(f"Data/Hora do Sistema: {now_br.strftime('%d/%m/%Y %H:%M')} (Horário de Brasília)")
     
-    # 1. Active Classes Right Now
+    # Active Classes Right Now
     active = get_active_classes()
     if active:
         parts.append("\n[Aulas em Andamento Agora]:")
         for a in active:
             parts.append(f"- Matéria: {a['subject']} | Horário: {a['start_time']} às {a['end_time']} | Sala: {a['room']} | Prof: {a['teacher_name']}")
+            
+    # Fetch schedules based on dynamic RAG query
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    
+    weekday_names = ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado", "Domingo"]
+    
+    if show_all_week:
+        parts.append("\n[Cronograma Completo de Aulas da Semana]:")
+        cursor.execute("SELECT subject, weekday, start_time, end_time, room, teacher_name FROM schedules ORDER BY weekday, start_time")
+        rows = cursor.fetchall()
+        for r in rows:
+            parts.append(f"- {weekday_names[r[1]]}: {r[0]} ({r[2]}-{r[3]}) | Sala: {r[4]} | Prof: {r[5]}")
+    elif target_weekday is not None:
+        parts.append(f"\n[Aulas Filtradas para {weekday_names[target_weekday]}]:")
+        cursor.execute("SELECT subject, start_time, end_time, room, teacher_name FROM schedules WHERE weekday = ? ORDER BY start_time", (target_weekday,))
+        rows = cursor.fetchall()
+        if rows:
+            for r in rows:
+                parts.append(f"- Matéria: {r[0]} | Horário: {r[1]} às {r[2]} | Sala: {r[3]} | Prof: {r[4]}")
+        else:
+            parts.append("- Nenhuma aula cadastrada para este dia.")
     else:
-        parts.append("\n[Aulas em Andamento Agora]: Nenhuma aula ocorrendo neste momento.")
-        
-    # 2. Upcoming Classes Today
-    upcoming = get_upcoming_classes_today()
-    if upcoming:
-        parts.append("\n[Próximas Aulas de Hoje]:")
-        for u in upcoming:
-            parts.append(f"- Matéria: {u['subject']} | Início: {u['start_time']} | Sala: {u['room']} | Prof: {u['teacher_name']}")
+        # Default: show upcoming today
+        upcoming = get_upcoming_classes_today()
+        if upcoming:
+            parts.append("\n[Próximas Aulas de Hoje]:")
+            for u in upcoming:
+                parts.append(f"- Matéria: {u['subject']} | Início: {u['start_time']} | Sala: {u['room']} | Prof: {u['teacher_name']}")
+                
+    conn.close()
             
     # 3. Professors Rooms list
     profs = get_professors()

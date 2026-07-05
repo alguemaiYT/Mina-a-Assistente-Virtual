@@ -11,7 +11,7 @@ import time
 import hashlib
 import queue
 import threading
-from typing import Optional
+from typing import Optional, Callable
 
 from src.utils.logging_config import get_logger
 
@@ -198,7 +198,7 @@ class TTSClient:
     # Persistent Playback Device & Thread-Safe Queue
     # ------------------------------------------------------------------
 
-    async def play(self, audio_bytes: bytes) -> None:
+    async def play(self, audio_bytes: bytes, on_start: Optional[Callable] = None) -> None:
         """Play MP3 bytes through the persistent output device (0ms latency, no cutoff)."""
         if not _HAS_MINIAUDIO or not audio_bytes:
             return
@@ -213,15 +213,24 @@ class TTSClient:
                 
                 # Convert array of samples to raw bytes
                 samples_bytes = decoded.samples.tobytes()
+                duration = decoded.num_frames / decoded.sample_rate
                 
                 # Create a completion event for this specific chunk
+                chunk_started = threading.Event()
                 chunk_finished = threading.Event()
-                self._queue.put((samples_bytes, chunk_finished))
+                self._queue.put((samples_bytes, chunk_started, chunk_finished))
                 
-                # Block until this chunk finishes playing
-                await asyncio.to_thread(chunk_finished.wait)
-                # Small hardware buffer sleep to flush the final block
-                await asyncio.sleep(0.12)
+                # Wait until the hardware actually starts processing this chunk
+                await asyncio.to_thread(chunk_started.wait)
+                
+                if on_start:
+                    if asyncio.iscoroutinefunction(on_start):
+                        await on_start()
+                    else:
+                        on_start()
+                
+                # Block until this chunk finishes playing through the speakers
+                await asyncio.sleep(duration)
             except Exception as exc:
                 logger.warning("TTS playback error: %s", exc)
 
@@ -255,29 +264,41 @@ class TTSClient:
         
         current_samples = None
         current_pos = 0
-        current_event = None
+        current_started = None
+        current_finished = None
         
         while True:
-            if current_samples is None:
-                try:
-                    item = self._queue.get_nowait()
-                    current_samples, current_event = item
-                    current_pos = 0
-                except queue.Empty:
-                    # Output silent bytes (16-bit SIGNED16 has 2 bytes per sample)
-                    bytes_needed = required * self._channels * 2
-                    required = yield b"\x00" * bytes_needed
-                    continue
-            
             # SIGNED16 format has 2 bytes per sample
             bytes_needed = required * self._channels * 2
-            chunk = current_samples[current_pos : current_pos + bytes_needed]
-            current_pos += len(chunk)
+            out_buf = bytearray()
             
-            if current_pos >= len(current_samples):
-                if current_event:
-                    current_event.set()
-                current_samples = None
-                current_event = None
+            while len(out_buf) < bytes_needed:
+                if current_samples is None:
+                    try:
+                        item = self._queue.get_nowait()
+                        current_samples, current_started, current_finished = item
+                        current_pos = 0
+                        if current_started:
+                            current_started.set()
+                    except queue.Empty:
+                        # No more audio in queue. Pad the rest of the buffer with silence.
+                        remaining = bytes_needed - len(out_buf)
+                        out_buf.extend(b"\x00" * remaining)
+                        break
                 
-            required = yield chunk
+                # Copy from current_samples to out_buf
+                chunk_needed = bytes_needed - len(out_buf)
+                available = len(current_samples) - current_pos
+                to_read = min(chunk_needed, available)
+                
+                out_buf.extend(current_samples[current_pos : current_pos + to_read])
+                current_pos += to_read
+                
+                if current_pos >= len(current_samples):
+                    if current_finished:
+                        current_finished.set()
+                    current_samples = None
+                    current_started = None
+                    current_finished = None
+            
+            required = yield bytes(out_buf)

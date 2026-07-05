@@ -213,8 +213,9 @@ async def run_gui(fullscreen: bool = False, studio_mode: bool = False, rotation_
                         emotion = chunk.get("emotion")
                         tts_idx = chunk.get("tts_idx", -1)
 
-                        if emotion:
-                            await gui_display.update_emotion(emotion)
+                        async def on_audio_start():
+                            await gui_display.update_emotion(emotion or "neutral")
+                            await gui_display.update_text(chunk.get("text", ""))
 
                         # Retrieve pre-synthesised audio
                         audio_bytes = None
@@ -224,12 +225,18 @@ async def run_gui(fullscreen: bool = False, studio_mode: bool = False, rotation_
                             except Exception as exc:
                                 logger.warning("TTS synthesis failed for chunk %d: %s", tts_idx, exc)
 
-                        # Display text + play audio in parallel; honour delay
-                        coros = [gui_display.update_text(chunk.get("text", ""))]
+                        # Display text and play audio; duration is dictated by TTS, with fallback to character-count reading speed
                         if audio_bytes and tts_client.enabled:
-                            coros.append(tts_client.play(audio_bytes))
-                        coros.append(asyncio.sleep(delay))
-                        await asyncio.gather(*coros)
+                            # Play audio (blocks for the exact duration of the sound)
+                            await tts_client.play(audio_bytes, on_start=on_audio_start)
+                            # Add a small natural pause after the speech (e.g., 0.3s)
+                            await asyncio.sleep(0.3)
+                        else:
+                            # Fallback if TTS is disabled: read at a human-like speed
+                            await on_audio_start()
+                            char_count = len(chunk.get("text", ""))
+                            reading_delay = max(1.0, char_count * 0.06)
+                            await asyncio.sleep(reading_delay)
 
                         if extra_pause_ms > 0:
                             await asyncio.sleep(extra_pause_ms / 1000.0)
@@ -253,18 +260,6 @@ async def run_gui(fullscreen: bool = False, studio_mode: bool = False, rotation_
                     task = tts_client.pre_synthesize(chunk_text)
                     if task:
                         tts_futures[idx] = task
-                        if idx == 0:
-                            async def _signal_first():
-                                try:
-                                    await task
-                                except Exception:
-                                    pass
-                                first_audio_ready.set()
-                            asyncio.create_task(_signal_first())
-                    elif idx == 0:
-                        first_audio_ready.set()
-                elif idx == 0:
-                    first_audio_ready.set()
 
                 await chunk_queue.put({"text": chunk_text, "delay": delay, "emotion": emotion, "tts_idx": idx})
 
@@ -286,6 +281,12 @@ async def run_gui(fullscreen: bool = False, studio_mode: bool = False, rotation_
                     text, on_chunk=on_chunk, on_emotion=on_emotion, on_control=on_control
                 )
                 stream_success = True
+                
+                # Wait for all TTS chunks to be fully synthesized before starting playback
+                if tts_futures:
+                    await asyncio.gather(*tts_futures.values(), return_exceptions=True)
+                first_audio_ready.set()
+                
                 stderr_chunk = await chat_bridge.read_stderr()
                 if stderr_chunk:
                     logger.info(stderr_chunk.strip())

@@ -98,12 +98,12 @@ class ChatBridge:
         if len(self._history) > MAX_HISTORY:
             self._history = self._history[-MAX_HISTORY:]
 
-    def _get_system_prompt_with_memories(self) -> str:
+    def _get_system_prompt_with_memories(self, prompt: str = None) -> str:
         from src.utils.memory_db import get_all_memories
         from src.utils.academic_db import get_academic_context
         
         memories = get_all_memories()
-        academic_ctx = get_academic_context()
+        academic_ctx = get_academic_context(prompt)
         
         system_content = self._system_prompt
         
@@ -111,7 +111,7 @@ class ChatBridge:
             system_content += f"\n\n{academic_ctx}"
             
         if memories:
-            memory_block = "\n\nCONVERSAS ANTERIORES / MEMÓRIA DO LABORATÓRIO G.E.R.A:\n"
+            memory_block = "\n\nCONVERSAS ANTERIORES / MEMÓRIA DO LABORATÓRIO G.E.RA:\n"
             for user, keypoint in memories:
                 memory_block += f"- [{user}]: {keypoint}\n"
             system_content += memory_block
@@ -119,7 +119,7 @@ class ChatBridge:
 
     def _build_messages(self, prompt: str) -> list:
         self._append_history("user", prompt)
-        messages = [{"role": "system", "content": self._get_system_prompt_with_memories()}]
+        messages = [{"role": "system", "content": self._get_system_prompt_with_memories(prompt)}]
         messages.extend(self._history)
         return messages
 
@@ -433,7 +433,7 @@ class ChatBridge:
         temperature = llm_opts.get("TEMPERATURE", 0.7)
         max_tokens = llm_opts.get("MAX_TOKENS", 2048)
 
-        messages = [{"role": "system", "content": self._get_system_prompt_with_memories()}]
+        messages = [{"role": "system", "content": self._get_system_prompt_with_memories(prompt)}]
         for msg in self._history[-MAX_HISTORY:]:
             messages.append({"role": msg["role"], "content": msg["content"]})
         messages.append({"role": "user", "content": prompt})

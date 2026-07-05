@@ -2,7 +2,7 @@
 
 PYTHON ?= python
 PIP ?= $(PYTHON) -m pip
-CC ?= gcc
+CC = gcc
 
 # Detect and normalize architecture
 ARCH ?= $(shell uname -m | tr '[:upper:]' '[:lower:]')
@@ -43,6 +43,8 @@ help:
 	@echo "  apicomm        Compile apicomm.c"
 	@echo "  stt-linux      Build libs/$(ARCH)/libstt.so"
 	@echo "  stt-windows    Build libs/$(ARCH)/stt.dll"
+	@echo "  windows-all    Build both apicomm and stt-windows for Windows"
+	@echo "  install-deps-windows Install system deps on Windows via MSYS2 (pacman)"
 	@echo "  all            install-deps + compile (Debian/Ubuntu helper)"
 
 install:
@@ -80,28 +82,34 @@ test: check
 install-deps:
 	@echo "Installing system dependencies on Debian/Ubuntu..."
 	apt-get update
-	apt-get install -y libcjson-dev libcurl4-openssl-dev
+	apt-get install -y libcjson-dev libcurl4-openssl-dev portaudio19-dev
+
+install-deps-windows:
+	@echo "Installing system dependencies on Windows (requires MSYS2/pacman)..."
+	pacman -S --noconfirm --needed mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-cjson mingw-w64-ucrt-x86_64-curl mingw-w64-ucrt-x86_64-portaudio
 
 compile: apicomm
 
 apicomm: c_src/apicomm.c
 	@echo "Compiling apicomm..."
-	mkdir -p bin/$(ARCH)
+	$(PYTHON) -c "import os; os.makedirs('bin/$(ARCH)', exist_ok=True)"
 	$(CC) -O2 -march=native -Wall -Wextra -o bin/$(ARCH)/apicomm$(EXE_SUFFIX) c_src/apicomm.c -lcurl -lcjson
 	@ls -lh bin/$(ARCH)/apicomm$(EXE_SUFFIX)
 
 clean:
 	@echo "Cleaning binaries..."
-	rm -rf bin/$(ARCH) libs/$(ARCH)/libstt.so libs/$(ARCH)/stt.dll *.o
+	$(PYTHON) -c "import shutil, os; shutil.rmtree('bin/$(ARCH)', ignore_errors=True); [os.remove(f) for f in ['libs/$(ARCH)/libstt.so', 'libs/$(ARCH)/stt.dll'] if os.path.exists(f)]"
 
 stt-linux:
 	@echo "Building STT helper for Linux..."
-	mkdir -p libs/$(ARCH)
+	$(PYTHON) -c "import os; os.makedirs('libs/$(ARCH)', exist_ok=True)"
 	$(CC) -shared -fPIC c_src/stt.c -o $(STT_LINUX) -lportaudio -lcurl
 
 stt-windows:
 	@echo "Building STT helper for Windows..."
-	mkdir -p libs/$(ARCH)
+	$(PYTHON) -c "import os; os.makedirs('libs/$(ARCH)', exist_ok=True)"
 	$(CC) -shared -fPIC c_src/stt.c -o $(STT_WINDOWS) -lportaudio -lcurl
+
+windows-all: install-deps-windows apicomm stt-windows
 
 all: install-deps compile
