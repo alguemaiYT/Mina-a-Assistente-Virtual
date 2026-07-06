@@ -187,9 +187,94 @@ def get_upcoming_classes_today() -> List[Dict[str, Any]]:
     
     return [{"subject": r[0], "start_time": r[1], "end_time": r[2], "room": r[3], "teacher_name": r[4]} for r in rows]
 
+def sync_from_scraper():
+    """Dynamically pull scraped data from the Scraping4Hackathon API and sync to local academic.db."""
+    import urllib.request
+    import json
+    
+    # Try local (when running on robot) or remote IP of the Orange Pi
+    endpoints = [
+        "http://localhost:8000/dados-atuais",
+        "http://10.129.75.230:8000/dados-atuais"
+    ]
+    
+    payload = None
+    for url in endpoints:
+        try:
+            req = urllib.request.Request(url, headers={'User-Agent': 'MinaAssistant/1.0'})
+            with urllib.request.urlopen(req, timeout=1.5) as response:
+                payload = json.loads(response.read().decode('utf-8'))
+                if payload:
+                    logger.debug("Connected to Scraping4Hackathon API at %s", url)
+                    break
+        except Exception:
+            continue
+            
+    if not payload:
+        return
+        
+    data = payload.get("data")
+    if not data or "raw_payload" not in data:
+        return
+        
+    raw = data["raw_payload"]
+    
+    # Extract data from raw payload
+    news = raw.get("news", [])
+    active_classes = raw.get("active_classes", [])
+    upcoming_classes = raw.get("upcoming_classes", [])
+    
+    # Sync News & Events
+    for n in news:
+        title = n.get("title", "")
+        link = n.get("link", "")
+        pub_date = n.get("pub_date", "")
+        category = ", ".join(n.get("categories", []))
+        if title:
+            save_news_event(title, link, pub_date, category, is_event=False)
+            
+    # Sync Weekly schedules
+    day_of_week = raw.get("day_of_week")
+    if day_of_week is not None:
+        try:
+            # Clear old schedules for this weekday to keep it updated
+            init_db()
+            conn = sqlite3.connect(DB_PATH)
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM schedules WHERE weekday = ?", (day_of_week,))
+            conn.commit()
+            conn.close()
+            
+            # Map time tuple (e.g. 8.0, 11.6) to HH:MM format
+            for c in active_classes + upcoming_classes:
+                time_range = c.get("time", (0.0, 0.0))
+                start_h = int(time_range[0])
+                start_m = int(round((time_range[0] - start_h) * 60))
+                end_h = int(time_range[1])
+                end_m = int(round((time_range[1] - end_h) * 60))
+                
+                start_time = f"{start_h:02d}:{start_m:02d}"
+                end_time = f"{end_h:02d}:{end_m:02d}"
+                
+                save_schedule(
+                    subject=c.get("subject", ""),
+                    weekday=day_of_week,
+                    start_time=start_time,
+                    end_time=end_time,
+                    room=c.get("room", ""),
+                    teacher_name=c.get("teacher", "")
+                )
+            logger.info("Successfully updated weekday %d schedules from Scraper API", day_of_week)
+        except Exception as e:
+            logger.error("Failed to write scraped schedules to local database: %s", e)
+
 def get_academic_context(user_query: str = None) -> str:
     """Format SQLite database tables into a prompt-friendly context text block, 
     dynamically filtering schedules based on the user's query keywords to save tokens."""
+    import threading
+    # Fire off database synchronization in the background
+    threading.Thread(target=sync_from_scraper, daemon=True).start()
+
     if not os.path.exists(DB_PATH):
         return "Nenhum dado acadêmico da UNESP disponível no momento."
         
