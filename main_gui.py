@@ -173,6 +173,29 @@ async def run_gui(fullscreen: bool = False, studio_mode: bool = False, rotation_
             """Send text to the chat backend, pre-synthesise TTS for every
             chunk, and only start displaying text + emoji once the first
             audio chunk has been received from the TTS server."""
+            # Interceptador de intenções local (MABI/Offline)
+            from src.utils.intent_classifier import IntentClassifier
+            intent_classifier = IntentClassifier()
+            intent_detected, local_response = intent_classifier.classify_and_execute(text)
+
+            if intent_detected:
+                await gui_display.update_button_bar_visibility(False)
+                await gui_display.update_status("Respondendo...", True)
+                await gui_display.update_text(local_response)
+                await gui_display.update_emotion("neutral")
+                
+                if tts_client.enabled:
+                    audio_task = tts_client.pre_synthesize(local_response)
+                    if audio_task:
+                        audio_bytes = await audio_task
+                        if audio_bytes:
+                            await tts_client.play(audio_bytes, on_start=lambda: None)
+                            
+                await asyncio.sleep(1.0)
+                await gui_display.update_button_bar_visibility(True)
+                await gui_display.update_status("Pronto", True)
+                return
+
             await gui_display.update_button_bar_visibility(False)
             await gui_display.update_status("Pensando...", True)
             await gui_display.update_text("")
