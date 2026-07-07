@@ -8,7 +8,6 @@ from PyQt5.QtWidgets import (
     QMessageBox,
     QPushButton,
     QTextEdit,
-    QWidget,
 )
 
 from src.views.settings.components.base_settings_widget import BaseSettingsWidget
