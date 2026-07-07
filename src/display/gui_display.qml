@@ -720,7 +720,6 @@ Rectangle {
             }
         }
     }
-    } // end rotationWrapper
 
     // =========================================================================
     // TELA IDLE / ATRAÇÃO - Totem UNESP Sorocaba
@@ -865,6 +864,7 @@ Rectangle {
             color: "#445566"
         }
     }
+    } // end rotationWrapper
 
     // Timer de inatividade — volta para idle após 120s
     Timer {
