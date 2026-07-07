@@ -207,14 +207,11 @@ def sync_from_scraper():
     cfg = ConfigManager.get_instance()
     custom_url = cfg.get_config("SYSTEM_OPTIONS.NETWORK.SCRAPER_API_URL")
     
-    # Try custom, then local (when running on robot) or remote IP of the Orange Pi
+    # Try custom, then fallback to local scraper instance
     endpoints = []
     if custom_url:
         endpoints.append(custom_url)
-    endpoints.extend([
-        "http://localhost:8000/dados-atuais",
-        "http://10.129.75.230:8000/dados-atuais"
-    ])
+    endpoints.append("http://localhost:8000/dados-atuais")
     
     payload = None
     for url in endpoints:
