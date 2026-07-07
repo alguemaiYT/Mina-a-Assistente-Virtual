@@ -292,7 +292,7 @@ class ChatBridge:
                 if data == "[DONE]":
                     break
                 try:
-                    event = __import__('json').loads(data)
+                    event = json.loads(data)
                 except Exception:
                     continue
                 choices = event.get("choices") or []
