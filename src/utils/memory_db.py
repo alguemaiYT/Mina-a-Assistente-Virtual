@@ -11,7 +11,7 @@ _db_initialized: bool = False
 def init_db():
     """Initialize the SQLite memories database."""
     global _db_initialized
-    if _db_initialized:
+    if _db_initialized and os.path.exists(DB_PATH):
         return
 
     os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)

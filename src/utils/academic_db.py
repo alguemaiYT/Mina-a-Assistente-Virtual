@@ -17,7 +17,7 @@ DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__)
 def init_db():
     """Initialize the SQLite academic database tables."""
     global _db_initialized
-    if _db_initialized:
+    if _db_initialized and os.path.exists(DB_PATH):
         return
 
     os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
