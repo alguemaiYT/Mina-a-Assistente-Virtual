@@ -780,7 +780,8 @@ Rectangle {
                     repeat: true
                     triggeredOnStart: true
                     onTriggered: {
-                        var now = new Date()
+                        var offset = (typeof displayModel !== "undefined" && typeof displayModel.timeOffset !== "undefined") ? displayModel.timeOffset : 0
+                        var now = new Date(Date.now() + offset)
                         idleClock.text = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0')
                         idleDate.text = now.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })
                     }

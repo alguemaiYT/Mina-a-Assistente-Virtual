@@ -25,6 +25,12 @@ def init_db():
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     """)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS settings (
+            key TEXT PRIMARY KEY,
+            value TEXT
+        )
+    """)
     conn.commit()
     conn.close()
     _db_initialized = True
@@ -80,3 +86,29 @@ def get_all_memories() -> List[Tuple[str, str]]:
     except Exception as exc:
         logger.error("Failed to retrieve memories: %s", exc)
         return []
+
+def save_setting(key: str, value: str):
+    """Save a setting key-value pair, updating if it exists."""
+    init_db()
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", (key, value))
+    conn.commit()
+    conn.close()
+    logger.debug("Saved setting: %s = %s", key, value)
+
+def get_setting(key: str):
+    """Retrieve a setting value by key."""
+    if not os.path.exists(DB_PATH):
+        return None
+    try:
+        init_db()
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute("SELECT value FROM settings WHERE key = ?", (key,))
+        row = cursor.fetchone()
+        conn.close()
+        return row[0] if row else None
+    except Exception as exc:
+        logger.error("Failed to retrieve setting %s: %s", key, exc)
+        return None

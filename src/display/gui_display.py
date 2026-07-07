@@ -343,6 +343,18 @@ class GuiDisplay(BaseDisplay, QObject, metaclass=CombinedMeta):
 
         await self.update_emotion("neutral")
 
+        # Resolve NTP time offset in background
+        async def sync_time():
+            try:
+                from src.utils.ntp_sync import resolve_ntp_offset
+                offset_seconds = await resolve_ntp_offset()
+                self.display_model.timeOffset = offset_seconds * 1000.0
+                self.logger.info("Applied NTP time offset: %.3f ms", offset_seconds * 1000.0)
+            except Exception as e:
+                self.logger.error("Failed to sync NTP time: %s", e)
+
+        asyncio.create_task(sync_time())
+
         # Decide modo de exibição conforme configuração
         if getattr(self, "_is_fullscreen", False):
             self.root.showFullScreen()

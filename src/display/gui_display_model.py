@@ -17,6 +17,7 @@ class GuiDisplayModel(QObject):
     ttsTextChanged = pyqtSignal()
     buttonTextChanged = pyqtSignal()
     buttonBarVisibleChanged = pyqtSignal()
+    timeOffsetChanged = pyqtSignal()
 
     # 用户操作信号
     autoButtonClicked = pyqtSignal()
@@ -33,6 +34,7 @@ class GuiDisplayModel(QObject):
         self._button_text = "Falar"  # 自动模式按钮文本
         self._is_connected = False
         self._button_bar_visible = True
+        self._time_offset = 0.0  # offset in milliseconds
 
     # 状态文本属性
     @pyqtProperty(str, notify=statusTextChanged)
@@ -89,6 +91,17 @@ class GuiDisplayModel(QObject):
         if self._button_bar_visible != value:
             self._button_bar_visible = value
             self.buttonBarVisibleChanged.emit()
+
+    # NTP time offset property (in milliseconds)
+    @pyqtProperty(float, notify=timeOffsetChanged)
+    def timeOffset(self):
+        return self._time_offset
+
+    @timeOffset.setter
+    def timeOffset(self, value):
+        if self._time_offset != value:
+            self._time_offset = float(value)
+            self.timeOffsetChanged.emit()
 
     # 便捷方法
     def update_status(self, status: str, connected: bool):
