@@ -202,12 +202,19 @@ def sync_from_scraper():
     """Dynamically pull scraped data from the Scraping4Hackathon API and sync to local academic.db."""
     import urllib.request
     import json
+    from src.utils.config_manager import ConfigManager
     
-    # Try local (when running on robot) or remote IP of the Orange Pi
-    endpoints = [
+    cfg = ConfigManager.get_instance()
+    custom_url = cfg.get_config("SYSTEM_OPTIONS.NETWORK.SCRAPER_API_URL")
+    
+    # Try custom, then local (when running on robot) or remote IP of the Orange Pi
+    endpoints = []
+    if custom_url:
+        endpoints.append(custom_url)
+    endpoints.extend([
         "http://localhost:8000/dados-atuais",
         "http://10.129.75.230:8000/dados-atuais"
-    ]
+    ])
     
     payload = None
     for url in endpoints:

@@ -384,6 +384,32 @@ async def run_gui(fullscreen: bool = False, studio_mode: bool = False, rotation_
         await gui_display.update_status("Interface Pronta", True)
         await gui_display.update_emotion("neutral")
 
+        # Background internet status checking loop
+        async def check_internet_loop():
+            import socket
+            while gui_display._running:
+                online = False
+                try:
+                    def ping():
+                        try:
+                            socket.setdefaulttimeout(1.5)
+                            socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect(("8.8.8.8", 53))
+                            return True
+                        except Exception:
+                            return False
+                    online = await asyncio.to_thread(ping)
+                except Exception:
+                    pass
+                
+                if not online:
+                    await gui_display.update_status("Modo Local (Offline)", False)
+                else:
+                    if gui_display.current_status in ["Modo Local (Offline)", "Interface Pronta (Offline)"]:
+                        await gui_display.update_status("Interface Pronta", True)
+                await asyncio.sleep(10.0)
+
+        asyncio.create_task(check_internet_loop())
+
         logger.info("GUI started successfully")
         
         # Keep the event loop running until GUI is closed

@@ -11,3 +11,15 @@ cache/
 .env
 *.env
 config/config.json
+
+# Rust build target
+target/
+edge_opi_client/target/
+
+# Virtual environment
+venv/
+.venv/
+
+# Model binaries (downloaded via setup scripts)
+*.onnx
+*.bin

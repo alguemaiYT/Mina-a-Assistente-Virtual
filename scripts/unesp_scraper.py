@@ -52,6 +52,21 @@ SCHEDULES_DATA = [
     {"subject": "Gestão Ambiental", "weekday": 4, "start": "14:00", "end": "17:40", "room": "Sala 4 (Amb 7º Termo)", "teacher": "Profa. Juliana"},
 ]
 
+# Try loading custom academic data from config/academic_data.json to avoid hardcoded fallbacks
+_script_dir = os.path.dirname(os.path.abspath(__file__))
+_json_path = os.path.join(os.path.dirname(_script_dir), "config", "academic_data.json")
+if os.path.exists(_json_path):
+    try:
+        with open(_json_path, "r", encoding="utf-8") as f:
+            _custom_data = json.load(f)
+            if "professors" in _custom_data:
+                PROFESSORS_DATA = _custom_data["professors"]
+            if "schedules" in _custom_data:
+                SCHEDULES_DATA = _custom_data["schedules"]
+            print(f"Loaded custom academic data from {_json_path}")
+    except Exception as _e:
+        print(f"Failed to load custom academic data: {_e}", file=sys.stderr)
+
 def scrape_unesp_rss():
     """Scrape Jornal da Unesp RSS and populate the SQLite database."""
     feed_url = "https://jornal.unesp.br/feed/"

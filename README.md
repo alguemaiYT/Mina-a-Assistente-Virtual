@@ -90,3 +90,9 @@ Toda entrada do usuário é interceptada:
 Desenvolvido pela equipe do **G.E.R.A (Grupo de Eletrônica e Robótica Aplicada)** da **UNESP Sorocaba**.
 * **Mina AI:** Isaac Andrade.
 * **MABI Classifier Pipeline:** Brenda Biral Batista.
+
+---
+
+## 🤝 Créditos e Agradecimentos
+
+Este projeto é uma adaptação e extensão do **[py-xiaozhi](https://github.com/c2er/py-xiaozhi)**, um cliente de código aberto para o assistente de voz Xiaozhi AI. Agradecemos aos desenvolvedores originais pelo excelente trabalho que serviu de base tecnológica para o desenvolvimento da Mina.

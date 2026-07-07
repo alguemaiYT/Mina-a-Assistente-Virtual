@@ -78,8 +78,25 @@ class IntentClassifier:
         if not professores:
             return "Não encontrei nenhum professor cadastrado no banco de dados acadêmico."
 
-        # Tentar extrair o nome do professor da pergunta do usuário
-        # Procura por palavras após "professor/prof", limpando pontuação
+        query_lower = query.lower()
+
+        # 1. Match full clean names (without title prefixes) in the query
+        for p in professores:
+            clean_name = p["name"].replace("Prof. ", "").replace("Profa. ", "").strip().lower()
+            if clean_name in query_lower:
+                return f"O {p['name']} atende na {p['room']} do departamento de {p['department'] or 'Geral'}."
+
+        # 2. Match individual unique components of names (longer than 2 chars)
+        for p in professores:
+            clean_name = p["name"].replace("Prof. ", "").replace("Profa. ", "").strip().lower()
+            for word in clean_name.split():
+                if len(word) > 2 and word in query_lower:
+                    # Verify if this word is unique among all professors
+                    matches = [prof for prof in professores if word in prof["name"].lower()]
+                    if len(matches) == 1:
+                        return f"O {p['name']} atende na {p['room']} do departamento de {p['department'] or 'Geral'}."
+
+        # 3. Fallback to sequential word matching
         nome_procurado = ""
         query_limpa = re.sub(r"[^\w\s]", "", query)
         palavras = query_limpa.split()
@@ -91,12 +108,11 @@ class IntentClassifier:
                 break
 
         if nome_procurado:
-            # Busca no banco pelo nome aproximado
             for p in professores:
                 if nome_procurado in p["name"].lower():
                     return f"O {p['name']} atende na {p['room']} do departamento de {p['department'] or 'Geral'}."
 
-        # Se não achar um específico, lista os primeiros
+        # If not identified, list the first ones
         lista_profs = ", ".join([f"{p['name']} ({p['room']})" for p in professores[:3]])
         return f"Não identifiquei o nome do professor com clareza. Mas aqui estão alguns docentes que localizei: {lista_profs}."
 
