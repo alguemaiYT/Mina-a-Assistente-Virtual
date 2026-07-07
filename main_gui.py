@@ -176,7 +176,8 @@ async def run_gui(fullscreen: bool = False, studio_mode: bool = False, rotation_
 
         async def handle_send_text(text: str):
             """Send text to the chat backend, pre-synthesise TTS for every
-            chunk, and only start displaying text + emoji once the first
+            chunk, and only start displaying text + emoji once the first.
+            """
             nonlocal _last_request_time, _last_interaction_time, _idle_reset_done
 
             # Rate limiter: 3s cooldown between requests
