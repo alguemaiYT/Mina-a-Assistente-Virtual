@@ -6,9 +6,14 @@ from src.utils.logging_config import get_logger
 logger = get_logger(__name__)
 
 DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "config", "memory.db")
+_db_initialized: bool = False
 
 def init_db():
     """Initialize the SQLite memories database."""
+    global _db_initialized
+    if _db_initialized:
+        return
+
     os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
@@ -22,6 +27,7 @@ def init_db():
     """)
     conn.commit()
     conn.close()
+    _db_initialized = True
     logger.info("Memories database initialized at %s", DB_PATH)
 
 def save_memory(username: str, keypoint: str):

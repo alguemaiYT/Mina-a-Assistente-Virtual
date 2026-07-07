@@ -10,11 +10,16 @@ logger = get_logger(__name__)
 
 _sync_lock = threading.Lock()
 _last_sync_time: float = 0
+_db_initialized: bool = False
 
 DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "config", "academic.db")
 
 def init_db():
     """Initialize the SQLite academic database tables."""
+    global _db_initialized
+    if _db_initialized:
+        return
+
     os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
@@ -57,6 +62,7 @@ def init_db():
     
     conn.commit()
     conn.close()
+    _db_initialized = True
     logger.info("Academic database initialized at %s", DB_PATH)
 
 def save_professor(name: str, room: str, email: str = None, department: str = None):
