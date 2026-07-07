@@ -13,6 +13,7 @@ import json
 import sys
 import os
 import signal
+import time
 from typing import Optional
 
 # Configure Qt platform before importing Qt
@@ -169,10 +170,23 @@ async def run_gui(fullscreen: bool = False, studio_mode: bool = False, rotation_
         if fullscreen:
             gui_display.set_force_fullscreen(True)
 
+        _last_request_time: float = 0
+        _last_interaction_time: float = time.monotonic()
+        _idle_reset_done: bool = False
+
         async def handle_send_text(text: str):
             """Send text to the chat backend, pre-synthesise TTS for every
             chunk, and only start displaying text + emoji once the first
             audio chunk has been received from the TTS server."""
+            nonlocal _last_request_time, _last_interaction_time, _idle_reset_done
+
+            # Rate limiter: 3s cooldown between requests
+            now = time.monotonic()
+            if now - _last_request_time < 3.0:
+                await gui_display.update_status("Aguarde um momento...", True)
+                return
+            _last_request_time = now
+
             await gui_display.update_button_bar_visibility(False)
             await gui_display.update_status("Pensando...", True)
             await gui_display.update_text("")
@@ -311,6 +325,8 @@ async def run_gui(fullscreen: bool = False, studio_mode: bool = False, rotation_
                     await gui_display.update_text(final_text)
                 await asyncio.sleep(1.0)
                 await gui_display.update_button_bar_visibility(True)
+                _last_interaction_time = time.monotonic()
+                _idle_reset_done = False
 
         stt_controller = None
         stt_opts = cfg.get_config("STT_OPTIONS", {})
@@ -349,6 +365,11 @@ async def run_gui(fullscreen: bool = False, studio_mode: bool = False, rotation_
         try:
             while gui_display._running:
                 await asyncio.sleep(0.5)
+                # Session reset on inactivity (120s)
+                if not _idle_reset_done and time.monotonic() - _last_interaction_time > 120:
+                    chat_bridge._history.clear()
+                    _idle_reset_done = True
+                    logger.info("Inactivity timeout: chat history cleared")
         finally:
             if stt_controller:
                 await stt_controller.shutdown()

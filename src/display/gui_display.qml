@@ -60,11 +60,11 @@ Rectangle {
         return Qt.rect(0, 0, 0, 0)
     }
 
-    // 信号定义 - 与 Python 回调对接
+    // Sinais - interface com callbacks Python
     signal autoButtonClicked()
     signal abortButtonClicked()
     signal sendButtonClicked(string text)
-    // 标题栏相关信号
+    // Sinais da barra de título
     signal titleMinimize()
     signal titleClose()
     signal titleDragStart(real mouseX, real mouseY)
@@ -95,6 +95,7 @@ Rectangle {
     }
 
     function sendCurrentText() {
+        idleTimer.notifyActivity()
         var trimmed = textInput.text.trim()
         if (!trimmed.length) {
             focusTextChat(false)
@@ -161,7 +162,7 @@ Rectangle {
             textInputFocusTimer.restart()
     }
 
-    // 主布局 — absolute positioning with configurable x/y/width/height
+    // Layout principal — posicionamento absoluto com x/y/width/height configuráveis
     // rotationWrapper swaps logical width/height when rotated 90° so the content
     // fills the (already swapped) window dimensions correctly.
     Item {
@@ -175,7 +176,7 @@ Rectangle {
         id: mainContainer
         anchors.fill: parent
 
-        // 自定义标题栏：最小化、关闭、可拖动
+        // Barra de título customizada: minimizar, fechar, arrastar
         Rectangle {
             id: titleBar
             x: layoutValue("titleBar", "x", 0)
@@ -190,8 +191,8 @@ Rectangle {
                 y: layoutValue("titleBar", "offsetY", 0)
             }
 
-            // 整条标题栏拖动（使用屏幕坐标，避免累计误差导致抖动）
-            // 放在最底层，让按钮的 MouseArea 可以优先响应
+            // Drag da barra de título (coordenadas de tela, evita acúmulo de erro)
+            // Camada inferior para que botões tenham prioridade
             MouseArea {
                 anchors.fill: parent
                 acceptedButtons: Qt.LeftButton
@@ -206,7 +207,7 @@ Rectangle {
                 onReleased: {
                     root.titleDragEnd()
                 }
-                z: 0  // 最底层
+                z: 0  // Camada inferior
             }
 
             RowLayout {
@@ -214,7 +215,7 @@ Rectangle {
                 anchors.leftMargin: 10
                 anchors.rightMargin: 8
                 spacing: 8
-                z: 1  // 按钮层在拖动层上方
+                z: 1  // Camada de botões acima do drag
 
                 // Logo UNESP
                 Image {
@@ -253,7 +254,7 @@ Rectangle {
                     Text {
                         id: statusTextItem
                         text: displayModel ? displayModel.statusText : ""
-                        font.family: "PingFang SC, Microsoft YaHei UI"
+                        font.family: "Inter, Ubuntu, Roboto, sans-serif"
                         font.pixelSize: layoutValue("statusText", "fontSize", 11)
                         color: layoutValue("statusText", "color", "#86909c")
                         elide: Text.ElideRight
@@ -265,10 +266,10 @@ Rectangle {
                     }
                 }
 
-                // 左侧拖动区域
+                // Área de drag
                 Item { id: dragArea; Layout.fillWidth: true; Layout.fillHeight: true }
 
-                // 打开布局编辑器
+                // Botão do editor de layout
                 Rectangle {
                     id: btnStudio
                     width: 36; height: layoutValue("btnMin", "height", 24); radius: layoutValue("btnMin", "radius", 6)
@@ -290,12 +291,12 @@ Rectangle {
                     }
                 }
 
-                // 最小化
+                // Minimizar
                 Rectangle {
                     id: btnMin
                     width: layoutValue("btnMin", "width", 24); height: layoutValue("btnMin", "height", 24); radius: layoutValue("btnMin", "radius", 6)
                     color: btnMinMouse.pressed ? layoutValue("btnMin", "colorPressed", "#e5e6eb") : (btnMinMouse.containsMouse ? layoutValue("btnMin", "colorHover", "#f2f3f5") : layoutValue("btnMin", "colorNormal", "transparent"))
-                    z: 2  // 确保按钮在最上层
+                    z: 2  // Z-index alto para prioridade
                     Behavior on color { ColorAnimation { duration: 150; easing.type: Easing.OutCubic } }
                     transform: Translate {
                         x: layoutValue("btnMin", "offsetX", 0)
@@ -310,12 +311,12 @@ Rectangle {
                     }
                 }
 
-                // 关闭
+                // Fechar
                 Rectangle {
                     id: btnClose
                     width: layoutValue("btnClose", "width", 24); height: layoutValue("btnClose", "height", 24); radius: layoutValue("btnClose", "radius", 6)
                     color: btnCloseMouse.pressed ? layoutValue("btnClose", "colorPressed", "#f53f3f") : (btnCloseMouse.containsMouse ? layoutValue("btnClose", "colorHover", "#ff7875") : layoutValue("btnClose", "colorNormal", "transparent"))
-                    z: 2  // 确保按钮在最上层
+                    z: 2  // Z-index alto para prioridade
                     Behavior on color { ColorAnimation { duration: 150; easing.type: Easing.OutCubic } }
                     transform: Translate {
                         x: layoutValue("btnClose", "offsetX", 0)
@@ -332,7 +333,7 @@ Rectangle {
             }
         }
 
-        // 内容区域（表情、TTS, 输入）
+        // Área de conteúdo (emoção, TTS, input)
         Item {
             id: contentArea
             x: layoutValue("contentArea", "x", 0)
@@ -350,7 +351,7 @@ Rectangle {
                 anchors.margins: layoutValue("contentArea", "margins", 12)
                 spacing: layoutValue("contentArea", "spacing", 12)
 
-            // 表情显示区域
+            // Área de exibição da emoção
             Item {
                 id: emotionAreaItem
                 Layout.fillWidth: true
@@ -490,7 +491,7 @@ Rectangle {
                 }
             }
 
-            // TTS 文本显示区域
+            // Área de texto TTS
             Rectangle {
                 id: ttsAreaRect
                 Layout.fillWidth: true
@@ -509,7 +510,7 @@ Rectangle {
                     anchors.fill: parent
                     anchors.margins: layoutValue("ttsArea", "textMargins", 10)
                     text: displayModel ? displayModel.ttsText : ""
-                    font.family: "PingFang SC, Microsoft YaHei UI"
+                    font.family: "Inter, Ubuntu, Roboto, sans-serif"
                     font.pixelSize: layoutValue("ttsArea", "fontSize", 13)
                     color: layoutValue("ttsArea", "textColor", "#555555")
                     horizontalAlignment: Text.AlignHCenter
@@ -534,7 +535,7 @@ Rectangle {
             }
         }
 
-        // 按钮区域（统一配色与尺寸）
+        // Barra de botões
         Rectangle {
             id: buttonBarRect
             x: layoutValue("buttonBar", "x", 0)
@@ -559,7 +560,7 @@ Rectangle {
                 anchors.bottomMargin: layoutValue("buttonBar", "bottomMargin", 10)
                 spacing: layoutValue("buttonBar", "spacing", 6)
 
-                // 自动模式按钮 - 主色
+                // Botão principal
                 Button {
                     id: autoBtn
                     Layout.preferredWidth: layoutValue("autoButton", "preferredWidth", 100)
@@ -586,17 +587,17 @@ Rectangle {
 
                     contentItem: Text {
                         text: autoBtn.text
-                        font.family: "PingFang SC, Microsoft YaHei UI"
+                        font.family: "Inter, Ubuntu, Roboto, sans-serif"
                         font.pixelSize: layoutValue("autoButton", "fontSize", 12)
                         color: layoutValue("autoButton", "textColor", "white")
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                         elide: Text.ElideRight
                     }
-                    onClicked: root.autoButtonClicked()
+                    onClicked: { idleTimer.wake(); root.autoButtonClicked() }
                 }
 
-                // 打断对话 - 次要色
+                // Botão interromper
                 Button {
                     id: abortBtn
                     Layout.preferredWidth: layoutValue("abortButton", "preferredWidth", 80)
@@ -621,7 +622,7 @@ Rectangle {
                     }
                     contentItem: Text {
                         text: abortBtn.text
-                        font.family: "PingFang SC, Microsoft YaHei UI"
+                        font.family: "Inter, Ubuntu, Roboto, sans-serif"
                         font.pixelSize: layoutValue("abortButton", "fontSize", 12)
                         color: layoutValue("abortButton", "textColor", "#1d2129")
                         horizontalAlignment: Text.AlignHCenter
@@ -631,7 +632,7 @@ Rectangle {
                     onClicked: root.abortButtonClicked()
                 }
 
-                // 输入 + 发送
+                // Input + Enviar
                 RowLayout {
                     Layout.fillWidth: true
                     Layout.minimumWidth: 120
@@ -660,13 +661,13 @@ Rectangle {
                             anchors.rightMargin: layoutValue("textInput", "rightMargin", 10)
                             verticalAlignment: TextInput.AlignVCenter
                             activeFocusOnTab: true
-                            font.family: "PingFang SC, Microsoft YaHei UI"
+                            font.family: "Inter, Ubuntu, Roboto, sans-serif"
                             font.pixelSize: layoutValue("textInput", "fontSize", 12)
                             color: layoutValue("textInput", "textColor", "#333333")
                             selectByMouse: true
                             clip: true
 
-                            // 占位符 - visible when empty (even when focused)
+                            // Placeholder - visível quando vazio (mesmo com foco)
                             Text {
                                 anchors.fill: parent
                                 text: "Digite uma mensagem..."
@@ -678,7 +679,7 @@ Rectangle {
                                 Behavior on opacity { NumberAnimation { duration: 200 } }
                             }
 
-                            Keys.onReturnPressed: root.sendCurrentText()
+                            Keys.onReturnPressed: { idleTimer.notifyActivity(); root.sendCurrentText() }
                         }
                     }
 
@@ -705,14 +706,14 @@ Rectangle {
                         }
                         contentItem: Text {
                             text: sendBtn.text
-                            font.family: "PingFang SC, Microsoft YaHei UI"
+                            font.family: "Inter, Ubuntu, Roboto, sans-serif"
                             font.pixelSize: layoutValue("sendButton", "fontSize", 12)
                             color: layoutValue("sendButton", "textColor", "white")
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
                             opacity: sendBtn.enabled ? 1.0 : 0.7
                         }
-                        onClicked: root.sendCurrentText()
+                        onClicked: { idleTimer.notifyActivity(); root.sendCurrentText() }
                     }
                 }
 
@@ -720,6 +721,178 @@ Rectangle {
         }
     }
     } // end rotationWrapper
+
+    // =========================================================================
+    // TELA IDLE / ATRAÇÃO - Totem UNESP Sorocaba
+    // =========================================================================
+    Rectangle {
+        id: idleScreen
+        anchors.fill: parent
+        z: 500
+        visible: idleTimer.isIdle && !studioActive
+        color: "#060f18"
+        opacity: visible ? 1.0 : 0.0
+        Behavior on opacity { NumberAnimation { duration: 500; easing.type: Easing.OutCubic } }
+
+        // Background gradient
+        Rectangle {
+            anchors.fill: parent
+            gradient: Gradient {
+                GradientStop { position: 0.0; color: "#0d1b2a" }
+                GradientStop { position: 0.5; color: "#1b2838" }
+                GradientStop { position: 1.0; color: "#0d1b2a" }
+            }
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            onClicked: idleTimer.wake()
+        }
+
+        ColumnLayout {
+            anchors.centerIn: parent
+            spacing: 30
+            width: parent.width * 0.8
+
+            // Logo UNESP
+            Image {
+                source: "../../assets/logo.png"
+                fillMode: Image.PreserveAspectFit
+                Layout.preferredHeight: Math.min(parent.parent.height * 0.08, 60)
+                Layout.preferredWidth: Math.min(parent.parent.width * 0.25, 200)
+                Layout.alignment: Qt.AlignHCenter
+                opacity: 0.9
+            }
+
+            // Relógio ao vivo
+            Text {
+                id: idleClock
+                text: "00:00"
+                font.family: "Inter, Ubuntu, Roboto, sans-serif"
+                font.pixelSize: Math.min(parent.parent.parent.width * 0.12, 96)
+                font.weight: Font.Light
+                color: "#e0e6ed"
+                Layout.alignment: Qt.AlignHCenter
+                horizontalAlignment: Text.AlignHCenter
+
+                Timer {
+                    interval: 1000
+                    running: idleScreen.visible
+                    repeat: true
+                    triggeredOnStart: true
+                    onTriggered: {
+                        var now = new Date()
+                        idleClock.text = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0')
+                        idleDate.text = now.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })
+                    }
+                }
+            }
+
+            Text {
+                id: idleDate
+                text: ""
+                font.family: "Inter, Ubuntu, Roboto, sans-serif"
+                font.pixelSize: 16
+                color: "#8899aa"
+                Layout.alignment: Qt.AlignHCenter
+                horizontalAlignment: Text.AlignHCenter
+            }
+
+            Item { Layout.preferredHeight: 20 }
+
+            // Botão "Fale com a Mina" pulsante
+            Rectangle {
+                id: idleTalkBtn
+                Layout.preferredWidth: Math.min(parent.parent.parent.width * 0.5, 320)
+                Layout.preferredHeight: 64
+                Layout.alignment: Qt.AlignHCenter
+                radius: 32
+                color: idleTalkMa.pressed ? "#0e42d2" : "#165dff"
+                border.width: 2
+                border.color: "#4fb4ff"
+
+                Behavior on color { ColorAnimation { duration: 150 } }
+
+                // Glow pulsante
+                SequentialAnimation on border.color {
+                    running: idleScreen.visible
+                    loops: Animation.Infinite
+                    ColorAnimation { to: "#8fdaff"; duration: 1200; easing.type: Easing.InOutSine }
+                    ColorAnimation { to: "#4fb4ff"; duration: 1200; easing.type: Easing.InOutSine }
+                }
+
+                scale: idleTalkMa.pressed ? 0.95 : 1.0
+                Behavior on scale { NumberAnimation { duration: 100 } }
+
+                Text {
+                    anchors.centerIn: parent
+                    text: "\uD83C\uDFA4  Fale com a Mina"
+                    font.family: "Inter, Ubuntu, Roboto, sans-serif"
+                    font.pixelSize: 20
+                    font.bold: true
+                    color: "white"
+                }
+
+                MouseArea {
+                    id: idleTalkMa
+                    anchors.fill: parent
+                    onClicked: {
+                        idleTimer.wake()
+                        root.autoButtonClicked()
+                    }
+                }
+            }
+
+            // Subtexto
+            Text {
+                text: "ou digite sua pergunta"
+                font.family: "Inter, Ubuntu, Roboto, sans-serif"
+                font.pixelSize: 13
+                color: "#556677"
+                Layout.alignment: Qt.AlignHCenter
+                horizontalAlignment: Text.AlignHCenter
+            }
+        }
+
+        // Rodapé
+        Text {
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 20
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: "Laboratório G.E.R.A — UNESP Sorocaba"
+            font.family: "Inter, Ubuntu, Roboto, sans-serif"
+            font.pixelSize: 12
+            color: "#445566"
+        }
+    }
+
+    // Timer de inatividade — volta para idle após 120s
+    Timer {
+        id: idleTimer
+        interval: 1000
+        running: true
+        repeat: true
+        property bool isIdle: true
+        property int secondsSinceActivity: 0
+        property int idleTimeout: 120  // seconds
+
+        function wake() {
+            isIdle = false
+            secondsSinceActivity = 0
+        }
+
+        function notifyActivity() {
+            secondsSinceActivity = 0
+            if (isIdle) isIdle = false
+        }
+
+        onTriggered: {
+            secondsSinceActivity++
+            if (!isIdle && secondsSinceActivity >= idleTimeout) {
+                isIdle = true
+            }
+        }
+    }
 
     // =========================================================================
     // STUDIO / LAYOUT EDITOR OVERLAY

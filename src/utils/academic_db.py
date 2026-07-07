@@ -1,10 +1,15 @@
 import sqlite3
 import os
+import threading
+import time
 from datetime import datetime, timezone, timedelta
 from typing import List, Dict, Any
 from src.utils.logging_config import get_logger
 
 logger = get_logger(__name__)
+
+_sync_lock = threading.Lock()
+_last_sync_time: float = 0
 
 DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "config", "academic.db")
 
@@ -268,12 +273,23 @@ def sync_from_scraper():
         except Exception as e:
             logger.error("Failed to write scraped schedules to local database: %s", e)
 
+def _throttled_sync():
+    """Wrapper that updates _last_sync_time and releases the lock after sync."""
+    global _last_sync_time
+    try:
+        sync_from_scraper()
+    finally:
+        _last_sync_time = time.monotonic()
+        _sync_lock.release()
+
+
 def get_academic_context(user_query: str = None) -> str:
     """Format SQLite database tables into a prompt-friendly context text block, 
     dynamically filtering schedules based on the user's query keywords to save tokens."""
-    import threading
-    # Fire off database synchronization in the background
-    threading.Thread(target=sync_from_scraper, daemon=True).start()
+    # Throttled sync: max once per 60s, skip if already running
+    if time.monotonic() - _last_sync_time > 60:
+        if _sync_lock.acquire(blocking=False):
+            threading.Thread(target=_throttled_sync, daemon=True).start()
 
     if not os.path.exists(DB_PATH):
         return "Nenhum dado acadêmico da UNESP disponível no momento."

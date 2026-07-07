@@ -274,7 +274,7 @@ class ChatBridge:
             headers["Authorization"] = f"Bearer {api_key}"
 
         if not self._session or self._session.closed:
-            self._session = aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=60))
+            self._session = aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=15, connect=8))
 
         async with self._session.post(api_url, json=payload, headers=headers) as resp:
             if resp.status != 200:
