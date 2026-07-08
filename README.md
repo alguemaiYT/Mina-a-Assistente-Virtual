@@ -58,7 +58,7 @@ pip install nemo_toolkit[asr] librosa torch
 ### 2. Configurar Variáveis de Ambiente
 Copie o exemplo de configuração e insira as suas chaves de API:
 ```bash
-cp config/config.example.json config/config.json
+cp .env.example .env
 ```
 
 ### 3. Rodar a Assistente
