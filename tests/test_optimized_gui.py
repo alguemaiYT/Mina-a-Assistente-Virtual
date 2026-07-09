@@ -27,10 +27,12 @@ env["DISPLAY"] = display
 if xauth:
     env["XAUTHORITY"] = xauth
 
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 print(f"Starting main_gui.py on display {display} with system_optimizer...")
 proc = subprocess.Popen(
     ["python3", "main_gui.py"],
-    cwd="/root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A",
+    cwd=project_root,
     env=env,
     stdout=subprocess.PIPE,
     stderr=subprocess.PIPE,
