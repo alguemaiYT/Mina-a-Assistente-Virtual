@@ -17,7 +17,7 @@ Mina é uma assistente virtual de voz interativa e inteligente, construída para
    * Daemon integrado com `sherpa-onnx` que escuta continuamente por *"Alexa"* ou *"Hey Jarvis"* de forma 100% offline, emitindo um sinal sonoro de confirmação ao ser ativado.
 5. **Interface Gráfica e Linha de Comando:**
    * **Modo CLI:** Loop interativo de console (`main_cli.py`).
-   * **Modo GUI:** Interface gráfica moderna construída com `PyQt5` e sincronização assíncrona de emoções em tempo real (`main_gui.py`).
+   * **Modo GUI:** Interface gráfica moderna construída com `PyQt5` e sincronização assíncrona de emoções em tempo real (`main_gui.py`), incluindo tela de descanso NTP rotativa e otimizações avançadas de QML.
 
 ---
 
@@ -34,6 +34,7 @@ Mina-a-Assistente-Virtual/
 │       ├── intent_classifier.py # Classificador de intenções local e offline (MABI)
 │       ├── stt_client.py     # Transcritor local (PortAudio + C bindings)
 │       └── tts_client.py     # Sintetizador local (edge-tts + miniaudio)
+│       ├── ntp_sync.py       # Sincronização de horário NTP com cache em SQLite
 ├── scripts/                  # Scripts de sincronização e utilitários
 │   └── unesp_scraper.py      # Coletor em segundo plano do portal UNESP Sorocaba
 ├── main_cli.py               # Launcher em modo Linha de Comando (Console)

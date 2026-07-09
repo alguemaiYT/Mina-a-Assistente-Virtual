@@ -36,3 +36,9 @@ Welcome, AI Agent. This document provides universal guidelines, architectural co
 - **Hardcoded Configuration:** Recent efforts have removed hardcoded fallback IPs (e.g., in `academic_db.py`). Please avoid introducing hardcoded network addresses or paths. Use `.env` or configurations for dynamic values.
 - **Database Hygiene:** Databases are no longer tracked in the repository to maintain cleanliness.
 - **Performance:** Performance optimizations (like TTS normalization and DB sync logic) have been made. Be mindful of introducing performance regressions, particularly in the hot loops (like canvas drag/resize I/O or Wake Word processing).
+
+## 5. Architectural Updates (2026-07-09)
+
+- **NTP Sync & Timekeeping:** The system now incorporates persistent NTP time offset synchronization (`src/utils/ntp_sync.py`). The calculated offset is stored in `memory.db` to ensure accuracy even upon offline reboots. Agents must utilize this offset when time-sensitive calculations are required.
+- **UI & Display Architecture:** The GUI layout now wraps screen elements, such as the `idleScreen`, inside a `rotationWrapper` within `src/display/gui_display.qml`. This ensures compliance with dynamic screen rotation parameters (`-g` flags). Agents modifying visual components must place them correctly within this hierarchical flow.
+- **Performance:** JSON token parsing and database initialization checks have been optimized. Agents should be mindful of modifying these data parsing paths to avoid regressions in performance.
