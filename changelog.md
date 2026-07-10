@@ -4,18 +4,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased] - 2026-07-09
+## [Unreleased] - 2026-07-10
 
 ### Added
-- feat: implement persistent NTP time offset sync for idle screen clock and add ntp unit tests (4ff72a7)
+- Feat: implement persistent NTP time offset sync for idle screen clock and add ntp unit tests (4ff72a7)
 
 ### Changed
-- refactor: improve architecture, QML layout, and repo hygiene (0203d33)
+- Bolt: [performance] reuse HTTP session for remote TTS (043f1e8)
+- Perf: Batch database inserts to reduce N+1 queries in scraper sync (43bff49)
+- Refactor: improve architecture, QML layout, and repo hygiene (0203d33)
 - Bolt: Optimized DB init checks and JSON token parsing (6bc9ed3)
 
 ### Fixed
-- fix: move idleScreen inside rotationWrapper so it honors rotation parameters (-g) (a02f37d)
-- fix: restore missing closing docstring quote in handle_send_text (e44d13a)
+- Fix: move idleScreen inside rotationWrapper so it honors rotation parameters (-g) (a02f37d)
+- Fix: restore missing closing docstring quote in handle_send_text (e44d13a)
 
 ## [Unreleased] - 2026-07-07
 

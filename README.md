@@ -18,6 +18,8 @@ Mina é uma assistente virtual de voz interativa e inteligente, construída para
 5. **Interface Gráfica e Linha de Comando:**
    * **Modo CLI:** Loop interativo de console (`main_cli.py`).
    * **Modo GUI:** Interface gráfica moderna construída com `PyQt5` e sincronização assíncrona de emoções em tempo real (`main_gui.py`), incluindo tela de descanso NTP rotativa e otimizações avançadas de QML.
+6. **Sincronização de Tempo (NTP):**
+   * A interface gráfica (`GUI`) utiliza um offset de tempo NTP persistente para garantir precisão do relógio em dispositivos sem RTC, sincronizando offline por meio do `memory.db`.
 
 ---
 
