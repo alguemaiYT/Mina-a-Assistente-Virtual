@@ -67,12 +67,16 @@ class TTSClient:
         # mDNS / Remote API
         self._base_url = base_url
         self._resolved_url = None
+        self._session = None
 
     @property
     def enabled(self) -> bool:
         return self._enabled
 
     async def close(self) -> None:
+        if self._session is not None and not self._session.closed:
+            await self._session.close()
+
         if self._device is not None:
             try:
                 self._device.close()
@@ -177,28 +181,31 @@ class TTSClient:
             try:
                 t0 = time.perf_counter()
                 import aiohttp
-                async with aiohttp.ClientSession() as session:
-                    payload = {
-                        "text": text,
-                        "voice": self._voice,
-                        "rate": self._rate,
-                        "pitch": self._pitch,
-                        "volume": self._volume
-                    }
-                    async with session.post(f"{self._resolved_url}/synthesize", json=payload, timeout=5) as resp:
-                        if resp.status == 200:
-                            audio = await resp.read()
-                            elapsed = time.perf_counter() - t0
-                            logger.info("TTS remote synthesis OK | chars=%d | latency=%.3fs | server=%s", len(text), elapsed, self._resolved_url)
 
-                            if len(self._cache) >= self._cache_max:
-                                oldest = next(iter(self._cache))
-                                del self._cache[oldest]
-                            self._cache[key] = audio
-                            return audio
-                        else:
-                            body = await resp.text()
-                            logger.warning("Remote TTS synthesis returned error status %d: %s", resp.status, body)
+                if self._session is None or self._session.closed:
+                    self._session = aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=5))
+
+                payload = {
+                    "text": text,
+                    "voice": self._voice,
+                    "rate": self._rate,
+                    "pitch": self._pitch,
+                    "volume": self._volume
+                }
+                async with self._session.post(f"{self._resolved_url}/synthesize", json=payload) as resp:
+                    if resp.status == 200:
+                        audio = await resp.read()
+                        elapsed = time.perf_counter() - t0
+                        logger.info("TTS remote synthesis OK | chars=%d | latency=%.3fs | server=%s", len(text), elapsed, self._resolved_url)
+
+                        if len(self._cache) >= self._cache_max:
+                            oldest = next(iter(self._cache))
+                            del self._cache[oldest]
+                        self._cache[key] = audio
+                        return audio
+                    else:
+                        body = await resp.text()
+                        logger.warning("Remote TTS synthesis returned error status %d: %s", resp.status, body)
             except Exception as exc:
                 logger.warning("Failed to fetch remote TTS audio, falling back to local: %s", exc)
 
