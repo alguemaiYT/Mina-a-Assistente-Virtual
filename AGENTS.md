@@ -44,3 +44,9 @@ Welcome, AI Agent. This document provides universal guidelines, architectural co
 - **Performance:** Performance optimizations (like TTS normalization, TTS HTTP session pooling, DB init caching, and DB sync batching logic) have been made. Be mindful of introducing performance regressions, particularly in the hot loops (like canvas drag/resize I/O or Wake Word processing).
 - **Performance Optimization Boundaries:** Always run lint/tests before creating a PR, add explanatory comments, and document performance impact. Ask before adding dependencies or making architectural changes. Never modify project config files without instruction, make breaking changes, optimize prematurely, or sacrifice readability.
 - **Critical Learnings Journal:** Maintain a critical learnings journal at `.jules/bolt.md` using the format `## YYYY-MM-DD - [Title] \n **Learning:** [Insight] \n **Action:** [How to apply next time]` to document codebase-specific performance patterns and surprising edge cases.
+
+## 5. Architectural Updates (2026-07-09)
+
+- **NTP Sync & Timekeeping:** The system now incorporates persistent NTP time offset synchronization (`src/utils/ntp_sync.py`). The calculated offset is stored in `memory.db` to ensure accuracy even upon offline reboots. Agents must utilize this offset when time-sensitive calculations are required.
+- **UI & Display Architecture:** The GUI layout now wraps screen elements, such as the `idleScreen`, inside a `rotationWrapper` within `src/display/gui_display.qml`. This ensures compliance with dynamic screen rotation parameters (`-g` flags). Agents modifying visual components must place them correctly within this hierarchical flow.
+- **Performance:** JSON token parsing and database initialization checks have been optimized. Agents should be mindful of modifying these data parsing paths to avoid regressions in performance.
