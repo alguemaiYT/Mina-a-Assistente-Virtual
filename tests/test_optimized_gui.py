@@ -30,7 +30,7 @@ if xauth:
 print(f"Starting main_gui.py on display {display} with system_optimizer...")
 proc = subprocess.Popen(
     ["python3", "main_gui.py"],
-    cwd="/root/Repos/Mina-a-Assistente-Virtual-Do-G.E.R.A",
+    cwd=os.path.dirname(os.path.dirname(os.path.realpath(__file__))),
     env=env,
     stdout=subprocess.PIPE,
     stderr=subprocess.PIPE,
