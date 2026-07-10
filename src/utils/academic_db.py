@@ -239,27 +239,33 @@ def sync_from_scraper():
     active_classes = raw.get("active_classes", [])
     upcoming_classes = raw.get("upcoming_classes", [])
     
-    # Sync News & Events
-    for n in news:
-        title = n.get("title", "")
-        link = n.get("link", "")
-        pub_date = n.get("pub_date", "")
-        category = ", ".join(n.get("categories", []))
-        if title:
-            save_news_event(title, link, pub_date, category, is_event=False)
-            
-    # Sync Weekly schedules
-    day_of_week = raw.get("day_of_week")
-    if day_of_week is not None:
-        try:
+    init_db()
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    try:
+        # Sync News & Events using a single transaction
+        # ⚡ Bolt: Batching news inserts to reduce DB connection overhead
+        for n in news:
+            title = n.get("title", "")
+            link = n.get("link", "")
+            pub_date = n.get("pub_date", "")
+            category = ", ".join(n.get("categories", []))
+            if title:
+                cursor.execute("SELECT id FROM news_events WHERE title = ?", (title,))
+                if not cursor.fetchone():
+                    cursor.execute("""
+                        INSERT INTO news_events (title, link, pub_date, category, is_event)
+                        VALUES (?, ?, ?, ?, ?)
+                    """, (title, link, pub_date, category, 0))
+
+        # Sync Weekly schedules using the same transaction
+        day_of_week = raw.get("day_of_week")
+        if day_of_week is not None:
             # Clear old schedules for this weekday to keep it updated
-            init_db()
-            conn = sqlite3.connect(DB_PATH)
-            cursor = conn.cursor()
             cursor.execute("DELETE FROM schedules WHERE weekday = ?", (day_of_week,))
-            conn.commit()
-            conn.close()
             
+            # ⚡ Bolt: Batching schedule inserts to reduce N+1 queries and connection overhead
             # Map time tuple (e.g. 8.0, 11.6) to HH:MM format
             for c in active_classes + upcoming_classes:
                 time_range = c.get("time", (0.0, 0.0))
@@ -271,17 +277,29 @@ def sync_from_scraper():
                 start_time = f"{start_h:02d}:{start_m:02d}"
                 end_time = f"{end_h:02d}:{end_m:02d}"
                 
-                save_schedule(
-                    subject=c.get("subject", ""),
-                    weekday=day_of_week,
-                    start_time=start_time,
-                    end_time=end_time,
-                    room=c.get("room", ""),
-                    teacher_name=c.get("teacher", "")
-                )
+                subject = c.get("subject", "")
+                room = c.get("room", "")
+                teacher_name = c.get("teacher", "")
+
+                cursor.execute("""
+                    SELECT id FROM schedules
+                    WHERE subject = ? AND weekday = ? AND start_time = ? AND room = ?
+                """, (subject, day_of_week, start_time, room))
+                if not cursor.fetchone():
+                    cursor.execute("""
+                        INSERT INTO schedules (subject, weekday, start_time, end_time, room, teacher_name)
+                        VALUES (?, ?, ?, ?, ?, ?)
+                    """, (subject, day_of_week, start_time, end_time, room, teacher_name))
+
             logger.info("Successfully updated weekday %d schedules from Scraper API", day_of_week)
-        except Exception as e:
-            logger.error("Failed to write scraped schedules to local database: %s", e)
+
+        # Commit all batched operations at once
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        logger.error("Failed to write scraped data to local database: %s", e)
+    finally:
+        conn.close()
 
 def _throttled_sync():
     """Wrapper that updates _last_sync_time and releases the lock after sync."""
