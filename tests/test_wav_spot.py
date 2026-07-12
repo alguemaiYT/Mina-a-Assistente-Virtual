@@ -4,14 +4,14 @@ import numpy as np
 
 def main():
     kws = sherpa_onnx.KeywordSpotter(
-        tokens='sherpa-onnx-kws-zipformer-gigaspeech-3.3M-2024-01-01/tokens.txt',
-        encoder='sherpa-onnx-kws-zipformer-gigaspeech-3.3M-2024-01-01/encoder-epoch-12-avg-2-chunk-16-left-64.int8.onnx',
-        decoder='sherpa-onnx-kws-zipformer-gigaspeech-3.3M-2024-01-01/decoder-epoch-12-avg-2-chunk-16-left-64.int8.onnx',
-        joiner='sherpa-onnx-kws-zipformer-gigaspeech-3.3M-2024-01-01/joiner-epoch-12-avg-2-chunk-16-left-64.int8.onnx',
-        keywords_file='sherpa-onnx-kws-zipformer-gigaspeech-3.3M-2024-01-01/test_wavs/test_keywords.txt'
+        tokens='models/sherpa-onnx-kws-zipformer-gigaspeech-3.3M-2024-01-01/tokens.txt',
+        encoder='models/sherpa-onnx-kws-zipformer-gigaspeech-3.3M-2024-01-01/encoder-epoch-12-avg-2-chunk-16-left-64.int8.onnx',
+        decoder='models/sherpa-onnx-kws-zipformer-gigaspeech-3.3M-2024-01-01/decoder-epoch-12-avg-2-chunk-16-left-64.int8.onnx',
+        joiner='models/sherpa-onnx-kws-zipformer-gigaspeech-3.3M-2024-01-01/joiner-epoch-12-avg-2-chunk-16-left-64.int8.onnx',
+        keywords_file='models/sherpa-onnx-kws-zipformer-gigaspeech-3.3M-2024-01-01/test_wavs/test_keywords.txt'
     )
     s = kws.create_stream()
-    f = wave.open('sherpa-onnx-kws-zipformer-gigaspeech-3.3M-2024-01-01/test_wavs/0.wav')
+    f = wave.open('models/sherpa-onnx-kws-zipformer-gigaspeech-3.3M-2024-01-01/test_wavs/0.wav')
     samples = np.frombuffer(f.readframes(f.getnframes()), dtype=np.int16).astype(np.float32) / 32768
     s.accept_waveform(f.getframerate(), samples)
 

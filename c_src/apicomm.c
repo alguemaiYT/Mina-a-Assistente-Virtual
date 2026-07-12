@@ -226,7 +226,7 @@ int main()
 
     // Load optimized prompt
     char system_prompt_text[MAX_SYSTEM_PROMPT] = "Você é a Mina AI.";
-    FILE *pf = fopen("prompts.txt", "r");
+    FILE *pf = fopen("config/prompts.txt", "r");
     if (pf)
     {
         size_t n = fread(system_prompt_text, 1, sizeof(system_prompt_text) - 1, pf);

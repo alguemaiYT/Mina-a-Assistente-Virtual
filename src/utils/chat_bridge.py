@@ -84,7 +84,7 @@ class ChatBridge:
         self.proc = None
 
     def _load_system_prompt(self) -> str:
-        prompt_path = os.path.join(os.path.dirname(__file__), "..", "..", "prompts.txt")
+        prompt_path = os.path.join(os.path.dirname(__file__), "..", "..", "config", "prompts.txt")
         if not os.path.exists(prompt_path):
             return DEFAULT_SYSTEM_PROMPT
         with open(prompt_path, "r", encoding="utf-8") as prompt_file:

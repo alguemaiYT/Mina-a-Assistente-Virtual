@@ -70,7 +70,7 @@ def main():
         print("Warning: No audio input device found!", file=sys.stderr)
         sys.exit(1)
         
-    model_dir = "sherpa-onnx-kws-zipformer-gigaspeech-3.3M-2024-01-01"
+    model_dir = "models/sherpa-onnx-kws-zipformer-gigaspeech-3.3M-2024-01-01"
     
     encoder = f"{model_dir}/encoder-epoch-12-avg-2-chunk-16-left-64.int8.onnx"
     decoder = f"{model_dir}/decoder-epoch-12-avg-2-chunk-16-left-64.int8.onnx"

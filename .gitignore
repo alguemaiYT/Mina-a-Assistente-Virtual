@@ -24,3 +24,8 @@ venv/
 # Model binaries (downloaded via setup scripts)
 *.onnx
 *.bin
+
+# AI-related markdown files
+AGENTS.md
+GEMINI.md
+.github/copilot-instructions.md
