@@ -14,7 +14,6 @@ from PyQt5.QtWidgets import (
     QPushButton,
     QSpinBox,
     QVBoxLayout,
-    QWidget,
 )
 
 from src.views.settings.components.base_settings_widget import BaseSettingsWidget

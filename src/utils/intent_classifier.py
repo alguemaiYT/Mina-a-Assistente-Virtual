@@ -8,8 +8,6 @@ executa a query e responde instantaneamente de forma offline.
 """
 
 import re
-import os
-import sqlite3
 from typing import Tuple, Optional
 from src.utils.logging_config import get_logger
 
@@ -144,7 +142,7 @@ class IntentClassifier:
         lista_noticias = []
         for i, n in enumerate(noticias):
             tipo = "evento" if n["is_event"] else "notícia"
-            lista_noticias.append(f"{i + 1}: {n['title']}")
+            lista_noticias.append(f"{i + 1} ({tipo}): {n['title']}")
 
         resumo = " | ".join(lista_noticias)
         return f"Encontrei as seguintes novidades no mural da UNESP: {resumo}."
