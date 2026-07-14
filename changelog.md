@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased] - 2026-07-14
+
+### Changed
+- Refactor: clean up repository root, reorganize models, tests, and scripts (4634572)
+- Chore: remove obsolete tests and clean up unused imports/variables (df65b2e)
+
 ## [Unreleased] - 2026-07-10
 
 ### Added
