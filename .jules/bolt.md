@@ -9,3 +9,7 @@
 ## 2024-07-10 - Reusing HTTP Sessions for Real-Time TTS
 **Learning:** The codebase repeatedly creates an `aiohttp.ClientSession` for each audio chunk request during real-time TTS. This adds significant overhead (TCP and TLS handshake latency) to each synthesis request, which severely impacts response times for small audio chunks.
 **Action:** Reuse a single `aiohttp.ClientSession` across multiple requests by initializing it in the client instance and tearing it down only when the client is closed.
+
+## 2024-08-01 - Blocking Async Event Loop with Audio Decoding
+**Learning:** Calling CPU-bound synchronous functions like `miniaudio.decode` inside an `async def` method directly blocks the main asyncio event loop. In real-time streaming applications, this causes delays in processing incoming network chunks, UI events, and audio playback start times.
+**Action:** Always offload synchronous CPU-bound operations (like parsing large JSONs or decoding audio) to a background thread using `await asyncio.to_thread(func, *args, **kwargs)` when inside an active async event loop.
