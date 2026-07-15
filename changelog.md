@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+### Changed
+- Refactor: clean up repository root and reorganize models, tests, and scripts (4634572)
+- Chore: remove unused imports and clean up variables (df65b2e)
+
+### Removed
+- Remove obsolete tests (analyze_wav.py, test_openwakeword.py) (df65b2e)
+- Remove AGENTS.md (4634572)
+
 ## [Unreleased] - 2026-07-10
 
 ### Added

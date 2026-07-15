@@ -35,13 +35,16 @@ Mina-a-Assistente-Virtual/
 │       ├── chat_bridge.py    # Gerenciador da conexão com LLMs / APICOMM
 │       ├── intent_classifier.py # Classificador de intenções local e offline (MABI)
 │       ├── stt_client.py     # Transcritor local (PortAudio + C bindings)
-│       └── tts_client.py     # Sintetizador local (edge-tts + miniaudio)
-│       ├── ntp_sync.py       # Sincronização de horário NTP com cache em SQLite
+│       ├── tts_client.py     # Sintetizador local (edge-tts + miniaudio)
+│       └── ntp_sync.py       # Sincronização de horário NTP com cache em SQLite
+├── config/
+│   └── prompts.txt           # Prompt do sistema (Fallback)
 ├── scripts/                  # Scripts de sincronização e utilitários
-│   └── unesp_scraper.py      # Coletor em segundo plano do portal UNESP Sorocaba
+│   ├── unesp_scraper.py      # Coletor em segundo plano do portal UNESP Sorocaba
+│   ├── mina_wakeword_daemon.py # Daemon do Wake Word (Monitoramento de Microfone em background)
+│   └── mabi_voice_interface.py # Script integrado de demonstração rápida acústica local MABI
 ├── main_cli.py               # Launcher em modo Linha de Comando (Console)
 ├── main_gui.py               # Launcher em modo Interface Gráfica
-├── mabi_voice_interface.py   # Script integrado de demonstração rápida acústica local MABI
 └── requirements.txt          # Dependências do Python
 ```
 
@@ -76,7 +79,7 @@ cp .env.example .env
   ```
 * **Daemon do Wake Word (Monitoramento de Microfone em background):**
   ```bash
-  python mina_wakeword_daemon.py
+  python scripts/mina_wakeword_daemon.py
   ```
 
 ---
