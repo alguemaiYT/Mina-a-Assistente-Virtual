@@ -246,7 +246,7 @@ class TTSClient:
             return
         async with self._audio_lock:
             try:
-                decoded = miniaudio.decode(audio_bytes, output_format=miniaudio.SampleFormat.SIGNED16)
+                decoded = await asyncio.to_thread(miniaudio.decode, audio_bytes, output_format=miniaudio.SampleFormat.SIGNED16)
                 if not decoded.samples or decoded.num_frames == 0:
                     return
 

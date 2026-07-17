@@ -8,6 +8,9 @@ from src.utils.tts_client import TTSClient
 
 # logging.basicConfig(level=logging.INFO)
 
+import pytest
+
+@pytest.mark.asyncio
 async def test_pipeline():
     GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
     if not GROQ_API_KEY:
