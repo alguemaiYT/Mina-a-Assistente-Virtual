@@ -6,7 +6,15 @@ import aiohttp
 from src.utils.chat_bridge import ChatBridge
 from src.utils.tts_client import TTSClient
 
-import pytest
+try:
+    import pytest
+except ImportError:
+    class DummyMark:
+        def __getattr__(self, name):
+            return lambda func: func
+    class DummyPytest:
+        mark = DummyMark()
+    pytest = DummyPytest()
 
 # logging.basicConfig(level=logging.INFO)
 
