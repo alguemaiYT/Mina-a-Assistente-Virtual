@@ -491,47 +491,66 @@ Rectangle {
                 }
             }
 
-            // Área de texto TTS
+            // Área de texto TTS com Flickable e rolagem vertical
             Rectangle {
                 id: ttsAreaRect
                 Layout.fillWidth: true
-                Layout.preferredHeight: layoutValue("ttsArea", "height", 60)
+                Layout.preferredHeight: layoutValue("ttsArea", "height", 80)
+                Layout.minimumHeight: 60
+                Layout.maximumHeight: Math.max(100, parent.height * 0.4)
                 color: layoutValue("ttsArea", "color", "transparent")
                 radius: 16
                 border.width: 1
                 border.color: "#1d334a"
+                clip: true
                 transform: Translate {
                     x: layoutValue("ttsArea", "offsetX", 0)
                     y: layoutValue("ttsArea", "offsetY", 0)
                 }
 
-                Text {
-                    id: ttsTextDisplay
+                Flickable {
+                    id: ttsFlickable
                     anchors.fill: parent
                     anchors.margins: layoutValue("ttsArea", "textMargins", 10)
-                    text: displayModel ? displayModel.ttsText : ""
-                    font.family: "Inter, Ubuntu, Roboto, sans-serif"
-                    font.pixelSize: layoutValue("ttsArea", "fontSize", 13)
-                    color: layoutValue("ttsArea", "textColor", "#555555")
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                    wrapMode: Text.WordWrap
+                    contentWidth: ttsTextDisplay.width
+                    contentHeight: ttsTextDisplay.height
+                    clip: true
+                    boundsBehavior: Flickable.StopAtBounds
+                    flickableDirection: Flickable.VerticalFlick
+
+                    ScrollBar.vertical: ScrollBar {
+                        policy: ttsTextDisplay.height > ttsFlickable.height ? ScrollBar.AlwaysOn : ScrollBar.AsNeeded
+                        active: true
+                    }
+
+                    Text {
+                        id: ttsTextDisplay
+                        width: ttsFlickable.width
+                        text: displayModel ? displayModel.ttsText : ""
+                        font.family: "Inter, Ubuntu, Roboto, sans-serif"
+                        font.pixelSize: layoutValue("ttsArea", "fontSize", 13)
+                        color: layoutValue("ttsArea", "textColor", "#edf5ff")
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: ttsTextDisplay.height < ttsFlickable.height ? Text.AlignVCenter : Text.AlignTop
+                        wrapMode: Text.WordWrap
+                    }
                 }
 
                 // Smooth fade animation when TTS text changes
                 Connections {
                     target: displayModel
                     function onTtsTextChanged() {
+                        ttsFlickable.contentY = 0
                         ttsTextFade.restart()
                     }
                 }
 
                 SequentialAnimation {
                     id: ttsTextFade
-                    NumberAnimation { target: ttsTextDisplay; property: "opacity"; to: 0.4; duration: 80 }
-                    NumberAnimation { target: ttsTextDisplay; property: "opacity"; to: 1.0; duration: 200; easing.type: Easing.OutCubic }
+                    NumberAnimation { target: ttsFlickable; property: "opacity"; to: 0.4; duration: 80 }
+                    NumberAnimation { target: ttsFlickable; property: "opacity"; to: 1.0; duration: 200; easing.type: Easing.OutCubic }
                 }
-                }
+            }
             }
         }
 

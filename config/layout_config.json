@@ -9,8 +9,8 @@
         "y": null,
         "width": null,
         "height_canvas": null,
-        "offsetX": -1.0,
-        "offsetY": -2.0
+        "offsetX": 0.0,
+        "offsetY": 0.0
     },
     "statusDot": {
         "width": 8,
@@ -87,7 +87,7 @@
         "fontSize": 18.0,
         "textColor": "#edf5ff",
         "offsetX": 0.0,
-        "offsetY": 1.0
+        "offsetY": 0.0
     },
     "buttonBar": {
         "height": 64.0,
@@ -100,7 +100,7 @@
         "width": null,
         "height_canvas": null,
         "offsetX": 0.0,
-        "offsetY": 3.0
+        "offsetY": 0.0
     },
     "autoButton": {
         "preferredWidth": 100,

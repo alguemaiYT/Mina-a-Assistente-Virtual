@@ -31,8 +31,8 @@ class GuiDisplay(BaseDisplay, QObject, metaclass=CombinedMeta):
 
     # Constantes
     EMOTION_EXTENSIONS = (".gif", ".png", ".jpg", ".jpeg", ".webp")
-    DEFAULT_WINDOW_SIZE = (880, 560)
-    MINIMUM_WINDOW_SIZE = (480, 360)
+    DEFAULT_WINDOW_SIZE = (1024, 600)
+    MINIMUM_WINDOW_SIZE = (800, 500)
     DEFAULT_FONT_SIZE = 12
     QUIT_TIMEOUT_MS = 3000
 
@@ -236,8 +236,11 @@ class GuiDisplay(BaseDisplay, QObject, metaclass=CombinedMeta):
         window_size, is_fullscreen = self._calculate_window_size()
         self.root.resize(*window_size)
 
-        # Tamanho mínimo da janela
-        self.root.setMinimumSize(*self.MINIMUM_WINDOW_SIZE)
+        # Tamanho mínimo da janela (ajustado para rotação)
+        min_w, min_h = self.MINIMUM_WINDOW_SIZE
+        if self._rotation_angle % 180 != 0:
+            min_w, min_h = min_h, min_w
+        self.root.setMinimumSize(min_w, min_h)
 
         # Salva estado fullscreen para uso no show
         self._is_fullscreen = is_fullscreen
@@ -267,9 +270,8 @@ class GuiDisplay(BaseDisplay, QObject, metaclass=CombinedMeta):
 
             # Calcula tamanho conforme modo
             if window_size_mode == "default":
-                # Padrão: 50%
-                width = int(screen_width * 0.5)
-                height = int(screen_height * 0.5)
+                # Padrão: 1024x600
+                width, height = self.DEFAULT_WINDOW_SIZE
                 is_fullscreen = False
             elif window_size_mode == "screen_75":
                 width = int(screen_width * 0.75)
@@ -281,27 +283,33 @@ class GuiDisplay(BaseDisplay, QObject, metaclass=CombinedMeta):
                 height = screen_height
                 is_fullscreen = True
             else:
-                # Modo desconhecido: 50%
-                width = int(screen_width * 0.5)
-                height = int(screen_height * 0.5)
+                # Modo desconhecido: 1024x600
+                width, height = self.DEFAULT_WINDOW_SIZE
                 is_fullscreen = False
 
-            # Swap dimensions when rotated 90°
+            # Swap dimensions when rotated 90°/270°
             if self._rotation_angle % 180 != 0:
                 width, height = height, width
+
+            # Capping width and height to screen boundaries MUST happen AFTER rotation swap
+            if not is_fullscreen:
+                width = min(width, screen_width)
+                height = min(height, screen_height)
 
             return ((width, height), is_fullscreen)
 
         except Exception as e:
             self.logger.error(f"Falha ao calcular tamanho da janela: {e}", exc_info=True)
-            # Fallback: 50% da tela
+            # Fallback: DEFAULT_WINDOW_SIZE limitado pela tela pós-rotação
             try:
                 desktop = QApplication.desktop()
                 screen_rect = desktop.availableGeometry()
-                return (
-                    (int(screen_rect.width() * 0.5), int(screen_rect.height() * 0.5)),
-                    False,
-                )
+                w, h = self.DEFAULT_WINDOW_SIZE
+                if self._rotation_angle % 180 != 0:
+                    w, h = h, w
+                w = min(w, screen_rect.width())
+                h = min(h, screen_rect.height())
+                return ((w, h), False)
             except Exception:
                 return (self.DEFAULT_WINDOW_SIZE, False)
 
