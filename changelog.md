@@ -6,7 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased] - 2026-07-16
 
+### Fixed
+- Test: make pytest import robust in test_pipeline.py (b866907)
+
 ### Changed
+- Bolt: Offload audio decoding to background thread (a87264b)
 - Refactor: clean up repository root and reorganize models, tests, and scripts (4634572)
 - Chore: remove unused imports and clean up variables (df65b2e)
 
